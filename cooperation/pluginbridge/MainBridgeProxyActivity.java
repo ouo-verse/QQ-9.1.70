@@ -1,0 +1,23 @@
+package cooperation.pluginbridge;
+
+import android.content.res.Configuration;
+import android.view.MotionEvent;
+import com.tencent.mobileqq.app.QBaseActivity;
+import com.tencent.qqlive.module.videoreport.collect.EventCollector;
+
+/* loaded from: classes28.dex */
+public class MainBridgeProxyActivity extends QBaseActivity {
+    @Override // com.tencent.mobileqq.app.QBaseActivity, mqq.app.AppActivity, androidx.fragment.app.FragmentActivity, androidx.activity.ComponentActivity, androidx.core.app.ComponentActivity, android.app.Activity, android.view.Window.Callback
+    public boolean dispatchTouchEvent(MotionEvent motionEvent) {
+        EventCollector.getInstance().onActivityDispatchTouchEvent(this, motionEvent, false, true);
+        boolean dispatchTouchEvent = super.dispatchTouchEvent(motionEvent);
+        EventCollector.getInstance().onActivityDispatchTouchEvent(this, motionEvent, dispatchTouchEvent, false);
+        return dispatchTouchEvent;
+    }
+
+    @Override // com.tencent.mobileqq.app.QBaseActivity, mqq.app.AppActivity, androidx.fragment.app.FragmentActivity, androidx.activity.ComponentActivity, androidx.core.app.ComponentActivity, android.app.Activity, android.content.ComponentCallbacks
+    public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        EventCollector.getInstance().onActivityConfigurationChanged(this, configuration);
+    }
+}

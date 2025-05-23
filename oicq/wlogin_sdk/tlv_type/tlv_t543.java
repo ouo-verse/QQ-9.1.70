@@ -1,0 +1,9 @@
+package oicq.wlogin_sdk.tlv_type;
+
+/* compiled from: P */
+/* loaded from: classes28.dex */
+public final class tlv_t543 extends tlv_t {
+    public tlv_t543() {
+        this._cmd = 1347;
+    }
+}

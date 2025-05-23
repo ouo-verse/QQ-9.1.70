@@ -1,0 +1,89 @@
+package com.tencent.mobileqq.guild.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.LinearLayout;
+import androidx.annotation.DrawableRes;
+import com.tencent.biz.pubaccount.readinjoy.view.proteus.virtualview.view.text.rich.node.Node;
+import com.tencent.mobileqq.R;
+import com.tencent.mobileqq.guild.util.bi;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u0002\n\u0002\b\r\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0005\u0018\u0000 \u00182\u00020\u0001:\u0001\u0005B\u001b\u0012\u0006\u0010\u0013\u001a\u00020\u0012\u0012\n\b\u0002\u0010\u0015\u001a\u0004\u0018\u00010\u0014\u00a2\u0006\u0004\b\u0016\u0010\u0017J\u000e\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0003\u001a\u00020\u0002J\u000e\u0010\u0007\u001a\u00020\u00042\u0006\u0010\u0006\u001a\u00020\u0002J\u000e\u0010\t\u001a\u00020\u00042\u0006\u0010\b\u001a\u00020\u0002R\u0016\u0010\f\u001a\u00020\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\u0006\n\u0004\b\n\u0010\u000bR\u0016\u0010\u000e\u001a\u00020\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\u0006\n\u0004\b\r\u0010\u000bR\u0016\u0010\u0006\u001a\u00020\u00028\u0002@\u0002X\u0083\u000e\u00a2\u0006\u0006\n\u0004\b\u000f\u0010\u000bR\u0016\u0010\u0011\u001a\u00020\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\u0006\n\u0004\b\u0010\u0010\u000b\u00a8\u0006\u0019"}, d2 = {"Lcom/tencent/mobileqq/guild/widget/GuildDotIndicator;", "Landroid/widget/LinearLayout;", "", "count", "", "a", "dotRes", "setDotRes", "nowSelect", "b", "d", "I", "dotSize", "e", "dotSpace", "f", tl.h.F, "currentSelectedIndex", "Landroid/content/Context;", "context", "Landroid/util/AttributeSet;", Node.ATTRS_ATTR, "<init>", "(Landroid/content/Context;Landroid/util/AttributeSet;)V", "i", "qqguild-api_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes14.dex */
+public final class GuildDotIndicator extends LinearLayout {
+
+    /* renamed from: m, reason: collision with root package name */
+    private static int f235844m = R.drawable.guild_skin_operation_banner_indicator;
+
+    /* renamed from: d, reason: collision with root package name and from kotlin metadata */
+    private int dotSize;
+
+    /* renamed from: e, reason: collision with root package name and from kotlin metadata */
+    private int dotSpace;
+
+    /* renamed from: f, reason: collision with root package name and from kotlin metadata */
+    @DrawableRes
+    private int dotRes;
+
+    /* renamed from: h, reason: collision with root package name and from kotlin metadata */
+    private int currentSelectedIndex;
+
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public GuildDotIndicator(@NotNull Context context, @Nullable AttributeSet attributeSet) {
+        super(context, attributeSet, 0);
+        Intrinsics.checkNotNullParameter(context, "context");
+        this.dotRes = f235844m;
+        TypedArray obtainStyledAttributes = context.obtainStyledAttributes(attributeSet, com.tencent.mobileqq.guild.api.j.f214614v1);
+        Intrinsics.checkNotNullExpressionValue(obtainStyledAttributes, "context.obtainStyledAttr\u2026leable.GuildDotIndicator)");
+        int i3 = com.tencent.mobileqq.guild.api.j.f214620w1;
+        this.dotSize = obtainStyledAttributes.getDimensionPixelSize(i3, bi.b(5));
+        this.dotSpace = obtainStyledAttributes.getDimensionPixelSize(com.tencent.mobileqq.guild.api.j.f214626x1, bi.b(3));
+        this.dotRes = obtainStyledAttributes.getResourceId(i3, f235844m);
+        obtainStyledAttributes.recycle();
+    }
+
+    public final void a(int count) {
+        if (count <= 1) {
+            setVisibility(8);
+            return;
+        }
+        this.currentSelectedIndex = 0;
+        setVisibility(0);
+        removeAllViews();
+        for (int i3 = 0; i3 < count; i3++) {
+            View view = new View(getContext());
+            view.setBackgroundResource(this.dotRes);
+            view.setSelected(false);
+            int i16 = this.dotSize;
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(i16, i16);
+            int i17 = this.dotSpace;
+            layoutParams.leftMargin = i17;
+            layoutParams.rightMargin = i17;
+            addView(view, layoutParams);
+        }
+        getChildAt(this.currentSelectedIndex).setSelected(true);
+    }
+
+    public final void b(int nowSelect) {
+        if (this.currentSelectedIndex != nowSelect && nowSelect < getChildCount()) {
+            getChildAt(this.currentSelectedIndex).setSelected(false);
+            getChildAt(nowSelect).setSelected(true);
+            this.currentSelectedIndex = nowSelect;
+        }
+    }
+
+    public final void setDotRes(int dotRes) {
+        this.dotRes = dotRes;
+        int childCount = getChildCount();
+        for (int i3 = 0; i3 < childCount; i3++) {
+            getChildAt(i3).setBackgroundResource(dotRes);
+        }
+    }
+}

@@ -1,0 +1,167 @@
+package com.tencent.qqnt.aio.gametail.api;
+
+import com.tencent.gamecenter.wadl.biz.entity.WadlProxyConsts;
+import com.tencent.mobileqq.qfix.redirect.IPatchRedirector;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import tl.h;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000,\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\t\n\u0002\b\u0010\n\u0002\u0018\u0002\n\u0002\b\n\b\u0086\b\u0018\u00002\u00020\u0001BG\u0012\u0006\u0010\r\u001a\u00020\t\u0012\u0006\u0010\u0012\u001a\u00020\u0002\u0012\u0006\u0010\u0015\u001a\u00020\u0002\u0012\u0006\u0010\u0017\u001a\u00020\u0002\u0012\u0006\u0010\u0019\u001a\u00020\u0002\u0012\u0006\u0010\u001d\u001a\u00020\u001a\u0012\u0006\u0010\u001f\u001a\u00020\u0002\u0012\u0006\u0010!\u001a\u00020\u0002\u00a2\u0006\u0004\b\"\u0010#J\t\u0010\u0003\u001a\u00020\u0002H\u00d6\u0001J\t\u0010\u0005\u001a\u00020\u0004H\u00d6\u0001J\u0013\u0010\b\u001a\u00020\u00072\b\u0010\u0006\u001a\u0004\u0018\u00010\u0001H\u00d6\u0003R\u0017\u0010\r\u001a\u00020\t8\u0006\u00a2\u0006\f\n\u0004\b\n\u0010\u000b\u001a\u0004\b\n\u0010\fR\u0017\u0010\u0012\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u000e\u0010\u000f\u001a\u0004\b\u0010\u0010\u0011R\u0017\u0010\u0015\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0013\u0010\u000f\u001a\u0004\b\u0014\u0010\u0011R\u0017\u0010\u0017\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0016\u0010\u000f\u001a\u0004\b\u0013\u0010\u0011R\u0017\u0010\u0019\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0018\u0010\u000f\u001a\u0004\b\u0018\u0010\u0011R\u0017\u0010\u001d\u001a\u00020\u001a8\u0006\u00a2\u0006\f\n\u0004\b\u0014\u0010\u001b\u001a\u0004\b\u0016\u0010\u001cR\u0017\u0010\u001f\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u001e\u0010\u000f\u001a\u0004\b\u000e\u0010\u0011R\u0017\u0010!\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b \u0010\u000f\u001a\u0004\b\u001e\u0010\u0011\u00a8\u0006$"}, d2 = {"Lcom/tencent/qqnt/aio/gametail/api/a;", "", "", "toString", "", "hashCode", "other", "", "equals", "", "a", "J", "()J", "appId", "b", "Ljava/lang/String;", "getAppName", "()Ljava/lang/String;", "appName", "c", "f", "text", "d", "iconUrl", "e", WadlProxyConsts.KEY_JUMP_URL, "Lcom/tencent/qqnt/aio/gametail/api/JumpType;", "Lcom/tencent/qqnt/aio/gametail/api/JumpType;", "()Lcom/tencent/qqnt/aio/gametail/api/JumpType;", "jumpType", "g", "bgColor", h.F, "textColor", "<init>", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/tencent/qqnt/aio/gametail/api/JumpType;Ljava/lang/String;Ljava/lang/String;)V", "aio_adapter_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes23.dex */
+public final /* data */ class a {
+    static IPatchRedirector $redirector_;
+
+    /* renamed from: a, reason: collision with root package name and from kotlin metadata */
+    private final long appId;
+
+    /* renamed from: b, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String appName;
+
+    /* renamed from: c, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String text;
+
+    /* renamed from: d, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String iconUrl;
+
+    /* renamed from: e, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String jumpUrl;
+
+    /* renamed from: f, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final JumpType jumpType;
+
+    /* renamed from: g, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String bgColor;
+
+    /* renamed from: h, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final String textColor;
+
+    public a(long j3, @NotNull String appName, @NotNull String text, @NotNull String iconUrl, @NotNull String jumpUrl, @NotNull JumpType jumpType, @NotNull String bgColor, @NotNull String textColor) {
+        Intrinsics.checkNotNullParameter(appName, "appName");
+        Intrinsics.checkNotNullParameter(text, "text");
+        Intrinsics.checkNotNullParameter(iconUrl, "iconUrl");
+        Intrinsics.checkNotNullParameter(jumpUrl, "jumpUrl");
+        Intrinsics.checkNotNullParameter(jumpType, "jumpType");
+        Intrinsics.checkNotNullParameter(bgColor, "bgColor");
+        Intrinsics.checkNotNullParameter(textColor, "textColor");
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 1)) {
+            iPatchRedirector.redirect((short) 1, this, Long.valueOf(j3), appName, text, iconUrl, jumpUrl, jumpType, bgColor, textColor);
+            return;
+        }
+        this.appId = j3;
+        this.appName = appName;
+        this.text = text;
+        this.iconUrl = iconUrl;
+        this.jumpUrl = jumpUrl;
+        this.jumpType = jumpType;
+        this.bgColor = bgColor;
+        this.textColor = textColor;
+    }
+
+    public final long a() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 2)) {
+            return ((Long) iPatchRedirector.redirect((short) 2, (Object) this)).longValue();
+        }
+        return this.appId;
+    }
+
+    @NotNull
+    public final String b() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 8)) {
+            return (String) iPatchRedirector.redirect((short) 8, (Object) this);
+        }
+        return this.bgColor;
+    }
+
+    @NotNull
+    public final String c() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 5)) {
+            return (String) iPatchRedirector.redirect((short) 5, (Object) this);
+        }
+        return this.iconUrl;
+    }
+
+    @NotNull
+    public final JumpType d() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 7)) {
+            return (JumpType) iPatchRedirector.redirect((short) 7, (Object) this);
+        }
+        return this.jumpType;
+    }
+
+    @NotNull
+    public final String e() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 6)) {
+            return (String) iPatchRedirector.redirect((short) 6, (Object) this);
+        }
+        return this.jumpUrl;
+    }
+
+    public boolean equals(@Nullable Object other) {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 21)) {
+            return ((Boolean) iPatchRedirector.redirect((short) 21, (Object) this, other)).booleanValue();
+        }
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof a)) {
+            return false;
+        }
+        a aVar = (a) other;
+        if (this.appId == aVar.appId && Intrinsics.areEqual(this.appName, aVar.appName) && Intrinsics.areEqual(this.text, aVar.text) && Intrinsics.areEqual(this.iconUrl, aVar.iconUrl) && Intrinsics.areEqual(this.jumpUrl, aVar.jumpUrl) && this.jumpType == aVar.jumpType && Intrinsics.areEqual(this.bgColor, aVar.bgColor) && Intrinsics.areEqual(this.textColor, aVar.textColor)) {
+            return true;
+        }
+        return false;
+    }
+
+    @NotNull
+    public final String f() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 4)) {
+            return (String) iPatchRedirector.redirect((short) 4, (Object) this);
+        }
+        return this.text;
+    }
+
+    @NotNull
+    public final String g() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 9)) {
+            return (String) iPatchRedirector.redirect((short) 9, (Object) this);
+        }
+        return this.textColor;
+    }
+
+    public int hashCode() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 20)) {
+            return ((Integer) iPatchRedirector.redirect((short) 20, (Object) this)).intValue();
+        }
+        return (((((((((((((androidx.fragment.app.a.a(this.appId) * 31) + this.appName.hashCode()) * 31) + this.text.hashCode()) * 31) + this.iconUrl.hashCode()) * 31) + this.jumpUrl.hashCode()) * 31) + this.jumpType.hashCode()) * 31) + this.bgColor.hashCode()) * 31) + this.textColor.hashCode();
+    }
+
+    @NotNull
+    public String toString() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 19)) {
+            return (String) iPatchRedirector.redirect((short) 19, (Object) this);
+        }
+        return "GameTailInfo(appId=" + this.appId + ", appName=" + this.appName + ", text=" + this.text + ", iconUrl=" + this.iconUrl + ", jumpUrl=" + this.jumpUrl + ", jumpType=" + this.jumpType + ", bgColor=" + this.bgColor + ", textColor=" + this.textColor + ")";
+    }
+}

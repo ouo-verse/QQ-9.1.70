@@ -1,0 +1,13 @@
+package com.tencent.icgame.trpc.yes.common;
+
+import com.tencent.mobileqq.pb.ByteStringMicro;
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBBytesField;
+import com.tencent.mobileqq.pb.PBField;
+
+/* compiled from: P */
+/* loaded from: classes7.dex */
+public final class ActivityOuterClass$ShareLiveRoomLinkRsp extends MessageMicro<ActivityOuterClass$ShareLiveRoomLinkRsp> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10}, new String[]{"param"}, new Object[]{ByteStringMicro.EMPTY}, ActivityOuterClass$ShareLiveRoomLinkRsp.class);
+    public final PBBytesField param = PBField.initBytes(ByteStringMicro.EMPTY);
+}

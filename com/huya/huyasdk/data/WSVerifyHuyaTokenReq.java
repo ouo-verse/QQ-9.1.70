@@ -1,0 +1,18 @@
+package com.huya.huyasdk.data;
+
+import com.google.gson.annotations.SerializedName;
+import com.huya.huyasdk.jce.UserId;
+
+/* compiled from: P */
+/* loaded from: classes2.dex */
+public class WSVerifyHuyaTokenReq {
+
+    @SerializedName("tId")
+    public UserId tId = null;
+
+    @SerializedName("bAutoRegisterUid")
+    public Integer bAutoRegisterUid = 0;
+
+    @SerializedName("sAppSrc")
+    public String sAppSrc = "";
+}

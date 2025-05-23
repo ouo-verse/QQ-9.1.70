@@ -1,0 +1,40 @@
+package sy2;
+
+import android.content.Context;
+import com.tencent.mobileqq.transfile.predownload.schedule.PreDownloadConstants;
+import com.tencent.qphone.base.util.QLog;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u001c\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0011\n\u0002\b\u0004\bf\u0018\u00002\u00020\u0001J9\u0010\b\u001a\u0004\u0018\u00010\u00012\u0006\u0010\u0003\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0016\u0010\u0007\u001a\f\u0012\b\b\u0001\u0012\u0004\u0018\u00010\u00040\u0006\"\u0004\u0018\u00010\u0004H&\u00a2\u0006\u0004\b\b\u0010\t\u00a8\u0006\n"}, d2 = {"Lsy2/e;", "", "Landroid/content/Context;", "context", "", "methodName", "", "args", "a", "(Landroid/content/Context;Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/Object;", "QQCommon_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes20.dex */
+public interface e {
+
+    /* compiled from: P */
+    @Metadata(k = 3, mv = {1, 7, 1}, xi = 48)
+    /* loaded from: classes20.dex */
+    public static final class a {
+        @NotNull
+        public static BusinessData a(@NotNull e eVar, @Nullable String str) {
+            if (QLog.isColorLevel()) {
+                QLog.d("IJSPackageInfoHandler", 1, "getParams " + str);
+            }
+            if (str != null) {
+                JSONObject jSONObject = new JSONObject(str);
+                String packageName = jSONObject.optString("packageName", "");
+                String businessName = jSONObject.optString(PreDownloadConstants.RPORT_KEY_BUSINESS_NAME, "");
+                Intrinsics.checkNotNullExpressionValue(packageName, "packageName");
+                Intrinsics.checkNotNullExpressionValue(businessName, "businessName");
+                return new BusinessData(packageName, businessName);
+            }
+            return BusinessData.INSTANCE.a();
+        }
+    }
+
+    @Nullable
+    Object a(@NotNull Context context, @NotNull String methodName, @NotNull String... args);
+}

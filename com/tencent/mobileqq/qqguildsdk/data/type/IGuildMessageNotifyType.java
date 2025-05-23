@@ -1,0 +1,17 @@
+package com.tencent.mobileqq.qqguildsdk.data.type;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/* compiled from: P */
+@Target({ElementType.PARAMETER, ElementType.FIELD})
+@Retention(RetentionPolicy.SOURCE)
+/* loaded from: classes17.dex */
+public @interface IGuildMessageNotifyType {
+    public static final int NOTIFY_CLOSE = 2;
+    public static final int NOTIFY_DEFAULT = 0;
+    public static final int NOTIFY_ONLY_AT = 3;
+    public static final int NOTIFY_OPEN = 1;
+}

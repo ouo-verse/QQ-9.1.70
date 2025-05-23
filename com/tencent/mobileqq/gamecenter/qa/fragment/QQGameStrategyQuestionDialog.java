@@ -1,0 +1,134 @@
+package com.tencent.mobileqq.gamecenter.qa.fragment;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.tencent.mobileqq.gamecenter.qa.data.GameStrategyChannelEntry;
+import com.tencent.mobileqq.gamecenter.qa.view.QQGameStrategyQuestionControl;
+import com.tencent.mobileqq.gamecenter.qa.view.bh;
+import com.tencent.mobileqq.vas.theme.api.ThemeUtil;
+import com.tencent.qqlive.module.videoreport.inject.fragment.AndroidXFragmentCollector;
+
+/* compiled from: P */
+/* loaded from: classes12.dex */
+public class QQGameStrategyQuestionDialog extends BottomSheetDialogFragment {
+    private QQGameStrategyQuestionControl C;
+    protected BottomSheetBehavior D;
+    private View E;
+    private boolean F = true;
+
+    /* compiled from: P */
+    /* loaded from: classes12.dex */
+    class a implements bh.x {
+        a() {
+        }
+
+        @Override // com.tencent.mobileqq.gamecenter.qa.view.bh.x
+        public void a(boolean z16) {
+            QQGameStrategyQuestionDialog.this.F = z16;
+            QQGameStrategyQuestionDialog.this.dismiss();
+        }
+    }
+
+    public static Bundle qh(int i3, GameStrategyChannelEntry gameStrategyChannelEntry) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("appId", i3);
+        bundle.putSerializable("channelEntry", gameStrategyChannelEntry);
+        return bundle;
+    }
+
+    @Override // androidx.fragment.app.Fragment
+    public void onActivityResult(int i3, int i16, @Nullable Intent intent) {
+        super.onActivityResult(i3, i16, intent);
+        this.C.m0(i3, i16, intent);
+    }
+
+    @Override // androidx.fragment.app.DialogFragment, androidx.fragment.app.Fragment
+    public void onCreate(@Nullable Bundle bundle) {
+        super.onCreate(bundle);
+    }
+
+    @Override // androidx.fragment.app.Fragment
+    @Nullable
+    public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup, @Nullable Bundle bundle) {
+        super.onCreateView(layoutInflater, viewGroup, bundle);
+        getDialog().getWindow().setSoftInputMode(16);
+        Bundle arguments = getArguments();
+        com.tencent.mobileqq.gamecenter.qa.model.i iVar = new com.tencent.mobileqq.gamecenter.qa.model.i();
+        if (arguments != null) {
+            iVar.f212658a = arguments.getInt("appId");
+            iVar.f212662e = (GameStrategyChannelEntry) arguments.getSerializable("channelEntry");
+        }
+        QQGameStrategyQuestionControl qQGameStrategyQuestionControl = new QQGameStrategyQuestionControl(getActivity(), getContext(), iVar, 1, ThemeUtil.isNowThemeIsNight(null, false, null));
+        this.C = qQGameStrategyQuestionControl;
+        qQGameStrategyQuestionControl.f2(new a());
+        View o06 = this.C.o0(layoutInflater, viewGroup, bundle);
+        this.E = o06;
+        AndroidXFragmentCollector.onAndroidXFragmentViewCreated(this, o06);
+        return o06;
+    }
+
+    @Override // androidx.fragment.app.Fragment
+    public void onDestroy() {
+        super.onDestroy();
+        this.C.q0();
+    }
+
+    @Override // androidx.fragment.app.DialogFragment, android.content.DialogInterface.OnDismissListener
+    public void onDismiss(@NonNull DialogInterface dialogInterface) {
+        super.onDismiss(dialogInterface);
+        if (!this.F) {
+            return;
+        }
+        this.C.X1();
+    }
+
+    @Override // com.tencent.qqlive.module.videoreport.inject.fragment.ReportAndroidXDialogFragment, androidx.fragment.app.Fragment
+    public void onPause() {
+        super.onPause();
+        this.C.r0();
+    }
+
+    @Override // com.tencent.qqlive.module.videoreport.inject.fragment.ReportAndroidXDialogFragment, androidx.fragment.app.Fragment
+    public void onResume() {
+        super.onResume();
+        this.C.t0();
+    }
+
+    @Override // androidx.fragment.app.DialogFragment, androidx.fragment.app.Fragment
+    public void onStart() {
+        super.onStart();
+        ((View) this.E.getParent()).setBackgroundColor(0);
+        BottomSheetBehavior<FrameLayout> behavior = ((com.google.android.material.bottomsheet.a) getDialog()).getBehavior();
+        this.D = behavior;
+        behavior.setState(3);
+        this.D.setPeekHeight(0);
+        this.D.addBottomSheetCallback(new b());
+    }
+
+    /* compiled from: P */
+    /* loaded from: classes12.dex */
+    class b extends BottomSheetBehavior.e {
+        b() {
+        }
+
+        @Override // com.google.android.material.bottomsheet.BottomSheetBehavior.e
+        public void onStateChanged(@NonNull View view, int i3) {
+            if (i3 == 4) {
+                QQGameStrategyQuestionDialog.this.dismiss();
+            }
+        }
+
+        @Override // com.google.android.material.bottomsheet.BottomSheetBehavior.e
+        public void onSlide(@NonNull View view, float f16) {
+        }
+    }
+}

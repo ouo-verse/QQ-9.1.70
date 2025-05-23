@@ -1,0 +1,14 @@
+package com.tencent.icgame.trpc.yes.common;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt32Field;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+
+/* loaded from: classes7.dex */
+public final class PremadesTeamServerOuterClass$BatchGetGameTeamInfoRsp extends MessageMicro<PremadesTeamServerOuterClass$BatchGetGameTeamInfoRsp> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 16, 26}, new String[]{"team_list", "refresh_interval", "share_yolo_room_msg"}, new Object[]{null, 0, null}, PremadesTeamServerOuterClass$BatchGetGameTeamInfoRsp.class);
+    public final PBRepeatMessageField<PremadesTeamServerOuterClass$YesGamePremadesTeamInfo> team_list = PBField.initRepeatMessage(PremadesTeamServerOuterClass$YesGamePremadesTeamInfo.class);
+    public final PBInt32Field refresh_interval = PBField.initInt32(0);
+    public final PBRepeatMessageField<PremadesTeamServerOuterClass$ShareYoloRoomMsg> share_yolo_room_msg = PBField.initRepeatMessage(PremadesTeamServerOuterClass$ShareYoloRoomMsg.class);
+}

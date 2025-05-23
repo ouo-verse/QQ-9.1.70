@@ -1,0 +1,188 @@
+package kotlinx.atomicfu;
+
+import com.tencent.mtt.hippy.views.textinput.HippyTextInputController;
+import com.tencent.qqmini.miniapp.core.EventListener;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import kotlin.Metadata;
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import kotlin.jvm.internal.Intrinsics;
+import kotlin.reflect.KProperty;
+import kotlinx.atomicfu.TraceBase;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(bv = {1, 0, 3}, d1 = {"\u00008\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0010\u000b\n\u0002\b\t\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0003\n\u0002\u0010\u000e\n\u0002\b\u0002\u0018\u0000 \"2\u00020\u0001:\u0001\"B\u0017\b\u0000\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\u0002\u0010\u0006J\u000e\u0010\r\u001a\u00020\u00032\u0006\u0010\u000e\u001a\u00020\u0003J\u0016\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\u00032\u0006\u0010\u0012\u001a\u00020\u0003J\u0006\u0010\u0013\u001a\u00020\u0003J\u000e\u0010\u0014\u001a\u00020\u00032\u0006\u0010\u000e\u001a\u00020\u0003J\u0006\u0010\u0015\u001a\u00020\u0003J\u0006\u0010\u0016\u001a\u00020\u0003J\u000e\u0010\u0017\u001a\u00020\u00032\u0006\u0010\u0002\u001a\u00020\u0003J\u001f\u0010\t\u001a\u00020\u00032\b\u0010\u0018\u001a\u0004\u0018\u00010\u00012\n\u0010\u0019\u001a\u0006\u0012\u0002\b\u00030\u001aH\u0086\nJ\u0006\u0010\u001b\u001a\u00020\u0003J\u000e\u0010\u001c\u001a\u00020\u001d2\u0006\u0010\u0002\u001a\u00020\u0003J\u0011\u0010\u001e\u001a\u00020\u001d2\u0006\u0010\u000e\u001a\u00020\u0003H\u0086\nJ\u0011\u0010\u001f\u001a\u00020\u001d2\u0006\u0010\u000e\u001a\u00020\u0003H\u0086\nJ'\u0010\u000b\u001a\u00020\u001d2\b\u0010\u0018\u001a\u0004\u0018\u00010\u00012\n\u0010\u0019\u001a\u0006\u0012\u0002\b\u00030\u001a2\u0006\u0010\u0002\u001a\u00020\u0003H\u0086\nJ\b\u0010 \u001a\u00020!H\u0016R\u0011\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0007\u0010\bR$\u0010\u0002\u001a\u00020\u00032\u0006\u0010\u0002\u001a\u00020\u0003@FX\u0086\u000e\u00a2\u0006\u000e\n\u0000\u001a\u0004\b\t\u0010\n\"\u0004\b\u000b\u0010\f\u00a8\u0006#"}, d2 = {"Lkotlinx/atomicfu/AtomicInt;", "", "value", "", "trace", "Lkotlinx/atomicfu/TraceBase;", "(ILkotlinx/atomicfu/TraceBase;)V", "getTrace", "()Lkotlinx/atomicfu/TraceBase;", HippyTextInputController.COMMAND_getValue, "()I", HippyTextInputController.COMMAND_setValue, "(I)V", "addAndGet", EventListener.KEY_DELTA, "compareAndSet", "", "expect", "update", "decrementAndGet", "getAndAdd", "getAndDecrement", "getAndIncrement", "getAndSet", "thisRef", "property", "Lkotlin/reflect/KProperty;", "incrementAndGet", "lazySet", "", "minusAssign", "plusAssign", "toString", "", "Companion", "atomicfu"}, k = 1, mv = {1, 4, 3})
+/* loaded from: classes28.dex */
+public final class AtomicInt {
+
+    @NotNull
+    private static final Companion Companion = new Companion(null);
+
+    @Deprecated
+    private static final AtomicIntegerFieldUpdater<AtomicInt> FU = AtomicIntegerFieldUpdater.newUpdater(AtomicInt.class, "value");
+
+    @NotNull
+    private final TraceBase trace;
+    private volatile int value;
+
+    /* compiled from: P */
+    @Metadata(bv = {1, 0, 3}, d1 = {"\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\b\u0082\u0003\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002R2\u0010\u0003\u001a&\u0012\f\u0012\n \u0006*\u0004\u0018\u00010\u00050\u0005 \u0006*\u0012\u0012\f\u0012\n \u0006*\u0004\u0018\u00010\u00050\u0005\u0018\u00010\u00040\u0004X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u0007"}, d2 = {"Lkotlinx/atomicfu/AtomicInt$Companion;", "", "()V", "FU", "Ljava/util/concurrent/atomic/AtomicIntegerFieldUpdater;", "Lkotlinx/atomicfu/AtomicInt;", "kotlin.jvm.PlatformType", "atomicfu"}, k = 1, mv = {1, 4, 3})
+    /* loaded from: classes28.dex */
+    private static final class Companion {
+        Companion() {
+        }
+
+        public /* synthetic */ Companion(DefaultConstructorMarker defaultConstructorMarker) {
+            this();
+        }
+    }
+
+    public AtomicInt(int i3, @NotNull TraceBase trace) {
+        Intrinsics.checkNotNullParameter(trace, "trace");
+        this.trace = trace;
+        this.value = i3;
+    }
+
+    public final int addAndGet(int delta) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int addAndGet = FU.addAndGet(this, delta);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("addAndGet(" + delta + "):" + addAndGet);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, addAndGet - delta, addAndGet);
+        return addAndGet;
+    }
+
+    public final boolean compareAndSet(int expect, int update) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        boolean compareAndSet = FU.compareAndSet(this, expect, update);
+        if (compareAndSet) {
+            TraceBase traceBase = this.trace;
+            if (traceBase != TraceBase.None.INSTANCE) {
+                traceBase.append("CAS(" + expect + ", " + update + ')');
+            }
+            InterceptorKt.getInterceptor().afterRMW(this, expect, update);
+        }
+        return compareAndSet;
+    }
+
+    public final int decrementAndGet() {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int decrementAndGet = FU.decrementAndGet(this);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("decAndGet():" + decrementAndGet);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, decrementAndGet + 1, decrementAndGet);
+        return decrementAndGet;
+    }
+
+    public final int getAndAdd(int delta) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int andAdd = FU.getAndAdd(this, delta);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("getAndAdd(" + delta + "):" + andAdd);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, andAdd, delta + andAdd);
+        return andAdd;
+    }
+
+    public final int getAndDecrement() {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int andDecrement = FU.getAndDecrement(this);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("getAndDec():" + andDecrement);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, andDecrement, andDecrement - 1);
+        return andDecrement;
+    }
+
+    public final int getAndIncrement() {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int andIncrement = FU.getAndIncrement(this);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("getAndInc():" + andIncrement);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, andIncrement, andIncrement + 1);
+        return andIncrement;
+    }
+
+    public final int getAndSet(int value) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int andSet = FU.getAndSet(this, value);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("getAndSet(" + value + "):" + andSet);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, andSet, value);
+        return andSet;
+    }
+
+    @NotNull
+    public final TraceBase getTrace() {
+        return this.trace;
+    }
+
+    public final int getValue() {
+        return this.value;
+    }
+
+    public final int incrementAndGet() {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        int incrementAndGet = FU.incrementAndGet(this);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("incAndGet():" + incrementAndGet);
+        }
+        InterceptorKt.getInterceptor().afterRMW(this, incrementAndGet - 1, incrementAndGet);
+        return incrementAndGet;
+    }
+
+    public final void lazySet(int value) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        FU.lazySet(this, value);
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("lazySet(" + value + ')');
+        }
+        InterceptorKt.getInterceptor().afterSet(this, value);
+    }
+
+    public final void minusAssign(int delta) {
+        getAndAdd(-delta);
+    }
+
+    public final void plusAssign(int delta) {
+        getAndAdd(delta);
+    }
+
+    public final void setValue(int i3) {
+        InterceptorKt.getInterceptor().beforeUpdate(this);
+        this.value = i3;
+        TraceBase traceBase = this.trace;
+        if (traceBase != TraceBase.None.INSTANCE) {
+            traceBase.append("set(" + i3 + ')');
+        }
+        InterceptorKt.getInterceptor().afterSet(this, i3);
+    }
+
+    @NotNull
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    public final int getValue(@Nullable Object thisRef, @NotNull KProperty<?> property) {
+        Intrinsics.checkNotNullParameter(property, "property");
+        return getValue();
+    }
+
+    public final void setValue(@Nullable Object thisRef, @NotNull KProperty<?> property, int value) {
+        Intrinsics.checkNotNullParameter(property, "property");
+        setValue(value);
+    }
+}

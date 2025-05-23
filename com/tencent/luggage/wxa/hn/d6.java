@@ -1,0 +1,134 @@
+package com.tencent.luggage.wxa.hn;
+
+import java.util.LinkedList;
+
+/* compiled from: P */
+/* loaded from: classes8.dex */
+public class d6 extends com.tencent.luggage.wxa.fn.b {
+
+    /* renamed from: d, reason: collision with root package name */
+    public int f127477d;
+
+    /* renamed from: e, reason: collision with root package name */
+    public String f127478e;
+
+    /* renamed from: f, reason: collision with root package name */
+    public boolean f127479f;
+
+    /* renamed from: g, reason: collision with root package name */
+    public String f127480g;
+
+    /* renamed from: h, reason: collision with root package name */
+    public String f127481h;
+
+    /* renamed from: i, reason: collision with root package name */
+    public bg f127482i;
+
+    /* renamed from: j, reason: collision with root package name */
+    public String f127483j;
+
+    @Override // com.tencent.luggage.wxa.fn.b
+    public final int a(int i3, Object... objArr) {
+        if (i3 == 0) {
+            com.tencent.luggage.wxa.mr.a aVar = (com.tencent.luggage.wxa.mr.a) objArr[0];
+            aVar.b(1, this.f127477d);
+            String str = this.f127478e;
+            if (str != null) {
+                aVar.a(2, str);
+            }
+            aVar.a(3, this.f127479f);
+            String str2 = this.f127480g;
+            if (str2 != null) {
+                aVar.a(4, str2);
+            }
+            String str3 = this.f127481h;
+            if (str3 != null) {
+                aVar.a(5, str3);
+            }
+            bg bgVar = this.f127482i;
+            if (bgVar != null) {
+                aVar.c(6, bgVar.a());
+                this.f127482i.a(aVar);
+            }
+            String str4 = this.f127483j;
+            if (str4 != null) {
+                aVar.a(7, str4);
+            }
+            return 0;
+        }
+        if (i3 == 1) {
+            int b16 = com.tencent.luggage.wxa.gr.a.b(1, this.f127477d) + 0;
+            String str5 = this.f127478e;
+            if (str5 != null) {
+                b16 += com.tencent.luggage.wxa.gr.a.a(2, str5);
+            }
+            int a16 = b16 + com.tencent.luggage.wxa.gr.a.a(3, this.f127479f);
+            String str6 = this.f127480g;
+            if (str6 != null) {
+                a16 += com.tencent.luggage.wxa.gr.a.a(4, str6);
+            }
+            String str7 = this.f127481h;
+            if (str7 != null) {
+                a16 += com.tencent.luggage.wxa.gr.a.a(5, str7);
+            }
+            bg bgVar2 = this.f127482i;
+            if (bgVar2 != null) {
+                a16 += com.tencent.luggage.wxa.gr.a.c(6, bgVar2.a());
+            }
+            String str8 = this.f127483j;
+            if (str8 != null) {
+                return a16 + com.tencent.luggage.wxa.gr.a.a(7, str8);
+            }
+            return a16;
+        }
+        if (i3 == 2) {
+            com.tencent.luggage.wxa.hr.a aVar2 = new com.tencent.luggage.wxa.hr.a((byte[]) objArr[0], com.tencent.luggage.wxa.fn.b.f126260c);
+            for (int a17 = com.tencent.luggage.wxa.fn.b.a(aVar2); a17 > 0; a17 = com.tencent.luggage.wxa.fn.b.a(aVar2)) {
+                if (!super.a(aVar2, this, a17)) {
+                    aVar2.b();
+                }
+            }
+            return 0;
+        }
+        if (i3 != 3) {
+            return -1;
+        }
+        com.tencent.luggage.wxa.hr.a aVar3 = (com.tencent.luggage.wxa.hr.a) objArr[0];
+        d6 d6Var = (d6) objArr[1];
+        int intValue = ((Integer) objArr[2]).intValue();
+        switch (intValue) {
+            case 1:
+                d6Var.f127477d = aVar3.f(intValue);
+                return 0;
+            case 2:
+                d6Var.f127478e = aVar3.i(intValue);
+                return 0;
+            case 3:
+                d6Var.f127479f = aVar3.a(intValue);
+                return 0;
+            case 4:
+                d6Var.f127480g = aVar3.i(intValue);
+                return 0;
+            case 5:
+                d6Var.f127481h = aVar3.i(intValue);
+                return 0;
+            case 6:
+                LinkedList h16 = aVar3.h(intValue);
+                int size = h16.size();
+                for (int i16 = 0; i16 < size; i16++) {
+                    byte[] bArr = (byte[]) h16.get(i16);
+                    bg bgVar3 = new bg();
+                    if (bArr != null && bArr.length > 0) {
+                        bgVar3.a(bArr);
+                    }
+                    d6Var.f127482i = bgVar3;
+                }
+                return 0;
+            case 7:
+                d6Var.f127483j = aVar3.i(intValue);
+                return 0;
+            default:
+                return -1;
+        }
+    }
+}

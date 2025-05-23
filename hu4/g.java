@@ -1,0 +1,89 @@
+package hu4;
+
+import com.google.protobuf.nano.CodedInputByteBufferNano;
+import com.google.protobuf.nano.CodedOutputByteBufferNano;
+import com.google.protobuf.nano.ExtendableMessageNano;
+import com.google.protobuf.nano.InternalNano;
+import java.io.IOException;
+
+/* compiled from: P */
+/* loaded from: classes38.dex */
+public final class g extends ExtendableMessageNano<g> {
+
+    /* renamed from: c, reason: collision with root package name */
+    private static volatile g[] f406374c;
+
+    /* renamed from: a, reason: collision with root package name */
+    public int f406375a;
+
+    /* renamed from: b, reason: collision with root package name */
+    public int f406376b;
+
+    public g() {
+        a();
+    }
+
+    public static g[] b() {
+        if (f406374c == null) {
+            synchronized (InternalNano.LAZY_INIT_LOCK) {
+                if (f406374c == null) {
+                    f406374c = new g[0];
+                }
+            }
+        }
+        return f406374c;
+    }
+
+    @Override // com.google.protobuf.nano.MessageNano
+    /* renamed from: c, reason: merged with bridge method [inline-methods] */
+    public g mergeFrom(CodedInputByteBufferNano codedInputByteBufferNano) throws IOException {
+        while (true) {
+            int readTag = codedInputByteBufferNano.readTag();
+            if (readTag == 0) {
+                return this;
+            }
+            if (readTag == 8) {
+                this.f406375a = codedInputByteBufferNano.readInt32();
+            } else if (readTag != 16) {
+                if (!storeUnknownField(codedInputByteBufferNano, readTag)) {
+                    return this;
+                }
+            } else {
+                this.f406376b = codedInputByteBufferNano.readInt32();
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.google.protobuf.nano.ExtendableMessageNano, com.google.protobuf.nano.MessageNano
+    public int computeSerializedSize() {
+        int computeSerializedSize = super.computeSerializedSize();
+        int i3 = this.f406375a;
+        if (i3 != 0) {
+            computeSerializedSize += CodedOutputByteBufferNano.computeInt32Size(1, i3);
+        }
+        int i16 = this.f406376b;
+        return i16 != 0 ? computeSerializedSize + CodedOutputByteBufferNano.computeInt32Size(2, i16) : computeSerializedSize;
+    }
+
+    @Override // com.google.protobuf.nano.ExtendableMessageNano, com.google.protobuf.nano.MessageNano
+    public void writeTo(CodedOutputByteBufferNano codedOutputByteBufferNano) throws IOException {
+        int i3 = this.f406375a;
+        if (i3 != 0) {
+            codedOutputByteBufferNano.writeInt32(1, i3);
+        }
+        int i16 = this.f406376b;
+        if (i16 != 0) {
+            codedOutputByteBufferNano.writeInt32(2, i16);
+        }
+        super.writeTo(codedOutputByteBufferNano);
+    }
+
+    public g a() {
+        this.f406375a = 0;
+        this.f406376b = 0;
+        this.unknownFieldData = null;
+        this.cachedSize = -1;
+        return this;
+    }
+}

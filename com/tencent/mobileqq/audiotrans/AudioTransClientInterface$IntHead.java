@@ -1,0 +1,32 @@
+package com.tencent.mobileqq.audiotrans;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBEnumField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBStringField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+
+/* compiled from: P */
+/* loaded from: classes11.dex */
+public final class AudioTransClientInterface$IntHead extends MessageMicro<AudioTransClientInterface$IntHead> {
+    public static final int INT_C2S_CHANGE_SESSION_REQ = 5;
+    public static final int INT_C2S_CHANGE_SESSION_RSP = 6;
+    public static final int INT_C2S_EXIT_SESSION_REQ = 3;
+    public static final int INT_C2S_EXIT_SESSION_RSP = 4;
+    public static final int INT_C2S_HEART_BEAT_REQ = 9;
+    public static final int INT_C2S_HEART_BEAT_RSP = 10;
+    public static final int INT_C2S_JOIN_SESSION_REQ = 1;
+    public static final int INT_C2S_JOIN_SESSION_RSP = 2;
+    public static final int INT_C2S_RAW_DATA_REQ = 7;
+    public static final int INT_C2S_RAW_DATA_RSP = 8;
+    public static final int INT_S2C_NOTIFY_EXIT_REQ = 13;
+    public static final int INT_S2C_NOTIFY_EXIT_RSP = 14;
+    public static final int INT_S2C_PUSH_DATA_REQ = 11;
+    public static final int INT_S2C_PUSH_DATA_RSP = 12;
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18, 24, 32, 40}, new String[]{"str_session_id", "str_uin", "uint32_seq", "enum_body_type", "uint32_error_no"}, new Object[]{"", "", 0, 1, 0}, AudioTransClientInterface$IntHead.class);
+    public final PBStringField str_session_id = PBField.initString("");
+    public final PBStringField str_uin = PBField.initString("");
+    public final PBUInt32Field uint32_seq = PBField.initUInt32(0);
+    public final PBEnumField enum_body_type = PBField.initEnum(1);
+    public final PBUInt32Field uint32_error_no = PBField.initUInt32(0);
+}

@@ -1,0 +1,41 @@
+package com.tencent.mobileqq.wink.editor.menu;
+
+/* compiled from: P */
+/* loaded from: classes21.dex */
+public enum MenuType {
+    BOTTOM_DASHBOARD,
+    TO_VIDEO,
+    TO_IMAGE,
+    VIDEO_TEMPLATE,
+    CLIPPING,
+    TEMPLATE_COLL_CLIP,
+    CROP,
+    FILTER,
+    TEXT,
+    STICKER,
+    STICKER_OLD,
+    EFFECT,
+    EFFECT_CATE,
+    MUSIC,
+    STICKER_TIMELINE,
+    ENHANCE,
+    SUBTITLE,
+    SUBTITLE_TEXT,
+    LYRIC_STICKER,
+    COVER_TEMPLATE,
+    COVER_TEXT,
+    TTS,
+    TEMPLATE_TEXT,
+    VIDEO_FIRST_TEMPLATE,
+    BACKGROUND,
+    TEMPLATE_TEXT_LIST,
+    TEMPLATE_COVER_TEXT,
+    VIDEO_QZONE_ALBUM_RECOMMEND,
+    SMOOTH_DEBUG_CONFIG,
+    MOSAIC,
+    OPENING_ENDING,
+    OPENING_ENDING_AIGC,
+    AI_ELIMINATION,
+    MUSIC_VOLUME,
+    AI_TEMPLATE
+}

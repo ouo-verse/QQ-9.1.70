@@ -1,0 +1,24 @@
+package com.tencent.mobileqq.zplan.api;
+
+import kotlin.Metadata;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\f\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0002\b\u0011\b\u0086\u0001\u0018\u00002\b\u0012\u0004\u0012\u00020\u00000\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002j\u0002\b\u0003j\u0002\b\u0004j\u0002\b\u0005j\u0002\b\u0006j\u0002\b\u0007j\u0002\b\bj\u0002\b\tj\u0002\b\nj\u0002\b\u000bj\u0002\b\fj\u0002\b\rj\u0002\b\u000ej\u0002\b\u000fj\u0002\b\u0010j\u0002\b\u0011\u00a8\u0006\u0012"}, d2 = {"Lcom/tencent/mobileqq/zplan/api/ZplanCacheComponentType;", "", "(Ljava/lang/String;I)V", "PARENT_PAGE_HANDLER", "AVATAR_COMPONENT_VIEW", "MAIN_TOP_PLACEHOLDER", "MAIN_TAB", "MAIN_PAGE_CONTAINER", "FACE_AD_CONTAINER", "CARD_LIST_VIEW", "CARD_TOP_LIST", "AVATAR_FULL_CONTAINER", "AVATAR_CARD", "AVATAR_CACHE_CONTAINER", "USER_CENTER_LIST_VIEW", "USER_CENTER_USER_INFO_CARD", "COMMUNITY_PUBLISH_BTN", "AVATAR_MALL_VIEW", "zplan_api_release"}, k = 1, mv = {1, 7, 1}, xi = 48)
+/* loaded from: classes21.dex */
+public enum ZplanCacheComponentType {
+    PARENT_PAGE_HANDLER,
+    AVATAR_COMPONENT_VIEW,
+    MAIN_TOP_PLACEHOLDER,
+    MAIN_TAB,
+    MAIN_PAGE_CONTAINER,
+    FACE_AD_CONTAINER,
+    CARD_LIST_VIEW,
+    CARD_TOP_LIST,
+    AVATAR_FULL_CONTAINER,
+    AVATAR_CARD,
+    AVATAR_CACHE_CONTAINER,
+    USER_CENTER_LIST_VIEW,
+    USER_CENTER_USER_INFO_CARD,
+    COMMUNITY_PUBLISH_BTN,
+    AVATAR_MALL_VIEW
+}

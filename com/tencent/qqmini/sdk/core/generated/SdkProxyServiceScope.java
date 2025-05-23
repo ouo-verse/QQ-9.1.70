@@ -1,0 +1,92 @@
+package com.tencent.qqmini.sdk.core.generated;
+
+import com.tencent.qqmini.sdk.core.proxy.MusicPlayerProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.ChannelProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.DownloaderProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.ExternalElementProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.FavoritesProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.KingCardProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.LogProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.MiniAppCacheProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.MiniAppNotifyProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.MiniAppProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.NavigationProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.RequestProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.RequestStrategyProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.ShareProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.UiJsProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.WnsConfigProxyDefault;
+import com.tencent.qqmini.sdk.core.proxy.service.a;
+import com.tencent.qqmini.sdk.core.proxy.service.b;
+import com.tencent.qqmini.sdk.core.proxy.service.c;
+import com.tencent.qqmini.sdk.core.proxy.service.d;
+import com.tencent.qqmini.sdk.core.proxy.service.e;
+import com.tencent.qqmini.sdk.core.proxy.service.f;
+import com.tencent.qqmini.sdk.core.proxy.service.g;
+import com.tencent.qqmini.sdk.core.proxy.service.h;
+import com.tencent.qqmini.sdk.core.proxy.service.i;
+import com.tencent.qqmini.sdk.core.proxy.service.j;
+import com.tencent.qqmini.sdk.launcher.core.proxy.AuthJsProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ChannelProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ConfigProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.DownloaderProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ExternalElementProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.FavoritesProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.GuildProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.HippyPageProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.IMiniAppNotifyProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.IWXLivePlayerProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.IWXLivePusherProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.KingCardProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.LogProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.MiniAppCacheProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.MiniAppProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.MusicPlayerProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.NavigationProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.PrivacyProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ReportProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.RequestProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.RequestStrategyProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ShareProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ThirdPartyMiniPageProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.ThreadProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.UiJsProxy;
+import com.tencent.qqmini.sdk.launcher.core.proxy.WnsConfigProxy;
+import java.util.HashMap;
+import java.util.Map;
+
+/* loaded from: classes23.dex */
+public final class SdkProxyServiceScope {
+    public static final Map PROXY_SERVICES;
+
+    static {
+        HashMap hashMap = new HashMap();
+        PROXY_SERVICES = hashMap;
+        hashMap.put(HippyPageProxy.class, d.class);
+        hashMap.put(ThirdPartyMiniPageProxy.class, g.class);
+        hashMap.put(RequestProxy.class, RequestProxyDefault.class);
+        hashMap.put(FavoritesProxy.class, FavoritesProxyDefault.class);
+        hashMap.put(ReportProxy.class, f.class);
+        hashMap.put(DownloaderProxy.class, DownloaderProxyDefault.class);
+        hashMap.put(IMiniAppNotifyProxy.class, MiniAppNotifyProxyDefault.class);
+        hashMap.put(MiniAppCacheProxy.class, MiniAppCacheProxyDefault.class);
+        hashMap.put(MiniAppProxy.class, MiniAppProxyDefault.class);
+        hashMap.put(GuildProxy.class, c.class);
+        hashMap.put(IWXLivePlayerProxy.class, i.class);
+        hashMap.put(LogProxy.class, LogProxyDefault.class);
+        hashMap.put(RequestStrategyProxy.class, RequestStrategyProxyDefault.class);
+        hashMap.put(MusicPlayerProxy.class, MusicPlayerProxyDefault.class);
+        hashMap.put(UiJsProxy.class, UiJsProxyDefault.class);
+        hashMap.put(PrivacyProxy.class, e.class);
+        hashMap.put(ThreadProxy.class, h.class);
+        hashMap.put(AuthJsProxy.class, a.class);
+        hashMap.put(NavigationProxy.class, NavigationProxyDefault.class);
+        hashMap.put(WnsConfigProxy.class, WnsConfigProxyDefault.class);
+        hashMap.put(KingCardProxy.class, KingCardProxyDefault.class);
+        hashMap.put(ChannelProxy.class, ChannelProxyDefault.class);
+        hashMap.put(ShareProxy.class, ShareProxyDefault.class);
+        hashMap.put(IWXLivePusherProxy.class, j.class);
+        hashMap.put(ExternalElementProxy.class, ExternalElementProxyDefault.class);
+        hashMap.put(ConfigProxy.class, b.class);
+    }
+}

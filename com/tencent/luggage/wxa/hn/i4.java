@@ -1,0 +1,56 @@
+package com.tencent.luggage.wxa.hn;
+
+import java.util.LinkedList;
+
+/* compiled from: P */
+/* loaded from: classes8.dex */
+public class i4 extends s8 {
+    @Override // com.tencent.luggage.wxa.fn.b
+    public final int a(int i3, Object... objArr) {
+        if (i3 == 0) {
+            com.tencent.luggage.wxa.mr.a aVar = (com.tencent.luggage.wxa.mr.a) objArr[0];
+            g0 g0Var = this.f128671d;
+            if (g0Var != null) {
+                aVar.c(1, g0Var.a());
+                this.f128671d.a(aVar);
+            }
+            return 0;
+        }
+        if (i3 == 1) {
+            g0 g0Var2 = this.f128671d;
+            if (g0Var2 == null) {
+                return 0;
+            }
+            return 0 + com.tencent.luggage.wxa.gr.a.c(1, g0Var2.a());
+        }
+        if (i3 == 2) {
+            com.tencent.luggage.wxa.hr.a aVar2 = new com.tencent.luggage.wxa.hr.a((byte[]) objArr[0], com.tencent.luggage.wxa.fn.b.f126260c);
+            for (int a16 = com.tencent.luggage.wxa.fn.b.a(aVar2); a16 > 0; a16 = com.tencent.luggage.wxa.fn.b.a(aVar2)) {
+                if (!super.a(aVar2, this, a16)) {
+                    aVar2.b();
+                }
+            }
+            return 0;
+        }
+        if (i3 != 3) {
+            return -1;
+        }
+        com.tencent.luggage.wxa.hr.a aVar3 = (com.tencent.luggage.wxa.hr.a) objArr[0];
+        i4 i4Var = (i4) objArr[1];
+        int intValue = ((Integer) objArr[2]).intValue();
+        if (intValue != 1) {
+            return -1;
+        }
+        LinkedList h16 = aVar3.h(intValue);
+        int size = h16.size();
+        for (int i16 = 0; i16 < size; i16++) {
+            byte[] bArr = (byte[]) h16.get(i16);
+            g0 g0Var3 = new g0();
+            if (bArr != null && bArr.length > 0) {
+                g0Var3.a(bArr);
+            }
+            i4Var.f128671d = g0Var3;
+        }
+        return 0;
+    }
+}

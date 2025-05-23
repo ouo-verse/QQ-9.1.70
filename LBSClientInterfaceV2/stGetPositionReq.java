@@ -1,0 +1,47 @@
+package LBSClientInterfaceV2;
+
+import com.qq.taf.jce.JceInputStream;
+import com.qq.taf.jce.JceOutputStream;
+import com.qq.taf.jce.JceStruct;
+
+/* loaded from: classes.dex */
+public final class stGetPositionReq extends JceStruct {
+    static stGPS cache_stGps;
+    public int iAccuracy;
+    public int iLocateCostTime;
+    public stGPS stGps;
+    public String strClientIP;
+
+    public stGetPositionReq() {
+        this.stGps = null;
+        this.strClientIP = "";
+        this.iAccuracy = 0;
+        this.iLocateCostTime = 0;
+    }
+
+    @Override // com.qq.taf.jce.JceStruct
+    public void readFrom(JceInputStream jceInputStream) {
+        if (cache_stGps == null) {
+            cache_stGps = new stGPS();
+        }
+        this.stGps = (stGPS) jceInputStream.read((JceStruct) cache_stGps, 0, true);
+        this.strClientIP = jceInputStream.readString(1, true);
+        this.iAccuracy = jceInputStream.read(this.iAccuracy, 2, false);
+        this.iLocateCostTime = jceInputStream.read(this.iLocateCostTime, 3, false);
+    }
+
+    @Override // com.qq.taf.jce.JceStruct
+    public void writeTo(JceOutputStream jceOutputStream) {
+        jceOutputStream.write((JceStruct) this.stGps, 0);
+        jceOutputStream.write(this.strClientIP, 1);
+        jceOutputStream.write(this.iAccuracy, 2);
+        jceOutputStream.write(this.iLocateCostTime, 3);
+    }
+
+    public stGetPositionReq(stGPS stgps, String str, int i3, int i16) {
+        this.stGps = stgps;
+        this.strClientIP = str;
+        this.iAccuracy = i3;
+        this.iLocateCostTime = i16;
+    }
+}

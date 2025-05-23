@@ -1,0 +1,45 @@
+package com.tencent.mobileqq.fe.utils.soload;
+
+import com.tencent.mobileqq.qfix.redirect.IPatchRedirector;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+
+/* compiled from: P */
+/* loaded from: classes12.dex */
+public class g {
+    static IPatchRedirector $redirector_;
+
+    public static void a(InputStream inputStream, byte[] bArr, int i3, int i16) throws IOException {
+        if (i16 == 0) {
+            return;
+        }
+        if (inputStream != null) {
+            if (bArr != null) {
+                if ((i3 | i16) >= 0 && i3 <= bArr.length && bArr.length - i3 >= i16) {
+                    while (i16 > 0) {
+                        int read = inputStream.read(bArr, i3, i16);
+                        if (read >= 0) {
+                            i3 += read;
+                            i16 -= read;
+                        } else {
+                            throw new EOFException();
+                        }
+                    }
+                    return;
+                }
+                return;
+            }
+            throw new NullPointerException("dst == null");
+        }
+        throw new NullPointerException("in == null");
+    }
+
+    public static int b(InputStream inputStream) throws IOException {
+        byte[] bArr = new byte[1];
+        if (inputStream.read(bArr, 0, 1) == -1) {
+            return -1;
+        }
+        return bArr[0] & 255;
+    }
+}

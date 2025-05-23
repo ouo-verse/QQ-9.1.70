@@ -1,0 +1,16 @@
+package ga3;
+
+/* compiled from: P */
+/* loaded from: classes21.dex */
+class i extends j {
+    /* JADX INFO: Access modifiers changed from: package-private */
+    public i(int i3, int i16, String str, int i17, boolean z16) {
+        super(i3, i16, str, i17, z16);
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    @Override // ga3.b
+    public byte a() {
+        return (byte) 6;
+    }
+}

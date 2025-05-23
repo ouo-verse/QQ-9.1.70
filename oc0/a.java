@@ -1,0 +1,34 @@
+package oc0;
+
+import com.tencent.mobileqq.highway.utils.BdhLogUtil;
+import com.tencent.mobileqq.widget.listitem.QUIListItemBackgroundType;
+import com.tencent.mobileqq.widget.listitem.QUISingleLineListItem;
+import com.tencent.mobileqq.widget.listitem.x;
+import com.tencent.mobileqq.widget.listitem.x.b;
+import com.tencent.mobileqq.widget.listitem.x.c;
+import java.util.List;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import org.jetbrains.annotations.NotNull;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010 \n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0006\b\u0016\u0018\u0000*\b\b\u0000\u0010\u0002*\u00020\u0001*\b\b\u0001\u0010\u0004*\u00020\u00032\u000e\u0012\u0004\u0012\u00028\u0000\u0012\u0004\u0012\u00028\u00010\u0005B\u0017\u0012\u0006\u0010\u000f\u001a\u00028\u0000\u0012\u0006\u0010\u0010\u001a\u00028\u0001\u00a2\u0006\u0004\b\u0011\u0010\u0012J&\u0010\u000e\u001a\u00020\r2\u0006\u0010\u0007\u001a\u00020\u00062\u0006\u0010\t\u001a\u00020\b2\f\u0010\f\u001a\b\u0012\u0004\u0012\u00020\u000b0\nH\u0014\u00a8\u0006\u0013"}, d2 = {"Loc0/a;", "Lcom/tencent/mobileqq/widget/listitem/x$b;", "L", "Lcom/tencent/mobileqq/widget/listitem/x$c;", BdhLogUtil.LogTag.Tag_Req, "Lcom/tencent/mobileqq/widget/listitem/x;", "Lcom/tencent/mobileqq/widget/listitem/QUISingleLineListItem;", "view", "", "position", "", "", "payloads", "", "P", "left", "right", "<init>", "(Lcom/tencent/mobileqq/widget/listitem/x$b;Lcom/tencent/mobileqq/widget/listitem/x$c;)V", "qcircle-plugin-module_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes5.dex */
+public class a<L extends x.b, R extends x.c> extends x<L, R> {
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public a(@NotNull L left, @NotNull R right) {
+        super(left, right);
+        Intrinsics.checkNotNullParameter(left, "left");
+        Intrinsics.checkNotNullParameter(right, "right");
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.tencent.mobileqq.widget.listitem.x, com.tencent.mobileqq.widget.listitem.w
+    /* renamed from: P */
+    public void F(@NotNull QUISingleLineListItem view, int position, @NotNull List<? extends Object> payloads) {
+        Intrinsics.checkNotNullParameter(view, "view");
+        Intrinsics.checkNotNullParameter(payloads, "payloads");
+        super.F(view, position, payloads);
+        view.setBackgroundType(QUIListItemBackgroundType.FullWidthWithTransparent);
+    }
+}

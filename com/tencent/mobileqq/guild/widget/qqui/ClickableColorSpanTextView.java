@@ -1,0 +1,127 @@
+package com.tencent.mobileqq.guild.widget.qqui;
+
+import android.content.Context;
+import android.text.Spannable;
+import android.util.AttributeSet;
+import android.util.StateSet;
+import android.view.MotionEvent;
+import android.widget.TextView;
+import com.tencent.mobileqq.guild.widget.qqui.StatableSpanTextView;
+
+/* compiled from: P */
+/* loaded from: classes14.dex */
+public class ClickableColorSpanTextView extends TextView {
+
+    /* renamed from: d, reason: collision with root package name */
+    private StatableSpanTextView.StatableForegroundColorSpan[] f236451d;
+
+    /* renamed from: e, reason: collision with root package name */
+    private StatableSpanTextView.StatableForegroundColorSpan f236452e;
+
+    /* compiled from: P */
+    /* loaded from: classes14.dex */
+    public interface a {
+    }
+
+    public ClickableColorSpanTextView(Context context) {
+        super(context);
+    }
+
+    private float a(float f16) {
+        return Math.min((getWidth() - getTotalPaddingRight()) - 1, Math.max(0.0f, f16 - getTotalPaddingLeft())) + getScrollX();
+    }
+
+    private int b(float f16) {
+        return getLayout().getLineForVertical((int) (Math.min((getHeight() - getTotalPaddingBottom()) - 1, Math.max(0.0f, f16 - getTotalPaddingTop())) + getScrollY()));
+    }
+
+    private int c(int i3, float f16) {
+        return getLayout().getOffsetForHorizontal(i3, a(f16));
+    }
+
+    @Override // android.widget.TextView
+    public int getOffsetForPosition(float f16, float f17) {
+        if (getLayout() == null) {
+            return -1;
+        }
+        return c(b(f17), f16);
+    }
+
+    /* JADX WARN: Code restructure failed: missing block: B:18:0x004b, code lost:
+    
+        if (r0 != 3) goto L33;
+     */
+    @Override // android.widget.TextView, android.view.View
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        StatableSpanTextView.StatableForegroundColorSpan statableForegroundColorSpan;
+        if (this.f236451d != null && (getText() instanceof Spannable)) {
+            int offsetForPosition = getOffsetForPosition(motionEvent.getX(), motionEvent.getY());
+            StatableSpanTextView.StatableForegroundColorSpan[] statableForegroundColorSpanArr = this.f236451d;
+            int length = statableForegroundColorSpanArr.length;
+            int i3 = 0;
+            while (true) {
+                if (i3 < length) {
+                    statableForegroundColorSpan = statableForegroundColorSpanArr[i3];
+                    int spanStart = ((Spannable) getText()).getSpanStart(statableForegroundColorSpan);
+                    int spanEnd = ((Spannable) getText()).getSpanEnd(statableForegroundColorSpan);
+                    if (offsetForPosition > spanStart && offsetForPosition < spanEnd) {
+                        break;
+                    }
+                    i3++;
+                } else {
+                    statableForegroundColorSpan = null;
+                    break;
+                }
+            }
+            int action = motionEvent.getAction();
+            if (action != 0) {
+                if (action != 1) {
+                    if (action == 2) {
+                        StatableSpanTextView.StatableForegroundColorSpan statableForegroundColorSpan2 = this.f236452e;
+                        if (statableForegroundColorSpan2 == statableForegroundColorSpan && statableForegroundColorSpan2 != null) {
+                            return true;
+                        }
+                    }
+                }
+                StatableSpanTextView.StatableForegroundColorSpan statableForegroundColorSpan3 = this.f236452e;
+                if (statableForegroundColorSpan3 != null) {
+                    statableForegroundColorSpan3.b(StateSet.WILD_CARD);
+                    this.f236452e = null;
+                    invalidate();
+                }
+            } else if (statableForegroundColorSpan != null) {
+                statableForegroundColorSpan.b(StatableSpanTextView.StatableForegroundColorSpan.f236490i);
+                this.f236452e = statableForegroundColorSpan;
+                invalidate();
+                return true;
+            }
+        }
+        return super.onTouchEvent(motionEvent);
+    }
+
+    @Override // android.widget.TextView
+    public void setText(CharSequence charSequence, TextView.BufferType bufferType) {
+        if (charSequence != null && (charSequence instanceof Spannable)) {
+            Spannable spannable = (Spannable) charSequence;
+            this.f236451d = (StatableSpanTextView.StatableForegroundColorSpan[]) spannable.getSpans(0, spannable.length(), StatableSpanTextView.StatableForegroundColorSpan.class);
+            bufferType = TextView.BufferType.SPANNABLE;
+        } else {
+            this.f236451d = null;
+        }
+        super.setText(charSequence, bufferType);
+    }
+
+    public ClickableColorSpanTextView(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+    }
+
+    public ClickableColorSpanTextView(Context context, AttributeSet attributeSet, int i3) {
+        super(context, attributeSet, i3);
+    }
+
+    public void setSpanClickListener(a aVar) {
+    }
+}

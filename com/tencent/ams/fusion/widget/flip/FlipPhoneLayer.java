@@ -1,0 +1,103 @@
+package com.tencent.ams.fusion.widget.flip;
+
+import android.content.Context;
+import com.tencent.ams.fusion.widget.animatorview.animator.Animator;
+import com.tencent.ams.fusion.widget.animatorview.layer.AnimatorLayer;
+import com.tencent.ams.fusion.widget.animatorview.layer.BitmapLayer;
+import com.tencent.ams.fusion.widget.animatorview.layer.GroupLayer;
+import com.tencent.ams.fusion.widget.flipcard.FlipCardFrontLayer;
+import com.tencent.ams.fusion.widget.utils.Utils;
+import com.tencent.mobileqq.qfix.redirect.IPatchRedirector;
+
+/* loaded from: classes3.dex */
+public class FlipPhoneLayer extends GroupLayer {
+    static IPatchRedirector $redirector_ = null;
+    private static final String PHONE_ICON_BASE64 = "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";
+    private final float RATIO_MASK_HEIGHT;
+    private final float RATIO_MASK_WIDTH;
+    private int mCameraLocationZ;
+    private Context mContext;
+    private FlipCardFrontLayer.KeepRotateAndProgressAnimator mKeepRotateAndProgressAnimator;
+    private GradientLayer mLRGradientLayer;
+    private BitmapLayer mPhoneLayer;
+    private GradientLayer mRLGradientLayer;
+
+    public FlipPhoneLayer() {
+        super(new AnimatorLayer[0]);
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 1)) {
+            iPatchRedirector.redirect((short) 1, (Object) this);
+            return;
+        }
+        this.RATIO_MASK_HEIGHT = 0.7f;
+        this.RATIO_MASK_WIDTH = 0.41f;
+        this.mCameraLocationZ = 0;
+    }
+
+    private GradientLayer createGradientLayer(int i3) {
+        GradientLayer gradientLayer = new GradientLayer();
+        gradientLayer.setCenterX(getCenterX());
+        gradientLayer.setCenterY(getCenterY());
+        gradientLayer.setWidth((int) (getWidth() * 0.41f));
+        gradientLayer.setHeight((int) (getHeight() * 0.7f));
+        gradientLayer.init(i3);
+        return gradientLayer;
+    }
+
+    private BitmapLayer createPhoneLayer() {
+        int width = getWidth();
+        int height = getHeight();
+        BitmapLayer bitmapLayer = new BitmapLayer(Utils.bitmapFromBase64StringSafe(PHONE_ICON_BASE64, width, height));
+        bitmapLayer.setWidth(width);
+        bitmapLayer.setHeight(height);
+        bitmapLayer.setCenterX(getCenterX());
+        bitmapLayer.setCenterY(getCenterY());
+        return bitmapLayer;
+    }
+
+    public void init(Context context, int i3, int i16, int i17, int i18, int i19) {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 2)) {
+            iPatchRedirector.redirect((short) 2, this, context, Integer.valueOf(i3), Integer.valueOf(i16), Integer.valueOf(i17), Integer.valueOf(i18), Integer.valueOf(i19));
+            return;
+        }
+        removeAllLayers();
+        setCenterX(i3);
+        setCenterY(i16);
+        setWidth(i17);
+        setHeight(i18);
+        this.mContext = context;
+        this.mPhoneLayer = createPhoneLayer();
+        this.mLRGradientLayer = createGradientLayer(1);
+        GradientLayer createGradientLayer = createGradientLayer(2);
+        this.mRLGradientLayer = createGradientLayer;
+        this.mCameraLocationZ = i19;
+        addLayers(this.mPhoneLayer, this.mLRGradientLayer, createGradientLayer);
+    }
+
+    @Override // com.tencent.ams.fusion.widget.animatorview.layer.AnimatorLayer, com.tencent.ams.fusion.widget.animatorview.layer.AnimatorAction
+    public void postRotationY(float f16) {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 4)) {
+            iPatchRedirector.redirect((short) 4, this, Float.valueOf(f16));
+            return;
+        }
+        super.postRotationY(f16);
+        FlipCardFrontLayer.KeepRotateAndProgressAnimator keepRotateAndProgressAnimator = this.mKeepRotateAndProgressAnimator;
+        if (keepRotateAndProgressAnimator != null) {
+            keepRotateAndProgressAnimator.updateRotateY(f16);
+        }
+    }
+
+    public void startInteractive() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 3)) {
+            iPatchRedirector.redirect((short) 3, (Object) this);
+            return;
+        }
+        FlipCardFrontLayer.KeepRotateAndProgressAnimator keepRotateAndProgressAnimator = new FlipCardFrontLayer.KeepRotateAndProgressAnimator(this, new Animator[0]);
+        this.mKeepRotateAndProgressAnimator = keepRotateAndProgressAnimator;
+        keepRotateAndProgressAnimator.setCameraLocationZ(this.mCameraLocationZ);
+        setAnimator(this.mKeepRotateAndProgressAnimator);
+    }
+}

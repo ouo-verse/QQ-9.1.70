@@ -1,0 +1,155 @@
+package com.tencent.guild.api.msg.service;
+
+import com.tencent.mobileqq.qroute.QRoute;
+import com.tencent.qqnt.kernel.nativeinterface.IMsgOperateCallback;
+import com.tencent.qqnt.kernelpublic.nativeinterface.Contact;
+import com.tencent.qqnt.msg.api.IMsgService;
+import java.util.ArrayList;
+import kotlin.Metadata;
+import kotlin.ResultKt;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.intrinsics.IntrinsicsKt__IntrinsicsKt;
+import kotlin.coroutines.jvm.internal.DebugMetadata;
+import kotlin.coroutines.jvm.internal.SuspendLambda;
+import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
+import kotlin.jvm.internal.Intrinsics;
+import kotlin.jvm.internal.Ref;
+import kotlinx.coroutines.channels.ProduceKt;
+import kotlinx.coroutines.channels.ProducerScope;
+import kotlinx.coroutines.channels.SendChannel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* JADX INFO: Access modifiers changed from: package-private */
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\u0010\u0004\u001a\u00020\u0003*\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00020\u00010\u0000H\u008a@"}, d2 = {"Lkotlinx/coroutines/channels/ProducerScope;", "Lcom/tencent/aio/msgservice/h;", "Lcom/tencent/aio/data/msglist/a;", "", "<anonymous>"}, k = 3, mv = {1, 7, 1})
+@DebugMetadata(c = "com.tencent.guild.api.msg.service.ChannelAIOMsgService$getMsgsBySeqRange$1", f = "ChannelAIOMsgService.kt", i = {}, l = {275}, m = "invokeSuspend", n = {}, s = {})
+/* loaded from: classes6.dex */
+public final class ChannelAIOMsgService$getMsgsBySeqRange$1 extends SuspendLambda implements Function2<ProducerScope<? super com.tencent.aio.msgservice.h<com.tencent.aio.data.msglist.a>>, Continuation<? super Unit>, Object> {
+    final /* synthetic */ com.tencent.aio.msgservice.e $req;
+    private /* synthetic */ Object L$0;
+    int label;
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public ChannelAIOMsgService$getMsgsBySeqRange$1(com.tencent.aio.msgservice.e eVar, Continuation<? super ChannelAIOMsgService$getMsgsBySeqRange$1> continuation) {
+        super(2, continuation);
+        this.$req = eVar;
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public static final void b(Ref.ObjectRef objectRef, int i3, String str, ArrayList msgList) {
+        boolean z16;
+        Function1 function1 = (Function1) objectRef.element;
+        if (function1 != null) {
+            if (i3 == 0) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            l lVar = l.f112634a;
+            Intrinsics.checkNotNullExpressionValue(msgList, "msgList");
+            function1.invoke(new com.tencent.aio.msgservice.h(z16, i3, str, lVar.g(msgList)));
+        }
+    }
+
+    @Override // kotlin.coroutines.jvm.internal.BaseContinuationImpl
+    @NotNull
+    public final Continuation<Unit> create(@Nullable Object obj, @NotNull Continuation<?> continuation) {
+        ChannelAIOMsgService$getMsgsBySeqRange$1 channelAIOMsgService$getMsgsBySeqRange$1 = new ChannelAIOMsgService$getMsgsBySeqRange$1(this.$req, continuation);
+        channelAIOMsgService$getMsgsBySeqRange$1.L$0 = obj;
+        return channelAIOMsgService$getMsgsBySeqRange$1;
+    }
+
+    /* JADX WARN: Type inference failed for: r3v0, types: [T, com.tencent.guild.api.msg.service.ChannelAIOMsgService$getMsgsBySeqRange$1$callback$1] */
+    @Override // kotlin.coroutines.jvm.internal.BaseContinuationImpl
+    @Nullable
+    public final Object invokeSuspend(@NotNull Object obj) {
+        Object coroutine_suspended;
+        long j3;
+        coroutine_suspended = IntrinsicsKt__IntrinsicsKt.getCOROUTINE_SUSPENDED();
+        int i3 = this.label;
+        if (i3 != 0) {
+            if (i3 == 1) {
+                ResultKt.throwOnFailure(obj);
+            } else {
+                throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+            }
+        } else {
+            ResultKt.throwOnFailure(obj);
+            final ProducerScope producerScope = (ProducerScope) this.L$0;
+            final Ref.ObjectRef objectRef = new Ref.ObjectRef();
+            objectRef.element = new Function1<com.tencent.aio.msgservice.h<com.tencent.aio.data.msglist.a>, Unit>() { // from class: com.tencent.guild.api.msg.service.ChannelAIOMsgService$getMsgsBySeqRange$1$callback$1
+                /* JADX INFO: Access modifiers changed from: package-private */
+                /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+                /* JADX WARN: Multi-variable type inference failed */
+                {
+                    super(1);
+                }
+
+                @Override // kotlin.jvm.functions.Function1
+                public /* bridge */ /* synthetic */ Unit invoke(com.tencent.aio.msgservice.h<com.tencent.aio.data.msglist.a> hVar) {
+                    invoke2(hVar);
+                    return Unit.INSTANCE;
+                }
+
+                /* renamed from: invoke, reason: avoid collision after fix types in other method */
+                public final void invoke2(@NotNull com.tencent.aio.msgservice.h<com.tencent.aio.data.msglist.a> it) {
+                    Intrinsics.checkNotNullParameter(it, "it");
+                    producerScope.mo2003trySendJP2dKIU(it);
+                    SendChannel.DefaultImpls.close$default(producerScope, null, 1, null);
+                }
+            };
+            Contact c16 = l.f112634a.c(this.$req.a());
+            IMsgService iMsgService = (IMsgService) QRoute.api(IMsgService.class);
+            Long b16 = this.$req.b();
+            long j16 = 0;
+            if (b16 != null) {
+                j3 = b16.longValue();
+            } else {
+                j3 = 0;
+            }
+            Long c17 = this.$req.c();
+            if (c17 != null) {
+                j16 = c17.longValue();
+            }
+            iMsgService.getMsgsBySeqRange(c16, j3, j16, new IMsgOperateCallback() { // from class: com.tencent.guild.api.msg.service.k
+                @Override // com.tencent.qqnt.kernel.nativeinterface.IMsgOperateCallback
+                public final void onResult(int i16, String str, ArrayList arrayList) {
+                    ChannelAIOMsgService$getMsgsBySeqRange$1.b(Ref.ObjectRef.this, i16, str, arrayList);
+                }
+            });
+            Function0<Unit> function0 = new Function0<Unit>() { // from class: com.tencent.guild.api.msg.service.ChannelAIOMsgService$getMsgsBySeqRange$1.2
+                /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+                {
+                    super(0);
+                }
+
+                @Override // kotlin.jvm.functions.Function0
+                public /* bridge */ /* synthetic */ Unit invoke() {
+                    invoke2();
+                    return Unit.INSTANCE;
+                }
+
+                /* renamed from: invoke, reason: avoid collision after fix types in other method */
+                public final void invoke2() {
+                    objectRef.element = null;
+                }
+            };
+            this.label = 1;
+            if (ProduceKt.awaitClose(producerScope, function0, this) == coroutine_suspended) {
+                return coroutine_suspended;
+            }
+        }
+        return Unit.INSTANCE;
+    }
+
+    @Override // kotlin.jvm.functions.Function2
+    @Nullable
+    public final Object invoke(@NotNull ProducerScope<? super com.tencent.aio.msgservice.h<com.tencent.aio.data.msglist.a>> producerScope, @Nullable Continuation<? super Unit> continuation) {
+        return ((ChannelAIOMsgService$getMsgsBySeqRange$1) create(producerScope, continuation)).invokeSuspend(Unit.INSTANCE);
+    }
+}

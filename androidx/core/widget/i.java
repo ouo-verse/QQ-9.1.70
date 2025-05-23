@@ -1,0 +1,6 @@
+package androidx.core.widget;
+
+/* compiled from: P */
+/* loaded from: classes.dex */
+public final /* synthetic */ class i {
+}

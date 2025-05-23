@@ -1,0 +1,68 @@
+package r25;
+
+import c45.b;
+import c45.f;
+import c45.h;
+import c45.j;
+import java.util.Map;
+import kotlin.TuplesKt;
+import kotlin.collections.MapsKt__MapsKt;
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import kotlin.jvm.internal.Intrinsics;
+
+/* compiled from: P */
+/* loaded from: classes36.dex */
+public final class a extends j {
+
+    /* renamed from: d, reason: collision with root package name */
+    public int f430595d;
+
+    /* renamed from: e, reason: collision with root package name */
+    public int f430596e;
+
+    /* renamed from: f, reason: collision with root package name */
+    public int f430597f;
+
+    public a() {
+        this(0, 0, 0, 7, null);
+    }
+
+    @Override // c45.j
+    public final j decodeWith(f fVar) {
+        return fVar.g(new a(0, 0, 0, 7, null));
+    }
+
+    public /* synthetic */ a(int i3, int i16, int i17, int i18, DefaultConstructorMarker defaultConstructorMarker) {
+        this(0, 0, 0);
+    }
+
+    @Override // c45.j
+    public final Map<Integer, h> getIndexes() {
+        Map<Integer, h> mapOf;
+        mapOf = MapsKt__MapsKt.mapOf(TuplesKt.to(1, new h(1, Integer.valueOf(this.f430595d), new b.e.h(false))), TuplesKt.to(2, new h(2, Integer.valueOf(this.f430596e), new b.e.h(false))), TuplesKt.to(3, new h(3, Integer.valueOf(this.f430597f), new b.e.h(false))));
+        return mapOf;
+    }
+
+    @Override // c45.j
+    public final void setValue(int i3, Object obj) {
+        if (i3 == 1) {
+            Intrinsics.checkNotNull(obj, "null cannot be cast to non-null type kotlin.Int");
+            this.f430595d = ((Integer) obj).intValue();
+        } else if (i3 == 2) {
+            Intrinsics.checkNotNull(obj, "null cannot be cast to non-null type kotlin.Int");
+            this.f430596e = ((Integer) obj).intValue();
+        } else {
+            if (i3 != 3) {
+                return;
+            }
+            Intrinsics.checkNotNull(obj, "null cannot be cast to non-null type kotlin.Int");
+            this.f430597f = ((Integer) obj).intValue();
+        }
+    }
+
+    public a(int i3, int i16, int i17) {
+        this.f430595d = i3;
+        this.f430596e = i16;
+        this.f430597f = i17;
+    }
+}

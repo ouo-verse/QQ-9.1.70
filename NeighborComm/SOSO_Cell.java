@@ -1,0 +1,49 @@
+package NeighborComm;
+
+import com.qq.taf.jce.JceInputStream;
+import com.qq.taf.jce.JceOutputStream;
+import com.qq.taf.jce.JceStruct;
+
+/* compiled from: P */
+/* loaded from: classes.dex */
+public final class SOSO_Cell extends JceStruct {
+    public int iCellId;
+    public int iLac;
+    public short shMcc;
+    public short shMnc;
+    public short shRssi;
+
+    public SOSO_Cell() {
+        this.shMcc = (short) -1;
+        this.shMnc = (short) -1;
+        this.iLac = -1;
+        this.iCellId = -1;
+        this.shRssi = (short) 0;
+    }
+
+    @Override // com.qq.taf.jce.JceStruct
+    public void readFrom(JceInputStream jceInputStream) {
+        this.shMcc = jceInputStream.read(this.shMcc, 0, true);
+        this.shMnc = jceInputStream.read(this.shMnc, 1, true);
+        this.iLac = jceInputStream.read(this.iLac, 2, true);
+        this.iCellId = jceInputStream.read(this.iCellId, 3, true);
+        this.shRssi = jceInputStream.read(this.shRssi, 4, false);
+    }
+
+    @Override // com.qq.taf.jce.JceStruct
+    public void writeTo(JceOutputStream jceOutputStream) {
+        jceOutputStream.write(this.shMcc, 0);
+        jceOutputStream.write(this.shMnc, 1);
+        jceOutputStream.write(this.iLac, 2);
+        jceOutputStream.write(this.iCellId, 3);
+        jceOutputStream.write(this.shRssi, 4);
+    }
+
+    public SOSO_Cell(short s16, short s17, int i3, int i16, short s18) {
+        this.shMcc = s16;
+        this.shMnc = s17;
+        this.iLac = i3;
+        this.iCellId = i16;
+        this.shRssi = s18;
+    }
+}

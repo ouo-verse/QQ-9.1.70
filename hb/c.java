@@ -1,0 +1,10 @@
+package hb;
+
+import kotlin.Metadata;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u0012\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\bf\u0018\u0000*\u0004\b\u0000\u0010\u00012\u00020\u0002J\u0010\u0010\u0004\u001a\n\u0012\u0004\u0012\u00028\u0000\u0018\u00010\u0003H&\u00a8\u0006\u0005"}, d2 = {"Lhb/c;", "T", "", "Loc/a;", "E", "qzone_df_impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes38.dex */
+public interface c<T> {
+    oc.a<T> E();
+}

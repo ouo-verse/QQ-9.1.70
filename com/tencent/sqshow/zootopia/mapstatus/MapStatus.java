@@ -1,0 +1,37 @@
+package com.tencent.sqshow.zootopia.mapstatus;
+
+import kotlin.Metadata;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0000\n\u0002\u0010\b\n\u0002\b\u0016\b\u0086\u0001\u0018\u00002\b\u0012\u0004\u0012\u00020\u00000\u0001B\u000f\b\u0002\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0005\u0010\u0006j\u0002\b\u0007j\u0002\b\bj\u0002\b\tj\u0002\b\nj\u0002\b\u000bj\u0002\b\fj\u0002\b\rj\u0002\b\u000ej\u0002\b\u000fj\u0002\b\u0010j\u0002\b\u0011j\u0002\b\u0012j\u0002\b\u0013j\u0002\b\u0014j\u0002\b\u0015j\u0002\b\u0016j\u0002\b\u0017j\u0002\b\u0018\u00a8\u0006\u0019"}, d2 = {"Lcom/tencent/sqshow/zootopia/mapstatus/MapStatus;", "", "priority", "", "(Ljava/lang/String;II)V", "getPriority", "()I", "MAP_STATUS_INIT", "MAP_STATUS_LOADING", "MAP_STATUS_PAUSE", "MAP_STATUS_UPDATE", "MAP_STATUS_UNZIPPING", "MAP_STATUS_DOWNLOAD_FAILED", "MAP_STATUS_DEPRESS_FAILED", "MAP_STATUS_DOWNLOAD_COMPLETE", "MAP_STATUS_NEED_UPDATE_QQ", "MAP_STATUS_HIGHER_QQ_VERSION", "MAP_STATUS_MAINTAIN", "MAP_STATUS_WAITING_DOWNLOAD", "MAP_STATUS_DOWNLOAD_INTERRUPT", "MAP_STATUS_OFF_SHELF", "MAP_STATUS_CAN_APPOINTMENT", "MAP_STATUS_APPOINTED", "MAP_STATUS_ONLY_DOWNLOAD", "MAP_STATUS_PHONE_MODEL_INVALID", "superqqshow-portal-impl_release"}, k = 1, mv = {1, 7, 1}, xi = 48)
+/* loaded from: classes34.dex */
+public enum MapStatus {
+    MAP_STATUS_INIT(5),
+    MAP_STATUS_LOADING(5),
+    MAP_STATUS_PAUSE(5),
+    MAP_STATUS_UPDATE(3),
+    MAP_STATUS_UNZIPPING(5),
+    MAP_STATUS_DOWNLOAD_FAILED(5),
+    MAP_STATUS_DEPRESS_FAILED(5),
+    MAP_STATUS_DOWNLOAD_COMPLETE(5),
+    MAP_STATUS_NEED_UPDATE_QQ(2),
+    MAP_STATUS_HIGHER_QQ_VERSION(2),
+    MAP_STATUS_MAINTAIN(4),
+    MAP_STATUS_WAITING_DOWNLOAD(5),
+    MAP_STATUS_DOWNLOAD_INTERRUPT(5),
+    MAP_STATUS_OFF_SHELF(1),
+    MAP_STATUS_CAN_APPOINTMENT(1),
+    MAP_STATUS_APPOINTED(1),
+    MAP_STATUS_ONLY_DOWNLOAD(1),
+    MAP_STATUS_PHONE_MODEL_INVALID(1);
+
+    private final int priority;
+
+    MapStatus(int i3) {
+        this.priority = i3;
+    }
+
+    public final int getPriority() {
+        return this.priority;
+    }
+}

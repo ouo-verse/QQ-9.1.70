@@ -1,0 +1,7590 @@
+package com.tencent.mobileqq.wink.editor;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.SurfaceTexture;
+import android.os.Handler;
+import android.text.TextUtils;
+import android.view.Surface;
+import android.view.TextureView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.exifinterface.media.ExifInterface;
+import androidx.fragment.app.FragmentActivity;
+import camera.MOBILE_QQ_MATERIAL_INTERFACE.AudioInfo;
+import camera.XEFFECT_MATERIALS_GENERAL_DATASTRUCT.MetaMaterial;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.gyailib.library.GYTrackStickerInfo;
+import com.gyailib.library.GYVideoClassifyResult;
+import com.heytap.databaseengine.model.UserInfo;
+import com.tencent.biz.common.util.WebViewConstants;
+import com.tencent.biz.richframework.delegate.impl.RFWApplication;
+import com.tencent.biz.richframework.eventbus.SimpleEventBus;
+import com.tencent.biz.richframework.part.BasePartFragment;
+import com.tencent.bugly.common.constants.Constants;
+import com.tencent.gamecenter.wadl.api.IQQGameCommApi;
+import com.tencent.gamecenter.wadl.biz.entity.WadlProxyConsts;
+import com.tencent.hippy.qq.api.OpenHippyInfo;
+import com.tencent.hippy.qq.view.pag.HippyQQPagView;
+import com.tencent.hippy.qq.view.tkd.listview.HippyTKDListViewAdapter;
+import com.tencent.intervideo.nowproxy.NowProxyConstants;
+import com.tencent.mobileqq.R;
+import com.tencent.mobileqq.app.AppConstants;
+import com.tencent.mobileqq.app.ThreadManager;
+import com.tencent.mobileqq.app.ThreadManagerV2;
+import com.tencent.mobileqq.highway.utils.BdhLogUtil;
+import com.tencent.mobileqq.qcircle.api.constant.QCircleScheme;
+import com.tencent.mobileqq.qroute.QRoute;
+import com.tencent.mobileqq.shortvideo.gesture.DownloadInfo;
+import com.tencent.mobileqq.transfile.dns.DomainData;
+import com.tencent.mobileqq.transfile.report.ReportConstant;
+import com.tencent.mobileqq.tritonaudio.InnerAudioPlugin;
+import com.tencent.mobileqq.tvideo.ad.miniqadsdk.QAdCore.qaddefine.QAdReportDefine$AdReporterParams;
+import com.tencent.mobileqq.utils.ViewUtils;
+import com.tencent.mobileqq.widget.QQToast;
+import com.tencent.mobileqq.wink.api.IWinkReport;
+import com.tencent.mobileqq.wink.api.QQWinkConstants;
+import com.tencent.mobileqq.wink.context.WinkContext;
+import com.tencent.mobileqq.wink.edit.manager.WinkEditorResourceManager;
+import com.tencent.mobileqq.wink.editor.WinkVideoTavCut;
+import com.tencent.mobileqq.wink.editor.dr;
+import com.tencent.mobileqq.wink.editor.draft.TrackStickerInfo;
+import com.tencent.mobileqq.wink.editor.draft.WinkEditData;
+import com.tencent.mobileqq.wink.editor.draft.WinkEditStretchedData;
+import com.tencent.mobileqq.wink.editor.draft.WinkStickerModelExtra;
+import com.tencent.mobileqq.wink.editor.export.WinkExportUtils;
+import com.tencent.mobileqq.wink.editor.model.PointF;
+import com.tencent.mobileqq.wink.editor.model.WinkTavCutScene;
+import com.tencent.mobileqq.wink.editor.mosaic.model.MosaicData;
+import com.tencent.mobileqq.wink.editor.smartclip.algorithm.TemplateFixedClipConfig;
+import com.tencent.mobileqq.wink.editor.smartclip.algorithm.TemplateMusicInfoParseResult;
+import com.tencent.mobileqq.wink.editor.sticker.WinkStickerModel;
+import com.tencent.mobileqq.wink.editor.sticker.g;
+import com.tencent.mobileqq.wink.editor.template.x;
+import com.tencent.mobileqq.wink.editor.transition.TransitionModelExKt;
+import com.tencent.mobileqq.wink.editor.transition.TransitionResourceManager;
+import com.tencent.mobileqq.wink.editor.tts.source.TTSAudioInfo;
+import com.tencent.mobileqq.wink.editor.tts.source.TTSAudioItem;
+import com.tencent.mobileqq.wink.editor.view.video.WinkPlayerContainerView;
+import com.tencent.mobileqq.wink.event.StickerEditEvent;
+import com.tencent.mobileqq.wink.event.TemplateSelectEvent;
+import com.tencent.mobileqq.wink.picker.MediaPickerScene;
+import com.tencent.mobileqq.wink.picker.core.part.an;
+import com.tencent.mobileqq.wink.utils.n;
+import com.tencent.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import com.tencent.qphone.base.BaseConstants;
+import com.tencent.qphone.base.util.BaseApplication;
+import com.tencent.rmonitor.custom.ICustomDataEditor;
+import com.tencent.tav.coremedia.CMTimeRange;
+import com.tencent.tavcut.core.manager.StickerTrackerManager;
+import com.tencent.tavcut.core.render.builder.light.model.ClipSource;
+import com.tencent.tavcut.core.render.builder.light.model.CustomRenderConfig;
+import com.tencent.tavcut.core.render.builder.light.model.InputSource;
+import com.tencent.tavcut.core.render.builder.light.model.LAKRenderModel;
+import com.tencent.tavcut.core.render.builder.light.model.Painting;
+import com.tencent.tavcut.core.render.builder.light.model.Timeline;
+import com.tencent.tavcut.core.render.builder.light.model.pag.ImageLayerData;
+import com.tencent.tavcut.core.render.builder.light.model.pag.PagEffectData;
+import com.tencent.tavcut.core.render.player.IPlayer;
+import com.tencent.tavcut.core.render.rendernode.BaseEffectNode;
+import com.tencent.tavcut.core.session.ICutSession;
+import com.tencent.tavcut.core.session.ICutStatusCallback;
+import com.tencent.tavcut.core.session.IRenderTimeListener;
+import com.tencent.tavcut.core.session.ISessionListener;
+import com.tencent.tavcut.core.session.IStickerUpdateCallback;
+import com.tencent.tavcut.core.session.LAKCutSession;
+import com.tencent.tavcut.rendermodel.parser.TemplateParser;
+import com.tencent.videocut.model.AudioModel;
+import com.tencent.videocut.model.BackgroundFillMode;
+import com.tencent.videocut.model.BackgroundModel;
+import com.tencent.videocut.model.FilterModel;
+import com.tencent.videocut.model.HDRModel;
+import com.tencent.videocut.model.LutFilterModel;
+import com.tencent.videocut.model.MediaClip;
+import com.tencent.videocut.model.MediaModel;
+import com.tencent.videocut.model.MediaModelUtilsKt;
+import com.tencent.videocut.model.MediaType;
+import com.tencent.videocut.model.ResourceModel;
+import com.tencent.videocut.model.Size;
+import com.tencent.videocut.model.SizeF;
+import com.tencent.videocut.model.SpecialEffectModel;
+import com.tencent.videocut.model.SpecialEffectModelKt;
+import com.tencent.videocut.model.StickerModel;
+import com.tencent.videocut.model.TransitionModel;
+import com.tencent.videocut.picker.MediaData;
+import com.tencent.videocut.render.ComposeRenderLayer;
+import com.tencent.videocut.render.extension.MediaClipUseType;
+import com.tencent.videocut.render.utils.b;
+import com.tencent.widget.immersive.ImmersiveUtils;
+import com.tencent.xweb.FileReaderHelper;
+import common.config.service.QzoneConfig;
+import cooperation.qzone.webviewplugin.QzoneZipCacheHelper;
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import kotlin.Metadata;
+import kotlin.Pair;
+import kotlin.Triple;
+import kotlin.TuplesKt;
+import kotlin.Unit;
+import kotlin.collections.CollectionsKt__CollectionsJVMKt;
+import kotlin.collections.CollectionsKt__CollectionsKt;
+import kotlin.collections.CollectionsKt__IterablesKt;
+import kotlin.collections.CollectionsKt___CollectionsKt;
+import kotlin.collections.MapsKt__MapsJVMKt;
+import kotlin.collections.MapsKt__MapsKt;
+import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import kotlin.jvm.internal.Intrinsics;
+import kotlin.jvm.internal.Ref;
+import kotlin.jvm.internal.Reflection;
+import kotlin.jvm.internal.TypeIntrinsics;
+import kotlin.math.MathKt__MathJVMKt;
+import kotlin.ranges.RangesKt___RangesKt;
+import kotlin.text.StringsKt__StringsJVMKt;
+import kotlin.text.StringsKt__StringsKt;
+import n73.AutoClipResult;
+import okio.ByteString;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.light.LightAsset;
+import org.light.TemplateConfig;
+import org.light.WatermarkConfig;
+import org.light.lightAssetKit.Entity;
+import org.light.lightAssetKit.LightAssetDataContext;
+import org.light.lightAssetKit.LightAssetDataType;
+import org.light.lightAssetKit.LightAssetUtils;
+import org.light.lightAssetKit.components.AudioSource;
+import org.light.lightAssetKit.components.Component;
+import org.light.lightAssetKit.components.Image;
+import org.light.lightAssetKit.components.MultiMedia;
+import org.light.lightAssetKit.components.PAGAsset;
+import org.light.lightAssetKit.components.ReplaceItem;
+import org.light.lightAssetKit.components.ScreenTransform;
+import org.light.lightAssetKit.components.TimeOffset;
+import org.light.lightAssetKit.components.TimeRange;
+import org.light.lightAssetKit.enums.AudioSourceType;
+import org.light.lightAssetKit.enums.PAGScaleMode;
+import org.light.lightAssetKit.enums.ReplaceType;
+import org.light.listener.OnClipAssetListener;
+import org.light.listener.OnLoadAssetListener;
+import td4.g;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u00ac\u0004\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\b\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\b\n\u0002\u0010$\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\t\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u0007\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\t\n\u0002\u0018\u0002\n\u0002\b\r\n\u0002\u0018\u0002\n\u0002\b\t\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0010%\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u000b\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0012\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\u000b\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\f\n\u0002\u0018\u0002\n\u0002\b\u000f\n\u0002\u0018\u0002\n\u0002\b\u001d\n\u0002\u0018\u0002\n\u0002\b\u0018\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0010\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0014\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u000b\n\u0002\u0010!\n\u0002\b\u0014\n\u0002\u0018\u0002\n\u0002\b\u001c\n\u0002\u0018\u0002\n\u0002\b!\n\u0002\u0018\u0002\n\u0002\b,\u0018\u0000 \u0093\u00022\u00020\u0001:\u0004\u0083\u0002\u00a6\u0001B\u0015\u0012\n\b\u0002\u0010\u001d\u001a\u0004\u0018\u00010\u0007\u00a2\u0006\u0006\b\u00af\u0004\u0010\u0093\u0003J\\\u0010\u0014\u001a\u00020\u00132\b\u0010\u0003\u001a\u0004\u0018\u00010\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0016\u0010\n\u001a\u0012\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\b0\u0006j\u0002`\t2\u0006\u0010\f\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\r2\n\b\u0002\u0010\u0010\u001a\u0004\u0018\u00010\u000f2\n\b\u0002\u0010\u0012\u001a\u0004\u0018\u00010\u0011H\u0002J\u0010\u0010\u0015\u001a\u00020\u00132\u0006\u0010\u0005\u001a\u00020\u0004H\u0002J\u001c\u0010\u0018\u001a\u00020\u00132\u0006\u0010\u0017\u001a\u00020\u00162\n\b\u0002\u0010\u0012\u001a\u0004\u0018\u00010\u0011H\u0002J\b\u0010\u0019\u001a\u00020\u0013H\u0002J\u0012\u0010\u001c\u001a\u00020\u00132\b\u0010\u001b\u001a\u0004\u0018\u00010\u001aH\u0002J\u0012\u0010\u001e\u001a\u00020\u00132\b\u0010\u001d\u001a\u0004\u0018\u00010\u0007H\u0002J\u0010\u0010 \u001a\u00020\u00132\u0006\u0010\u001f\u001a\u00020\u000bH\u0002J\u0010\u0010$\u001a\u00020#2\u0006\u0010\"\u001a\u00020!H\u0002J\b\u0010%\u001a\u00020\u0013H\u0002J\b\u0010&\u001a\u00020\u0013H\u0002J\u0010\u0010)\u001a\u00020\u00132\u0006\u0010(\u001a\u00020'H\u0002J\u0012\u0010+\u001a\u00020\u00132\b\u0010*\u001a\u0004\u0018\u00010'H\u0002J\u0010\u0010,\u001a\u00020\u00132\u0006\u0010(\u001a\u00020'H\u0002J$\u0010/\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#2\b\b\u0002\u0010.\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\rH\u0002J\u0010\u00102\u001a\u00020\u00132\u0006\u00101\u001a\u000200H\u0002J$\u00103\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#2\b\b\u0002\u0010.\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\rH\u0002J\u0010\u00104\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#H\u0002J \u00109\u001a\u0002082\u0006\u0010-\u001a\u00020#2\u0006\u00106\u001a\u0002052\u0006\u00107\u001a\u000205H\u0002J$\u0010:\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#2\b\b\u0002\u0010.\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\rH\u0002J\u0010\u0010;\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#H\u0002J\u0010\u0010=\u001a\u00020\u00132\u0006\u0010<\u001a\u00020\rH\u0002J8\u0010C\u001a\u0016\u0012\u0004\u0012\u00020B\u0018\u00010>j\n\u0012\u0004\u0012\u00020B\u0018\u0001`@2\u001a\u0010A\u001a\u0016\u0012\u0004\u0012\u00020?\u0018\u00010>j\n\u0012\u0004\u0012\u00020?\u0018\u0001`@H\u0002J\u0016\u0010G\u001a\u00020\u00132\f\u0010F\u001a\b\u0012\u0004\u0012\u00020E0DH\u0002J\u001e\u0010L\u001a\u00020K2\u0006\u0010H\u001a\u00020\u000b2\f\u0010J\u001a\b\u0012\u0004\u0012\u00020I0DH\u0002J\u0016\u0010N\u001a\b\u0012\u0004\u0012\u00020I0D2\u0006\u0010M\u001a\u00020\u000bH\u0002Jt\u0010X\u001a\u00020\u00132\b\u0010\u001d\u001a\u0004\u0018\u00010\u00072\b\u0010O\u001a\u0004\u0018\u00010\u001a2\u0006\u0010P\u001a\u00020K2&\u0010R\u001a\"\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u0007\u0018\u00010\u0006j\u0010\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u0007\u0018\u0001`Q2\u0006\u0010S\u001a\u00020\u000b2\u0006\u0010T\u001a\u00020\u000b2\u0006\u0010U\u001a\u00020\u000b2\u0006\u0010V\u001a\u00020\r2\u0006\u0010W\u001a\u00020\u000bH\u0002J:\u0010^\u001a\u00020\u00132\u0006\u0010Y\u001a\u00020K2\u0018\u0010[\u001a\u0014\u0012\u0010\u0012\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00070Z0D2\u0006\u0010\\\u001a\u00020\u00072\u0006\u0010]\u001a\u000205H\u0002J4\u0010b\u001a&\u0012\n\u0012\b\u0012\u0004\u0012\u00020I0D\u0012\u0016\u0012\u0014\u0012\u0010\u0012\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00070Z0D0a2\u0006\u0010`\u001a\u00020_H\u0002J.\u0010e\u001a\u00020K2\u0006\u0010c\u001a\u00020\u000b2\u0006\u0010d\u001a\u00020\u00072\u0006\u0010]\u001a\u0002052\f\u0010J\u001a\b\u0012\u0004\u0012\u00020I0DH\u0002J\u0010\u0010f\u001a\u00020\u00132\u0006\u0010P\u001a\u00020KH\u0002J\u0010\u0010g\u001a\u00020\u00132\u0006\u0010P\u001a\u00020KH\u0002J2\u0010h\u001a\u00020\u00132\u0006\u0010S\u001a\u00020\u000b2\u0006\u0010T\u001a\u00020\u000b2\u0006\u0010U\u001a\u00020\u000b2\u0006\u0010V\u001a\u00020\r2\b\b\u0002\u0010W\u001a\u00020\u000bH\u0002J$\u0010l\u001a\b\u0012\u0004\u0012\u00020k0D2\b\u0010\u001d\u001a\u0004\u0018\u00010\u00072\n\b\u0002\u0010j\u001a\u0004\u0018\u00010iH\u0002J\u0014\u0010n\u001a\u0004\u0018\u00010m2\b\u0010\u001d\u001a\u0004\u0018\u00010\u0007H\u0002J\u0012\u0010o\u001a\u0002052\b\u0010\u001d\u001a\u0004\u0018\u00010\u0007H\u0002J \u0010q\u001a\u00020\u00132\u0016\b\u0002\u0010p\u001a\u0010\u0012\u0004\u0012\u000205\u0012\u0004\u0012\u00020k\u0018\u00010ZH\u0002J \u0010r\u001a\u00020\u00132\u0016\b\u0002\u0010p\u001a\u0010\u0012\u0004\u0012\u000205\u0012\u0004\u0012\u00020k\u0018\u00010ZH\u0002J\u0016\u0010t\u001a\u00020\u00132\f\u0010s\u001a\b\u0012\u0004\u0012\u00020k0DH\u0002J\b\u0010u\u001a\u00020\u0013H\u0002J\b\u0010v\u001a\u00020\u0013H\u0002J<\u0010|\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020w0Z2\u0012\u0010x\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020w0Z2\b\u0010z\u001a\u0004\u0018\u00010y2\b\u0010{\u001a\u0004\u0018\u00010yH\u0002J\b\u0010}\u001a\u00020\u000bH\u0002J/\u0010\u0082\u0001\u001a\u00030\u0081\u00012\u0006\u0010\u007f\u001a\u00020~2\u0007\u0010\u0080\u0001\u001a\u00020~2\b\b\u0002\u00106\u001a\u0002052\b\b\u0002\u00107\u001a\u000205H\u0002J\u000f\u0010\u0083\u0001\u001a\b\u0012\u0004\u0012\u00020#0DH\u0002J\u000f\u0010\u0084\u0001\u001a\b\u0012\u0004\u0012\u00020#0DH\u0002J\t\u0010\u0085\u0001\u001a\u00020\u000bH\u0002J\u000b\u0010\u0086\u0001\u001a\u0004\u0018\u00010KH\u0002J\t\u0010\u0087\u0001\u001a\u00020\u000bH\u0002J\u001c\u0010\u0089\u0001\u001a\u00020\u00132\u0006\u0010Y\u001a\u00020K2\t\u0010\u0088\u0001\u001a\u0004\u0018\u00010\u001aH\u0002J\t\u0010\u008a\u0001\u001a\u00020\u000bH\u0002J3\u0010\u008d\u0001\u001a\u00020\u00132\b\u0010\u008c\u0001\u001a\u00030\u008b\u00012\u0006\u0010\u0005\u001a\u00020\u00042\u0016\u0010\n\u001a\u0012\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\b0\u0006j\u0002`\tH\u0016JQ\u0010\u008e\u0001\u001a\u00020\u00132\b\u0010\u008c\u0001\u001a\u00030\u008b\u00012\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\f\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\r2\u0018\b\u0002\u0010\n\u001a\u0012\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\b0\u0006j\u0002`\t2\n\b\u0002\u0010\u0012\u001a\u0004\u0018\u00010\u0011JG\u0010\u008f\u0001\u001a\u00020\u00132\b\u0010\u0003\u001a\u0004\u0018\u00010\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0016\u0010\n\u001a\u0012\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\b0\u0006j\u0002`\t2\b\u0010\u0010\u001a\u0004\u0018\u00010\u000f2\n\b\u0002\u0010\u0012\u001a\u0004\u0018\u00010\u0011J\u0007\u0010\u0090\u0001\u001a\u00020\u0013J\u0010\u0010\u0092\u0001\u001a\u00020\u00132\u0007\u0010\u0091\u0001\u001a\u00020\u000bJ\u001d\u0010\u0095\u0001\u001a\u00020\u00132\t\u0010\u0093\u0001\u001a\u0004\u0018\u00010'2\t\u0010\u0094\u0001\u001a\u0004\u0018\u00010'J#\u0010\u0096\u0001\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#2\b\b\u0002\u0010.\u001a\u00020\u000b2\b\b\u0002\u0010\u000e\u001a\u00020\rJ\u0012\u0010\u0098\u0001\u001a\u00020\u000b2\u0007\u0010\u0097\u0001\u001a\u00020yH\u0016J\u0011\u0010\u009a\u0001\u001a\u00020\u000b2\b\u0010\u0097\u0001\u001a\u00030\u0099\u0001J!\u0010\u009b\u0001\u001a\u00020y2\u0006\u0010-\u001a\u00020#2\u0006\u00106\u001a\u0002052\u0006\u00107\u001a\u000205H\u0016J!\u0010\u009d\u0001\u001a\u00020#2\u0006\u0010-\u001a\u00020#2\u0007\u0010\u0097\u0001\u001a\u00020y2\u0007\u0010\u009c\u0001\u001a\u00020~J\u0019\u0010\u00a0\u0001\u001a\u00020\u00132\u0007\u0010\u009e\u0001\u001a\u0002052\u0007\u0010\u009f\u0001\u001a\u00020\u0007J\u000f\u0010\u00a1\u0001\u001a\u00020\u00132\u0006\u0010d\u001a\u000205J\u000b\u0010\u00a2\u0001\u001a\u0004\u0018\u000100H\u0016J\n\u0010\u00a4\u0001\u001a\u00030\u00a3\u0001H\u0016J\u0012\u0010\u00a6\u0001\u001a\u00020\u00132\u0007\u0010\u00a5\u0001\u001a\u00020\u000bH\u0016J\t\u0010\u00a7\u0001\u001a\u00020\u0013H\u0016J\t\u0010\u00a8\u0001\u001a\u00020\u0013H\u0016J\t\u0010\u00a9\u0001\u001a\u00020#H\u0016J\u000f\u0010\u00aa\u0001\u001a\b\u0012\u0004\u0012\u00020#0DH\u0016J\u0012\u0010\u00ac\u0001\u001a\u00020\u00132\u0007\u0010\u00ab\u0001\u001a\u00020\u000bH\u0016J\u0010\u0010\u00ad\u0001\u001a\u00020\u00132\u0007\u0010\u00ab\u0001\u001a\u00020\u000bJ\u0018\u0010\u00af\u0001\u001a\u00020\u00132\r\u0010`\u001a\t\u0012\u0004\u0012\u00020\u00130\u00ae\u0001H\u0016J\u0011\u0010\u00b0\u0001\u001a\u00020\u00132\u0006\u0010-\u001a\u00020#H\u0016J\t\u0010\u00b1\u0001\u001a\u00020\rH\u0016J\u001f\u0010\u00b4\u0001\u001a\u00020\u00132\u0014\u0010\u00b3\u0001\u001a\u000f\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020E0\u00b2\u0001H\u0016J&\u0010\u00b6\u0001\u001a\u00020\u00132\u0014\u0010\u00b3\u0001\u001a\u000f\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020E0\u00b2\u00012\u0007\u0010\u00b5\u0001\u001a\u00020\rJ7\u0010\u00bb\u0001\u001a\u00020\u00132\u0017\u0010\u00b7\u0001\u001a\u0012\u0012\u0004\u0012\u00020B0>j\b\u0012\u0004\u0012\u00020B`@2\u0007\u0010\u00b8\u0001\u001a\u00020\u00072\f\b\u0002\u0010\u00ba\u0001\u001a\u0005\u0018\u00010\u00b9\u0001J\u001b\u0010\u00be\u0001\u001a\u00020\u00132\u0007\u0010\u00bc\u0001\u001a\u00020E2\u0007\u0010\u00bd\u0001\u001a\u00020\u000bH\u0016J\u0013\u0010\u00c1\u0001\u001a\u00020\u00132\b\u0010\u00c0\u0001\u001a\u00030\u00bf\u0001H\u0016J\u0007\u0010\u00c2\u0001\u001a\u00020\u0013J\u0018\u0010\u00c4\u0001\u001a\u00020\u00132\r\u0010\u00c3\u0001\u001a\b\u0012\u0004\u0012\u00020E0DH\u0016J\u0012\u0010\u00c5\u0001\u001a\u00020\u00132\u0007\u0010\u00bc\u0001\u001a\u00020EH\u0016J\u0017\u0010\u00c6\u0001\u001a\u00020\u00132\f\u0010F\u001a\b\u0012\u0004\u0012\u00020E0DH\u0016J\u0018\u0010\u00c7\u0001\u001a\u0011\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020E\u0018\u00010\u00b2\u0001H\u0016J\u000f\u0010\u00c8\u0001\u001a\b\u0012\u0004\u0012\u00020E0DH\u0016J\r\u0010\u00c9\u0001\u001a\b\u0012\u0004\u0012\u00020E0DJ\r\u0010\u00ca\u0001\u001a\b\u0012\u0004\u0012\u00020E0DJ)\u0010\u00ce\u0001\u001a\u00020\u00132\n\u0010\u00cc\u0001\u001a\u0005\u0018\u00010\u00cb\u00012\t\u0010\u0088\u0001\u001a\u0004\u0018\u00010\u001a2\u0007\u0010\u00cd\u0001\u001a\u00020\u000bH\u0016J\u001f\u0010\u00d3\u0001\u001a\u00020\u00132\n\u0010\u00d0\u0001\u001a\u0005\u0018\u00010\u00cf\u00012\b\u0010\u00d2\u0001\u001a\u00030\u00d1\u0001H\u0016J\u001c\u0010\u00d5\u0001\u001a\u00020\u00132\u0007\u0010\u00d4\u0001\u001a\u00020~2\b\u0010\u00d2\u0001\u001a\u00030\u00d1\u0001H\u0016J\u001c\u0010\u00d6\u0001\u001a\u00020\u00132\u0007\u0010\u00d4\u0001\u001a\u00020~2\b\u0010\u00d2\u0001\u001a\u00030\u00d1\u0001H\u0016J\u0012\u0010\u00d7\u0001\u001a\u00020\u00132\u0007\u0010\u00d4\u0001\u001a\u00020~H\u0016J\u0012\u0010\u00d8\u0001\u001a\u00020\u00132\u0007\u0010\u00d4\u0001\u001a\u00020~H\u0016J\u001e\u0010\u00da\u0001\u001a\u00020\u00132\u0013\u0010\u00d9\u0001\u001a\u000e\u0012\u0004\u0012\u000205\u0012\u0004\u0012\u00020~0ZH\u0016J-\u0010\u00dd\u0001\u001a\u00020\u00132\u0006\u0010`\u001a\u00020_2\u0006\u0010U\u001a\u00020\u000b2\u0007\u0010\u00db\u0001\u001a\u00020\u000b2\t\u0010\u00dc\u0001\u001a\u0004\u0018\u00010\u0007H\u0016J\t\u0010\u00de\u0001\u001a\u0004\u0018\u00010KJ(\u0010\u00e0\u0001\u001a\u0004\u0018\u00010E2\t\u0010\u00df\u0001\u001a\u0004\u0018\u00010k2\u0006\u0010V\u001a\u00020\r2\n\b\u0002\u0010\u001b\u001a\u0004\u0018\u00010\u001aJ\u0010\u0010\u00e2\u0001\u001a\u00020\u00132\u0007\u0010\u00e1\u0001\u001a\u00020\u0007J\u0010\u0010\u00e3\u0001\u001a\u00020\u00132\u0007\u0010\u00e1\u0001\u001a\u00020\u0007J\u0010\u0010\u00e5\u0001\u001a\u00020\u00132\u0007\u0010`\u001a\u00030\u00e4\u0001J\r\u0010\u00e6\u0001\u001a\b\u0012\u0004\u0012\u00020k0DJ\u001c\u0010\u00e7\u0001\u001a\u00020\u00132\u0007\u0010\u00d4\u0001\u001a\u00020~2\n\b\u0002\u0010j\u001a\u0004\u0018\u00010iJ\u0010\u0010\u00e9\u0001\u001a\u00020\u000b2\u0007\u0010\u00e8\u0001\u001a\u00020\u000bJ\u0010\u0010\u00ea\u0001\u001a\u00020\u00132\u0007\u0010\u00e8\u0001\u001a\u00020\u000bJ-\u0010\u00ef\u0001\u001a\u00020\u00132\u000e\u0010\u00ec\u0001\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010D2\t\b\u0002\u0010\u00ed\u0001\u001a\u00020\u000b2\t\b\u0002\u0010\u00ee\u0001\u001a\u00020\u000bJ\u0019\u0010\u00f0\u0001\u001a\u00020\u000b2\u000e\u0010\u00ec\u0001\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010DH\u0016J8\u0010\u00f4\u0001\u001a\u00020\u000b2\u000e\u0010\u00ec\u0001\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010D2\t\b\u0002\u0010\u00f1\u0001\u001a\u00020\u000b2\t\b\u0002\u0010\u00f2\u0001\u001a\u00020\r2\t\b\u0002\u0010\u00f3\u0001\u001a\u00020\u000bJ\"\u0010\u00f6\u0001\u001a\u00020\u000b2\u000e\u0010\u00ec\u0001\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010D2\t\b\u0002\u0010\u00f5\u0001\u001a\u00020\u000bJ\u001c\u0010\u00fa\u0001\u001a\u00020\u00132\b\u0010\u00f8\u0001\u001a\u00030\u00f7\u00012\t\b\u0002\u0010\u00f9\u0001\u001a\u00020\u000bJ-\u0010\u00fe\u0001\u001a\u00020\u00132\u000e\u0010\u00fb\u0001\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010D2\u0014\u0010\u00fd\u0001\u001a\u000f\u0012\u0004\u0012\u00020\u0007\u0012\u0005\u0012\u00030\u00fc\u00010ZJ\u000f\u0010\u00ff\u0001\u001a\u00020\u00132\u0006\u0010.\u001a\u00020\u000bJ\u0007\u0010\u0080\u0002\u001a\u00020\u000bJ\u0007\u0010\u0081\u0002\u001a\u00020\u000bJ\u0007\u0010\u0082\u0002\u001a\u00020\u0013J\n\u0010\u0083\u0002\u001a\u00030\u0099\u0001H\u0016J\u0014\u0010\u0084\u0002\u001a\u00030\u0099\u00012\b\u0010O\u001a\u0004\u0018\u00010\u001aH\u0016J\n\u0010\u0085\u0002\u001a\u00030\u0099\u0001H\u0016J\u001a\u0010\u0086\u0002\u001a\u00020\u00132\u0006\u0010\u007f\u001a\u0002052\u0007\u0010\u0080\u0001\u001a\u000205H\u0016J\u0013\u0010\u0088\u0002\u001a\u00020\u00132\b\u0010\u0087\u0002\u001a\u00030\u0099\u0001H\u0016J\u0010\u0010\u008a\u0002\u001a\t\u0012\u0005\u0012\u00030\u0089\u00020DH\u0016J\t\u0010\u008b\u0002\u001a\u00020\u000bH\u0016J\t\u0010\u008c\u0002\u001a\u00020\u000bH\u0016J\t\u0010\u008d\u0002\u001a\u00020\u0007H\u0016J\t\u0010\u008e\u0002\u001a\u00020\u000bH\u0016J\u000b\u0010\u008f\u0002\u001a\u0004\u0018\u00010\u0007H\u0016J\t\u0010\u0090\u0002\u001a\u00020\u000bH\u0016J\u000b\u0010\u0091\u0002\u001a\u0004\u0018\u00010\u0007H\u0016J\t\u0010\u0092\u0002\u001a\u00020\u0013H\u0016J\t\u0010\u0093\u0002\u001a\u00020\u000bH\u0016J\u0012\u0010\u0095\u0002\u001a\u00020\u00132\u0007\u0010\u0094\u0002\u001a\u00020\u000bH\u0016J\t\u0010\u0096\u0002\u001a\u00020\u000bH\u0016J\u0007\u0010\u0097\u0002\u001a\u00020\u000bJ\u0007\u0010\u0098\u0002\u001a\u00020\u0013J\"\u0010\u009c\u0002\u001a\u00020\u00132\u000e\u0010\u009a\u0002\u001a\t\u0012\u0005\u0012\u00030\u0099\u00020D2\u0007\u0010\u009b\u0002\u001a\u00020\rH\u0016J\u0010\u0010\u009d\u0002\u001a\t\u0012\u0005\u0012\u00030\u0099\u00020DH\u0016J\t\u0010\u009e\u0002\u001a\u00020~H\u0016J\t\u0010\u009f\u0002\u001a\u00020\u0013H\u0016J\t\u0010\u00a0\u0002\u001a\u00020\u000bH\u0016J\u0007\u0010\u00a1\u0002\u001a\u00020\u000bJ\u0019\u0010\u00a2\u0002\u001a\u00020\u000b2\u0010\u0010\u00fb\u0001\u001a\u000b\u0012\u0005\u0012\u00030\u00eb\u0001\u0018\u00010DJ\t\u0010\u00a3\u0002\u001a\u00020\u000bH\u0016J\t\u0010\u00a4\u0002\u001a\u00020\u000bH\u0016J\b\u0010\u00a5\u0002\u001a\u00030\u0089\u0002J-\u0010\u00aa\u0002\u001a\u00020\u00132\u0007\u0010\u00a6\u0002\u001a\u00020\u000b2\u0007\u0010\u00a7\u0002\u001a\u0002052\u0007\u0010\u00a8\u0002\u001a\u0002052\u0007\u0010\u00a9\u0002\u001a\u00020\u000bH\u0016J\u0010\u0010\u00ac\u0002\u001a\u00020\u00132\u0007\u0010\u00ab\u0002\u001a\u00020\u000bJ\u0012\u0010\u00ad\u0002\u001a\u00020\u00132\u0007\u0010\u00a8\u0002\u001a\u000205H\u0016J\u0007\u0010\u00ae\u0002\u001a\u00020\u0013J\u0007\u0010\u00af\u0002\u001a\u00020\u0013J\u0007\u0010\u00b0\u0002\u001a\u00020\u000bJ\n\u0010\u00b1\u0002\u001a\u00030\u0099\u0001H\u0016J\u000f\u0010\u00b2\u0002\u001a\b\u0012\u0004\u0012\u00020#0DH\u0016J\u0007\u0010\u00b3\u0002\u001a\u00020\u0013J\u0012\u0010\u00b5\u0002\u001a\u00020\u00132\u0007\u0010\u00b4\u0002\u001a\u00020\u000bH\u0016J1\u0010\u00b6\u0002\u001a*\u0012\u0004\u0012\u00020\u0007\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00070D0\u0006j\u0014\u0012\u0004\u0012\u00020\u0007\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00070D`QH\u0016J\f\u0010\u00b8\u0002\u001a\u0005\u0018\u00010\u00b7\u0002H\u0016J\u0011\u0010\u00b9\u0002\u001a\n\u0012\u0004\u0012\u00020I\u0018\u00010DH\u0016J\u000f\u0010\u00ba\u0002\u001a\b\u0012\u0004\u0012\u00020\u00070DH\u0016J7\u0010\u00bc\u0002\u001a\u00020\u00132\u0007\u0010\u00e1\u0001\u001a\u00020\u00072#\u0010\u00bb\u0002\u001a\u001e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00070\u0006j\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u0007`QH\u0016J,\u0010\u00bd\u0002\u001a\u00020\u00132#\u0010\u00bb\u0002\u001a\u001e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00070\u0006j\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u0007`QJ\t\u0010\u00be\u0002\u001a\u00020\rH\u0016J\t\u0010\u00bf\u0002\u001a\u00020\u0013H\u0016J\t\u0010\u00c0\u0002\u001a\u00020\u000bH\u0016J\t\u0010\u00c1\u0002\u001a\u00020\u0013H\u0016J\t\u0010\u00c2\u0002\u001a\u00020\u000bH\u0016J\u0012\u0010\u00c3\u0002\u001a\u00020\u00132\u0007\u0010\u00b5\u0001\u001a\u00020\rH\u0016J\u001b\u0010\u00c3\u0002\u001a\u00020\u00132\u0007\u0010\u00b5\u0001\u001a\u00020\r2\u0007\u0010\u00c4\u0002\u001a\u00020\u000bH\u0016J\u0012\u0010\u00c5\u0002\u001a\u00020\u00132\u0007\u0010\u00b5\u0001\u001a\u00020\rH\u0016J\u0012\u0010\u00c7\u0002\u001a\u00020\u00132\u0007\u0010\u00c6\u0002\u001a\u00020\u000bH\u0016J\u0012\u0010\u00c9\u0002\u001a\u00020\u00132\u0007\u0010\u00c8\u0002\u001a\u00020\u000bH\u0016J\u0012\u0010\u00ca\u0002\u001a\u00020\u00132\u0007\u0010\u00e8\u0001\u001a\u00020\u000bH\u0016J\t\u0010\u00cb\u0002\u001a\u00020\rH\u0016J\u001a\u0010\u00cd\u0002\u001a\u00020\u00132\u0007\u0010\u00cc\u0002\u001a\u00020\r2\u0006\u0010<\u001a\u00020\rH\u0016J\u0010\u0010\u00ce\u0002\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010DH\u0016J\u0010\u0010\u00cf\u0002\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010DH\u0016J\u0010\u0010\u00d1\u0002\u001a\t\u0012\u0005\u0012\u00030\u00d0\u00020DH\u0016J\t\u0010\u00d2\u0002\u001a\u0004\u0018\u00010\u001aJK\u0010\u00d8\u0002\u001a\u00020\u00132%\u0010\u00d4\u0002\u001a \u0012\u0004\u0012\u00020\u0007\u0012\u0005\u0012\u00030\u00d3\u00020\u0006j\u000f\u0012\u0004\u0012\u00020\u0007\u0012\u0005\u0012\u00030\u00d3\u0002`Q2\u0007\u0010\u00d5\u0002\u001a\u00020\r2\u0007\u0010\u00d6\u0002\u001a\u00020\u000b2\u0007\u0010\u00d7\u0002\u001a\u00020\u000bH\u0016J\u0013\u0010\u00db\u0002\u001a\u00020\u00132\b\u0010\u00da\u0002\u001a\u00030\u00d9\u0002H\u0016J\u0013\u0010\u00de\u0002\u001a\u00020\u00132\n\u0010\u00dd\u0002\u001a\u0005\u0018\u00010\u00dc\u0002J\u0013\u0010\u00df\u0002\u001a\u00020\u00132\b\u0010\u00da\u0002\u001a\u00030\u00d9\u0002H\u0016J\u0013\u0010\u00e2\u0002\u001a\u00020\u00132\b\u0010\u00e1\u0002\u001a\u00030\u00e0\u0002H\u0016J\u0013\u0010\u00e3\u0002\u001a\u00020\u00132\b\u0010\u00e1\u0002\u001a\u00030\u00e0\u0002H\u0016J-\u0010\u00e6\u0002\u001a\t\u0012\u0005\u0012\u00030\u00eb\u00010D2\u001b\u0010\u00e5\u0002\u001a\u0016\u0012\u0012\u0012\u0010\u0012\u0005\u0012\u00030\u00f7\u0001\u0012\u0005\u0012\u00030\u00e4\u00020a0DH\u0016J\u001a\u0010\u00e7\u0002\u001a\u00020\u00132\u0006\u0010\u007f\u001a\u0002052\u0007\u0010\u0080\u0001\u001a\u000205H\u0016J\u0013\u0010\u00e9\u0002\u001a\u00020\u00132\n\u0010\u00e1\u0002\u001a\u0005\u0018\u00010\u00e8\u0002J.\u0010\u00f0\u0002\u001a\u00020\u00132\b\u0010\u00eb\u0002\u001a\u00030\u00ea\u00022\b\u0010\u00ed\u0002\u001a\u00030\u00ec\u00022\u0007\u0010\u00ee\u0002\u001a\u00020E2\b\u0010\u00ba\u0001\u001a\u00030\u00ef\u0002J\u000e\u0010\u00f2\u0002\u001a\t\u0012\u0005\u0012\u00030\u00f1\u00020DJ9\u0010\u00f8\u0002\u001a\u0005\u0018\u00010\u00f7\u00022\u0007\u0010\u00f3\u0002\u001a\u00020\r2\u0007\u0010\u0087\u0002\u001a\u0002082\u0007\u0010\u00f4\u0002\u001a\u00020\u00072\u0012\b\u0002\u0010\u00f6\u0002\u001a\u000b\u0012\u0005\u0012\u00030\u00f5\u0002\u0018\u00010DJ\u0012\u0010\u00f9\u0002\u001a\u00020k2\t\u0010\u00b8\u0001\u001a\u0004\u0018\u00010\u0007J\u0012\u0010\u00fa\u0002\u001a\u0002052\t\u0010\u00b8\u0001\u001a\u0004\u0018\u00010\u0007J\u0007\u0010\u00fb\u0002\u001a\u00020\rJ\t\u0010\u00fc\u0002\u001a\u00020\rH\u0016J\u0010\u0010\u00fe\u0002\u001a\u00020\u00132\u0007\u0010\u00fd\u0002\u001a\u00020\u0007J\u0019\u0010\u0081\u0003\u001a\u00020\u00132\u0007\u0010\u00ff\u0002\u001a\u00020\u00072\u0007\u0010\u0080\u0003\u001a\u00020\rJ@\u0010\u0084\u0003\u001a\u00020\u00132\t\u0010\u00e1\u0001\u001a\u0004\u0018\u00010\u00072\t\u0010\u0082\u0003\u001a\u0004\u0018\u00010\u00072\u0006\u0010<\u001a\u00020\r2\u0007\u0010\u00fd\u0002\u001a\u00020\u00072\u0007\u0010\u00d4\u0001\u001a\u00020~2\u0007\u0010\u0083\u0003\u001a\u00020\rJ\u000f\u0010\u0085\u0003\u001a\u00020\u00132\u0006\u0010<\u001a\u00020\rJ\u001a\u0010\u0086\u0003\u001a\u00020\u00132\u0006\u0010Y\u001a\u00020K2\t\u0010\u0088\u0001\u001a\u0004\u0018\u00010\u001aJ\u0015\u0010\u0089\u0003\u001a\u0005\u0018\u00010\u0088\u00032\u0007\u0010\u0087\u0003\u001a\u00020\u0007H\u0016J\u0012\u0010\u008b\u0003\u001a\u00020\u00132\u0007\u0010\u008a\u0003\u001a\u00020\u0007H\u0016J\u0013\u0010\u008d\u0003\u001a\u00020\u00132\b\u0010\u00e1\u0002\u001a\u00030\u008c\u0003H\u0016J\u0013\u0010\u008e\u0003\u001a\u00020\u00132\b\u0010\u00e1\u0002\u001a\u00030\u008c\u0003H\u0016R*\u0010\u001d\u001a\u0004\u0018\u00010\u00078\u0016@\u0016X\u0096\u000e\u00a2\u0006\u0018\n\u0006\b\u00a6\u0001\u0010\u008f\u0003\u001a\u0006\b\u0090\u0003\u0010\u0091\u0003\"\u0006\b\u0092\u0003\u0010\u0093\u0003R\u001b\u0010\u0095\u0003\u001a\u0004\u0018\u00010'8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00e6\u0002\u0010\u0094\u0003R\u001b\u0010\u0096\u0003\u001a\u0004\u0018\u00010'8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u008e\u0003\u0010\u0094\u0003R+\u0010\u009b\u0003\u001a\u0004\u0018\u00010'8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00c5\u0001\u0010\u0094\u0003\u001a\u0006\b\u0097\u0003\u0010\u0098\u0003\"\u0006\b\u0099\u0003\u0010\u009a\u0003R\u001b\u0010\u009c\u0003\u001a\u0004\u0018\u00010'8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00c8\u0001\u0010\u0094\u0003R\u001b\u0010\u009d\u0003\u001a\u0004\u0018\u00010'8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a7\u0001\u0010\u0094\u0003R+\u0010\u00a0\u0003\u001a\u0004\u0018\u00010'8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00fc\u0002\u0010\u0094\u0003\u001a\u0006\b\u009e\u0003\u0010\u0098\u0003\"\u0006\b\u009f\u0003\u0010\u009a\u0003R<\u0010\u00a6\u0003\u001a%\u0012\u0005\u0012\u00030\u00a2\u0003\u0012\u0007\u0012\u0005\u0018\u00010\u00a3\u0003\u0012\u0007\u0012\u0005\u0018\u00010\u00a3\u0003\u0018\u00010\u00a1\u0003j\u0005\u0018\u0001`\u00a4\u00038\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a4\u0002\u0010\u00a5\u0003R,\u0010\u00ac\u0003\u001a\u0005\u0018\u00010\u0099\u00018\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u0092\u0002\u0010\u00a7\u0003\u001a\u0006\b\u00a8\u0003\u0010\u00a9\u0003\"\u0006\b\u00aa\u0003\u0010\u00ab\u0003R\u001c\u0010\u00ae\u0003\u001a\u0005\u0018\u00010\u00a3\u00038\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00d8\u0002\u0010\u00ad\u0003R\u001c\u0010\u00da\u0002\u001a\u0005\u0018\u00010\u00d9\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a4\u0001\u0010\u00af\u0003R\u001f\u0010\u00b2\u0003\u001a\n\u0012\u0005\u0012\u00030\u00d9\u00020\u00b0\u00038\u0002X\u0082\u0004\u00a2\u0006\b\n\u0006\b\u00c7\u0001\u0010\u00b1\u0003R\u001c\u0010\u00b4\u0003\u001a\u0005\u0018\u00010\u00dc\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u008a\u0002\u0010\u00b3\u0003R\u0018\u0010\u0005\u001a\u00020\u00048\u0002@\u0002X\u0082.\u00a2\u0006\b\n\u0006\b\u00d7\u0001\u0010\u00b5\u0003R\u001a\u0010\u00b7\u0003\u001a\u00030\u00a3\u00018\u0002@\u0002X\u0082.\u00a2\u0006\b\n\u0006\b\u0096\u0002\u0010\u00b6\u0003R\u0019\u0010\u00b9\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a3\u0002\u0010\u00b8\u0003R\u001b\u0010\u00bb\u0003\u001a\u0004\u0018\u0001008\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00b0\u0001\u0010\u00ba\u0003R\u001b\u0010\u00bc\u0003\u001a\u0004\u0018\u0001008\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00d5\u0001\u0010\u00ba\u0003R\u0019\u0010\u00bd\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00be\u0001\u0010\u00b8\u0003R\u0019\u0010\u00be\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u009f\u0002\u0010\u00b8\u0003R\u0019\u0010\u00c0\u0002\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00da\u0001\u0010\u00b8\u0003R)\u0010\u00c3\u0003\u001a\u0002058\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00b6\u0002\u0010\u00b9\u0002\u001a\u0006\b\u00bf\u0003\u0010\u00c0\u0003\"\u0006\b\u00c1\u0003\u0010\u00c2\u0003R\u001b\u0010\u00c4\u0003\u001a\u0004\u0018\u0001008\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u008d\u0001\u0010\u00ba\u0003R\u001a\u0010\u00c7\u0003\u001a\u00030\u00c5\u00038\u0002@\u0002X\u0082.\u00a2\u0006\b\n\u0006\b\u009d\u0002\u0010\u00c6\u0003R)\u0010\u00c8\u0003\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00ba\u0002\u0010\u00b8\u0003\u001a\u0006\b\u00c8\u0003\u0010\u00c9\u0003\"\u0006\b\u00ca\u0003\u0010\u00cb\u0003R\u001b\u0010\u00cd\u0003\u001a\u0004\u0018\u00010\u001a8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00d1\u0002\u0010\u00cc\u0003R\u001b\u0010\u00cf\u0003\u001a\u0004\u0018\u00010#8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00b4\u0001\u0010\u00ce\u0003R)\u0010\u00d2\u0003\u001a\u0002058\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u0088\u0002\u0010\u00b9\u0002\u001a\u0006\b\u00d0\u0003\u0010\u00c0\u0003\"\u0006\b\u00d1\u0003\u0010\u00c2\u0003R)\u0010\u00d5\u0003\u001a\u0002058\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00b5\u0002\u0010\u00b9\u0002\u001a\u0006\b\u00d3\u0003\u0010\u00c0\u0003\"\u0006\b\u00d4\u0003\u0010\u00c2\u0003R)\u0010\u00d9\u0003\u001a\u000f\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020~0\u00b2\u00018\u0006\u00a2\u0006\u0010\n\u0006\b\u00b8\u0002\u0010\u00d6\u0003\u001a\u0006\b\u00d7\u0003\u0010\u00d8\u0003R\u001f\u0010\u00da\u0003\u001a\b\u0012\u0004\u0012\u00020#0D8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00e2\u0002\u0010\u00b1\u0003R)\u0010\u00de\u0003\u001a\u0002058\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00db\u0003\u0010\u00b9\u0002\u001a\u0006\b\u00dc\u0003\u0010\u00c0\u0003\"\u0006\b\u00dd\u0003\u0010\u00c2\u0003R)\u0010\u00e1\u0003\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u0090\u0003\u0010\u00b8\u0003\u001a\u0006\b\u00df\u0003\u0010\u00c9\u0003\"\u0006\b\u00e0\u0003\u0010\u00cb\u0003R*\u0010\u00e8\u0003\u001a\u00030\u00e2\u00038\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00b9\u0002\u0010\u00e3\u0003\u001a\u0006\b\u00e4\u0003\u0010\u00e5\u0003\"\u0006\b\u00e6\u0003\u0010\u00e7\u0003R\u0019\u0010\u00e9\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00b2\u0002\u0010\u00b8\u0003R)\u0010\u00ee\u0003\u001a\u00020~8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00dd\u0001\u0010\u00e2\u0002\u001a\u0006\b\u00ea\u0003\u0010\u00eb\u0003\"\u0006\b\u00ec\u0003\u0010\u00ed\u0003R\u0019\u0010\u00ef\u0003\u001a\u00020~8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00af\u0001\u0010\u00e2\u0002R)\u0010\u00f2\u0003\u001a\u00020~8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00b1\u0002\u0010\u00e2\u0002\u001a\u0006\b\u00f0\u0003\u0010\u00eb\u0003\"\u0006\b\u00f1\u0003\u0010\u00ed\u0003R\u0019\u0010\u00f3\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u009c\u0002\u0010\u00b8\u0003R\u0019\u0010\u00f4\u0003\u001a\u00020\r8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a0\u0002\u0010\u00b2\u0002RA\u0010\u00f6\u0003\u001a*\u0012\u0004\u0012\u00020\u0007\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00070D0\u0006j\u0014\u0012\u0004\u0012\u00020\u0007\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00070D`Q8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00e7\u0002\u0010\u00f5\u0003R\u001c\u0010\u00f8\u0003\u001a\u0005\u0018\u00010\u00b7\u00028\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00e3\u0002\u0010\u00f7\u0003R\u001f\u0010\u00f9\u0003\u001a\b\u0012\u0004\u0012\u00020I0D8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00ad\u0002\u0010\u00b1\u0003R\u001f\u0010\u00fb\u0003\u001a\b\u0012\u0004\u0012\u00020k0D8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00fa\u0003\u0010\u00b1\u0003R\u0019\u0010\u00fc\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00c6\u0001\u0010\u00b8\u0003R\u0019\u0010\u00fd\u0003\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u008b\u0002\u0010\u00b8\u0003R+\u0010\u0083\u0004\u001a\u0004\u0018\u00010k8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00a9\u0001\u0010\u00fe\u0003\u001a\u0006\b\u00ff\u0003\u0010\u0080\u0004\"\u0006\b\u0081\u0004\u0010\u0082\u0004R\u001f\u0010\u0086\u0004\u001a\n\u0012\u0005\u0012\u00030\u008c\u00030\u0084\u00048\u0002X\u0082\u0004\u00a2\u0006\b\n\u0006\b\u00c4\u0001\u0010\u0085\u0004R)\u0010\u0089\u0004\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u008f\u0002\u0010\u00b8\u0003\u001a\u0006\b\u0087\u0004\u0010\u00c9\u0003\"\u0006\b\u0088\u0004\u0010\u00cb\u0003R(\u0010\u001f\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00aa\u0002\u0010\u00b8\u0003\u001a\u0006\b\u008a\u0004\u0010\u00c9\u0003\"\u0006\b\u008b\u0004\u0010\u00cb\u0003R)\u0010\u008c\u0004\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00b8\u0003\u0010\u00b8\u0003\u001a\u0006\b\u008c\u0004\u0010\u00c9\u0003\"\u0006\b\u008d\u0004\u0010\u00cb\u0003R+\u0010\u0090\u0004\u001a\u0004\u0018\u00010\u00078\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00cf\u0002\u0010\u008f\u0003\u001a\u0006\b\u008e\u0004\u0010\u0091\u0003\"\u0006\b\u008f\u0004\u0010\u0093\u0003R)\u0010\u0093\u0004\u001a\u0002058\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00d6\u0001\u0010\u00b9\u0002\u001a\u0006\b\u0091\u0004\u0010\u00c0\u0003\"\u0006\b\u0092\u0004\u0010\u00c2\u0003R)\u0010\u0096\u0004\u001a\u00020\u000b8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u0095\u0002\u0010\u00b8\u0003\u001a\u0006\b\u0094\u0004\u0010\u00c9\u0003\"\u0006\b\u0095\u0004\u0010\u00cb\u0003R+\u0010\u009c\u0004\u001a\u0004\u0018\u00010E8\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u0084\u0002\u0010\u0097\u0004\u001a\u0006\b\u0098\u0004\u0010\u0099\u0004\"\u0006\b\u009a\u0004\u0010\u009b\u0004R,\u0010\u00a2\u0004\u001a\u0005\u0018\u00010\u00b9\u00018\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0018\n\u0006\b\u00f0\u0001\u0010\u009d\u0004\u001a\u0006\b\u009e\u0004\u0010\u009f\u0004\"\u0006\b\u00a0\u0004\u0010\u00a1\u0004R\u0018\u0010M\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00a3\u0004\u0010\u00b8\u0003R\u0017\u0010\u00a4\u0004\u001a\u00020\u000b8\u0002X\u0082\u0004\u00a2\u0006\b\n\u0006\b\u00ce\u0002\u0010\u00b8\u0003R\u0017\u0010\u00a6\u0004\u001a\u00020\u000b8\u0002X\u0082\u0004\u00a2\u0006\b\n\u0006\b\u00a5\u0004\u0010\u00b8\u0003R!\u0010\u00a7\u0004\u001a\n\u0012\u0005\u0012\u00030\u00bf\u00010\u00b0\u00038\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u00ce\u0001\u0010\u00b1\u0003R\u0019\u0010\u00a8\u0004\u001a\u00020\u000b8\u0002@\u0002X\u0082\u000e\u00a2\u0006\b\n\u0006\b\u008b\u0003\u0010\u00b8\u0003R\u0017\u0010\u00aa\u0004\u001a\u00020\u00118\u0002X\u0082\u0004\u00a2\u0006\b\n\u0006\b\u00d3\u0001\u0010\u00a9\u0004R\u0017\u0010\u00ac\u0004\u001a\u00020\u000b8BX\u0082\u0004\u00a2\u0006\b\u001a\u0006\b\u00ab\u0004\u0010\u00c9\u0003R\u001a\u0010\u00ae\u0004\u001a\u0005\u0018\u00010\u0089\u00028VX\u0096\u0004\u00a2\u0006\b\u001a\u0006\b\u00a5\u0004\u0010\u00ad\u0004\u00a8\u0006\u00b0\u0004"}, d2 = {"Lcom/tencent/mobileqq/wink/editor/WinkVideoTavCut;", "Lcom/tencent/mobileqq/wink/editor/dr;", "Lcom/tencent/mobileqq/wink/editor/view/video/WinkPlayerContainerView;", "containerView", "Lcom/tencent/mobileqq/wink/editor/dr$c;", "params", "Ljava/util/HashMap;", "", "", "Lcom/tencent/mobileqq/wink/editor/view/video/WinkTavCutExtraParam;", BaseConstants.ATTR_KET_EXTRA_MAP, "", "isSinglePlayer", "", "initTime", "Lorg/light/listener/OnLoadAssetListener;", "loadAssetListener", "Lorg/light/listener/OnClipAssetListener;", "onClipAssetListener", "", "T1", "o2", "Lcom/tencent/tavcut/core/render/builder/light/model/CustomRenderConfig;", "customRenderConfig", "X1", "y2", "Lcamera/XEFFECT_MATERIALS_GENERAL_DATASTRUCT/MetaMaterial;", "textFontMaterial", NowProxyConstants.AccountInfoKey.A2, "templatePath", "x2", "isFromQzoneText", "R1", "Lcom/tencent/mobileqq/wink/editor/model/WinkTavCutScene;", "scene", "Lcom/tencent/videocut/model/MediaModel;", "c3", "z2", "W1", "Landroid/widget/FrameLayout;", "playerViewContainer", "Y1", "mPlayerLayout", "p2", "S1", "mediaModel", "needUpdate", "P3", "Lcom/tencent/tavcut/core/render/player/IPlayer;", "player", "S0", "S3", "r3", "", "paramsWidth", "paramsHeight", "Lorg/light/lightAssetKit/components/Size;", "Z0", "Q3", "R3", "durationUs", "h3", "Ljava/util/ArrayList;", "Lcom/tencent/mobileqq/wink/editor/draft/TrackStickerInfo;", "Lkotlin/collections/ArrayList;", "trackStickerInfos", "Lcom/gyailib/library/GYTrackStickerInfo;", "d1", "", "Lcom/tencent/mobileqq/wink/editor/sticker/WinkStickerModel;", "stickerModelList", "B2", "needModifyClipsDuration", "Lcom/tencent/tavcut/core/render/builder/light/model/ClipSource;", "clipSources", "Lcom/tencent/tavcut/core/render/builder/light/model/LAKRenderModel;", "r2", "isZShowTemplate", "q2", "metaMaterial", "renderModel", "Lkotlin/collections/HashMap;", "assetData", "applyNewTemplate", "enableImageTemplateEdit", "isClearStickers", "currentTimeUs", "needRecoveryTemplateFromDraft", "C3", "templateRenderModel", "", "mediaClipExtras", "color", "fillMode", "B3", "Lcom/tencent/mobileqq/wink/editor/template/x$b;", "action", "Lkotlin/Pair;", "g3", "modifyClipsDuration", "bgColor", "E3", "W0", "X0", "w2", "Lorg/light/lightAssetKit/enums/AudioSourceType;", "type", "Lorg/light/lightAssetKit/Entity;", "f1", "Lorg/light/lightAssetKit/enums/BackgroundFillMode;", ICustomDataEditor.NUMBER_PARAM_1, "o1", "entityMap", ICustomDataEditor.STRING_PARAM_2, "u2", "entityList", "I3", "S2", "C2", "Lcom/tencent/videocut/model/StickerModel;", com.tencent.luggage.wxa.c8.c.B, "Lcom/tencent/videocut/model/SizeF;", "originRenderSizeF", "newRenderSizeF", "u3", "e2", "", "width", "height", "Lcom/tencent/mobileqq/wink/editor/WinkVideoTavCut$b;", "T0", "l1", "k1", "c2", "v1", "k2", WadlProxyConsts.KEY_MATERIAL, "F3", "m2", "Lcom/tencent/biz/richframework/part/BasePartFragment;", "hostFragment", HippyTKDListViewAdapter.X, "N1", "O1", "J3", QQWinkConstants.TAB_FIRST_TEMPLATE, "J2", "front", "back", "V1", "Z2", "renderSize", "V2", "Lcom/tencent/videocut/model/Size;", "U2", "V0", "fillScale", "d3", "backgroundFillMode", "backColor", "q3", "O2", "getPlayer", "Lcom/tencent/tavcut/core/session/ICutSession;", "l", "hidden", "b", "g", "release", "V", "m1", FileReaderHelper.OPEN_FILE_FROM_FORCE, HippyQQPagView.FunctionName.FLUSH, "c1", "Lkotlin/Function0;", "L", "r", "getDurationUs", "", "stickerModelMap", "B", "timeUs", "x3", "stickerTrackerResult", "entityName", "Lcom/tencent/tavcut/core/session/IStickerUpdateCallback;", "callback", "K3", "stickerModel", "isTransition", "t", "Lcom/tencent/mobileqq/wink/editor/sticker/sticker/d;", "stickerUpdateListener", "R0", "v3", "stickerModels", "W", "e", "T", QCircleScheme.AttrQQPublish.INPUT_TAB_MAGIC_STUDIO, "f", "E1", "I1", "Lcom/tencent/videocut/model/FilterModel;", "filterModel", "onlyUpdateIntensity", "i0", "Lcom/tencent/videocut/model/AudioModel;", "audioModel", "Lcom/tencent/videocut/model/AudioModel$Type;", "audioType", "k0", InnerAudioPlugin.AUDIO_PROPERTY_VOLUME, ReportConstant.COSTREPORT_PREFIX, "b0", "o", "O3", "clipVolumes", "v", "needChaneStrickerDirectly", "stickerText", "K", "u1", "rootEntity", "Q1", "path", "e3", "b3", "Lcom/tencent/mobileqq/wink/editor/template/x$c;", "A3", "C1", Constants.EMULATOR_INFO, "enable", "W2", "X2", "Lcom/tencent/videocut/model/MediaClip;", "videos", "isFromCrop", "isFromClipping", ICustomDataEditor.STRING_PARAM_3, "e0", "needFlushPlayer", "targetTimeUs", "forceFlush", "m3", "justFlush", "l3", "Landroid/graphics/Matrix;", "matrix", "refreshPlayer", "o3", "clips", "Lcom/tencent/videocut/model/TransitionModel;", "transforms", "f3", "M2", "p1", "M3", Constants.BASE_IN_PLUGIN_VERSION, "a", "d0", "getRenderSize", "n0", "size", BdhLogUtil.LogTag.Tag_Conn, "Lcom/tencent/mobileqq/wink/editor/draft/WinkEditData;", DomainData.DOMAIN_NAME, "U", "i2", "y1", ICustomDataEditor.STRING_ARRAY_PARAM_2, "X", SemanticAttributes.DbSystemValues.H2, "x1", "j", "l0", com.tencent.mobileqq.msf.core.f0.c.e.h.f248218g, "c0", "p", "j2", ICustomDataEditor.NUMBER_PARAM_2, "Lcom/tencent/videocut/model/SpecialEffectModel;", IQQGameCommApi.K_ABTEST_MODELS, "targetTime", "N", "y", "J1", "u", "O", "f2", "g2", QCircleScheme.AttrQQPublish.INPUT_TAB_QZONE_TEXT_TAB, "i", "K1", OpenHippyInfo.EXTRA_KEY_IS_FULL_SCREEN, "bottomOffset", "topOffset", "isBackgroundPanel", "Y", "isVisible", "L1", BdhLogUtil.LogTag.Tag_Req, "y3", "E2", "l2", "M", "J", "j3", "isForce", "D", "w", "Lcom/gyailib/library/GYVideoClassifyResult;", "E", "I", QCircleScheme.AttrQQPublish.INPUT_TAB_ZSHOW, "map", "F2", Constants.MMCCID, "getCurrentPlayUs", "pause", "isReady", "play", "isPlaying", InnerAudioPlugin.AUDIO_OPERATE_SEEK, "openInAccurateSeek", "stop", "isLoop", "setLoopPlay", "isAutoPlay", "setAutoPlay", "I2", "getFrameDuration", "startTimeUs", "setPlayTimeRange", "g0", "a0", "Lcom/tencent/mobileqq/wink/editor/mosaic/model/MosaicData;", ExifInterface.GPS_MEASUREMENT_IN_PROGRESS, "B1", "Lcom/tencent/videocut/model/HDRModel;", "inputMap", QAdReportDefine$AdReporterParams.K_Q_AD_REPORTER_PARAM_KEY_PLAY_TIME, "useHDR", "needPlay", "k", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerListener;", "playerListener", "addPlayerListener", "Landroid/view/TextureView$SurfaceTextureListener;", "surfaceTextureListener", "P2", "removePlayerListener", "Lcom/tencent/tavcut/core/session/ISessionListener;", "listener", UserInfo.SEX_FEMALE, AppConstants.RichMediaErrorCode.HTTP_OK_FAIL_PRE, "Landroid/graphics/RectF;", "cropInfoList", "c", "P", "Lcom/tencent/tavcut/core/session/IRenderTimeListener;", "Q2", "Lcom/tencent/tavcut/core/manager/StickerTrackerManager;", "stickerTrackerManager", "Lsd4/b;", DownloadInfo.spKey_Config, "curStickerModel", "Lcom/tencent/tavcut/core/manager/a;", "Y2", "Lcom/tencent/tavcut/core/render/builder/light/model/Timeline;", "F1", "atTimeMs", "templateDir", "Lcom/tencent/tavcut/core/render/rendernode/BaseEffectNode;", "renderNodes", "Landroid/graphics/Bitmap;", "g1", "i1", "j1", "r1", tl.h.F, "stickerId", "Y0", "stickerID", "startTime", "w3", "md5", "timeInTimeline", "Q0", "p3", "k3", "sourceKey", "Lcom/tencent/tavcut/core/render/builder/light/model/InputSource;", "P0", QzoneZipCacheHelper.DIR, "j0", "Lcom/tencent/tavcut/core/session/ICutStatusCallback;", "m0", "d", "Ljava/lang/String;", "H", "()Ljava/lang/String;", "R2", "(Ljava/lang/String;)V", "Landroid/widget/FrameLayout;", "frontPlayerViewContainer", "backPlayerViewContainer", "h1", "()Landroid/widget/FrameLayout;", "setCurrentPlayerViewContainer", "(Landroid/widget/FrameLayout;)V", "currentPlayerViewContainer", "verticalPlayerViewContainer", "horizontalPlayerViewContainer", "q1", "setPlayerContainerWrapper", "playerContainerWrapper", "Lkotlin/Triple;", "Landroidx/constraintlayout/widget/ConstraintLayout$LayoutParams;", "Landroid/widget/FrameLayout$LayoutParams;", "Lcom/tencent/mobileqq/wink/editor/PlayerWrapperSizeInfo;", "Lkotlin/Triple;", "playerWrapperOriginLayoutInfo", "Lcom/tencent/videocut/model/Size;", "getPlayerWrapperOriginSize", "()Lcom/tencent/videocut/model/Size;", "setPlayerWrapperOriginSize", "(Lcom/tencent/videocut/model/Size;)V", "playerWrapperOriginSize", "Landroid/widget/FrameLayout$LayoutParams;", "playerLayoutParams", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerListener;", "", "Ljava/util/List;", "playerListenerList", "Landroid/view/TextureView$SurfaceTextureListener;", "playerSurfaceTextureListener", "Lcom/tencent/mobileqq/wink/editor/dr$c;", "Lcom/tencent/tavcut/core/session/ICutSession;", "cutSession", "Z", "useVerticalPlayer", "Lcom/tencent/tavcut/core/render/player/IPlayer;", "verticalPlayer", "horizontalPlayer", "isCropScene", "isLightEntityReloading", ICustomDataEditor.STRING_PARAM_1, "()I", "setRenderFillType", "(I)V", "renderFillType", "currentPlayer", "Lcom/tencent/videocut/render/ComposeRenderLayer;", "Lcom/tencent/videocut/render/ComposeRenderLayer;", "renderLayerHelper", "isSinglePlayerModel", "()Z", "setSinglePlayerModel", "(Z)V", "Lcamera/XEFFECT_MATERIALS_GENERAL_DATASTRUCT/MetaMaterial;", "templateMaterial", "Lcom/tencent/videocut/model/MediaModel;", "oriMediaModel", "w1", "setRenderWidth", "renderWidth", "t1", "setRenderHeight", "renderHeight", "Ljava/util/Map;", "getStickerScaleMap", "()Ljava/util/Map;", "stickerScaleMap", "lastMediaModels", "G", "getFrom", "K2", "from", "d2", "L2", "isInit", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerStatus;", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerStatus;", "z1", "()Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerStatus;", "setStickerOperationPlayerStatus", "(Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerStatus;)V", "stickerOperationPlayerStatus", "needStretchBack", "getOriginTopY", "()F", "setOriginTopY", "(F)V", "originTopY", "originBottomY", "getOriginScale", "setOriginScale", "originScale", "isLabelDetected", "labelDetectDuration", "Ljava/util/HashMap;", "mediaLabels", "Lcom/gyailib/library/GYVideoClassifyResult;", "gyResult", "gyResultList", ExifInterface.LATITUDE_SOUTH, "templateMusicEntities", "enableTemplateMusic", "switchTemplateMusicSuccess", "Lorg/light/lightAssetKit/Entity;", Constants.BASE_IN_PLUGIN_ID, "()Lorg/light/lightAssetKit/Entity;", "setTemplateTTSEntity", "(Lorg/light/lightAssetKit/Entity;)V", "templateTTSEntity", "Ljava/util/concurrent/CopyOnWriteArrayList;", "Ljava/util/concurrent/CopyOnWriteArrayList;", "cutStatusCallBackList", "getNotChangeSize", "N2", "notChangeSize", "b2", "setFromQzoneText", "isFromFirstTemplate", "setFromFirstTemplate", "getTextQzoneText", "setTextQzoneText", "textQzoneText", "getBackgroundImageEntityId", "setBackgroundImageEntityId", "backgroundImageEntityId", "Z1", "setBackgroundTemplateInited", "isBackgroundTemplateInited", "Lcom/tencent/mobileqq/wink/editor/sticker/WinkStickerModel;", "getBackgroundTextWinkModel", "()Lcom/tencent/mobileqq/wink/editor/sticker/WinkStickerModel;", "H2", "(Lcom/tencent/mobileqq/wink/editor/sticker/WinkStickerModel;)V", "backgroundTextWinkModel", "Lcom/tencent/tavcut/core/session/IStickerUpdateCallback;", Constants.APK_CERTIFICATE, "()Lcom/tencent/tavcut/core/session/IStickerUpdateCallback;", "T2", "(Lcom/tencent/tavcut/core/session/IStickerUpdateCallback;)V", "traceStickerUpdateCallback", "f0", "isMovieControllDurationInTempColl", "h0", "isUsetNewReload", "stickerUpdateListeners", "needResetDurationProtect", "Lorg/light/listener/OnClipAssetListener;", "defaultOnClipAssetListener", "H1", "usingTemplateMaterial", "()Lcom/tencent/mobileqq/wink/editor/draft/WinkEditData;", "currentEditData", "<init>", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes21.dex */
+public final class WinkVideoTavCut implements dr {
+
+    /* renamed from: l0, reason: from kotlin metadata */
+    @NotNull
+    public static final Companion INSTANCE = new Companion(null);
+
+    /* renamed from: m0 */
+    private static final int f318687m0 = Color.parseColor("#121212");
+
+    /* renamed from: n0 */
+    @NotNull
+    private static final Size f318688n0 = new Size(720, 1280, null, 4, null);
+
+    /* renamed from: A */
+    @Nullable
+    private MetaMaterial templateMaterial;
+
+    /* renamed from: B, reason: from kotlin metadata */
+    @Nullable
+    private MediaModel oriMediaModel;
+
+    /* renamed from: C */
+    private int renderWidth;
+
+    /* renamed from: D, reason: from kotlin metadata */
+    private int renderHeight;
+
+    /* renamed from: E, reason: from kotlin metadata */
+    @NotNull
+    private final Map<String, Float> stickerScaleMap;
+
+    /* renamed from: F */
+    @NotNull
+    private List<MediaModel> lastMediaModels;
+
+    /* renamed from: G, reason: from kotlin metadata */
+    private int from;
+
+    /* renamed from: H, reason: from kotlin metadata */
+    private boolean isInit;
+
+    /* renamed from: I, reason: from kotlin metadata */
+    @NotNull
+    private IPlayer.PlayerStatus stickerOperationPlayerStatus;
+
+    /* renamed from: J, reason: from kotlin metadata */
+    private boolean needStretchBack;
+
+    /* renamed from: K */
+    private float originTopY;
+
+    /* renamed from: L */
+    private float originBottomY;
+
+    /* renamed from: M */
+    private float originScale;
+
+    /* renamed from: N, reason: from kotlin metadata */
+    private boolean isLabelDetected;
+
+    /* renamed from: O, reason: from kotlin metadata */
+    private long labelDetectDuration;
+
+    /* renamed from: P, reason: from kotlin metadata */
+    @NotNull
+    private HashMap<String, List<String>> mediaLabels;
+
+    /* renamed from: Q */
+    @Nullable
+    private GYVideoClassifyResult gyResult;
+
+    /* renamed from: R */
+    @NotNull
+    private List<ClipSource> gyResultList;
+
+    /* renamed from: S */
+    @NotNull
+    private List<? extends Entity> templateMusicEntities;
+
+    /* renamed from: T, reason: from kotlin metadata */
+    private boolean enableTemplateMusic;
+
+    /* renamed from: U, reason: from kotlin metadata */
+    private boolean switchTemplateMusicSuccess;
+
+    /* renamed from: V, reason: from kotlin metadata */
+    @Nullable
+    private Entity templateTTSEntity;
+
+    /* renamed from: W, reason: from kotlin metadata */
+    @NotNull
+    private final CopyOnWriteArrayList<ICutStatusCallback> cutStatusCallBackList;
+
+    /* renamed from: X, reason: from kotlin metadata */
+    private boolean notChangeSize;
+
+    /* renamed from: Y, reason: from kotlin metadata */
+    private boolean isFromQzoneText;
+
+    /* renamed from: Z, reason: from kotlin metadata */
+    private boolean isFromFirstTemplate;
+
+    /* renamed from: a0, reason: from kotlin metadata */
+    @Nullable
+    private String textQzoneText;
+
+    /* renamed from: b, reason: from kotlin metadata */
+    @Nullable
+    private String templatePath;
+
+    /* renamed from: b0, reason: from kotlin metadata */
+    private int backgroundImageEntityId;
+
+    /* renamed from: c, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout frontPlayerViewContainer;
+
+    /* renamed from: c0, reason: from kotlin metadata */
+    private boolean isBackgroundTemplateInited;
+
+    /* renamed from: d, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout backPlayerViewContainer;
+
+    /* renamed from: d0, reason: from kotlin metadata */
+    @Nullable
+    private WinkStickerModel backgroundTextWinkModel;
+
+    /* renamed from: e, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout currentPlayerViewContainer;
+
+    /* renamed from: e0, reason: from kotlin metadata */
+    @Nullable
+    private IStickerUpdateCallback traceStickerUpdateCallback;
+
+    /* renamed from: f, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout verticalPlayerViewContainer;
+
+    /* renamed from: f0, reason: from kotlin metadata */
+    private boolean isZShowTemplate;
+
+    /* renamed from: g, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout horizontalPlayerViewContainer;
+
+    /* renamed from: g0, reason: from kotlin metadata */
+    private final boolean isMovieControllDurationInTempColl;
+
+    /* renamed from: h */
+    @Nullable
+    private FrameLayout playerContainerWrapper;
+
+    /* renamed from: h0, reason: from kotlin metadata */
+    private final boolean isUsetNewReload;
+
+    /* renamed from: i, reason: from kotlin metadata */
+    @Nullable
+    private Triple<? extends ConstraintLayout.LayoutParams, ? extends FrameLayout.LayoutParams, ? extends FrameLayout.LayoutParams> playerWrapperOriginLayoutInfo;
+
+    /* renamed from: i0, reason: from kotlin metadata */
+    @NotNull
+    private List<com.tencent.mobileqq.wink.editor.sticker.sticker.d> stickerUpdateListeners;
+
+    /* renamed from: j, reason: from kotlin metadata */
+    @Nullable
+    private Size playerWrapperOriginSize;
+
+    /* renamed from: j0, reason: from kotlin metadata */
+    private boolean needResetDurationProtect;
+
+    /* renamed from: k, reason: from kotlin metadata */
+    @Nullable
+    private FrameLayout.LayoutParams playerLayoutParams;
+
+    /* renamed from: k0, reason: from kotlin metadata */
+    @NotNull
+    private final OnClipAssetListener defaultOnClipAssetListener;
+
+    /* renamed from: l, reason: from kotlin metadata */
+    @Nullable
+    private IPlayer.PlayerListener playerListener;
+
+    /* renamed from: m */
+    @NotNull
+    private final List<IPlayer.PlayerListener> playerListenerList;
+
+    /* renamed from: n */
+    @Nullable
+    private TextureView.SurfaceTextureListener playerSurfaceTextureListener;
+
+    /* renamed from: o, reason: from kotlin metadata */
+    private dr.WinkTavCutParams params;
+
+    /* renamed from: p, reason: from kotlin metadata */
+    private ICutSession cutSession;
+
+    /* renamed from: q */
+    private boolean useVerticalPlayer;
+
+    /* renamed from: r, reason: from kotlin metadata */
+    @Nullable
+    private IPlayer verticalPlayer;
+
+    /* renamed from: s */
+    @Nullable
+    private IPlayer horizontalPlayer;
+
+    /* renamed from: t, reason: from kotlin metadata */
+    private boolean isCropScene;
+
+    /* renamed from: u, reason: from kotlin metadata */
+    private boolean isLightEntityReloading;
+
+    /* renamed from: v, reason: from kotlin metadata */
+    private boolean isReady;
+
+    /* renamed from: w, reason: from kotlin metadata */
+    private int renderFillType;
+
+    /* renamed from: x */
+    @Nullable
+    private IPlayer currentPlayer;
+
+    /* renamed from: y, reason: from kotlin metadata */
+    private ComposeRenderLayer renderLayerHelper;
+
+    /* renamed from: z */
+    private boolean isSinglePlayerModel;
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000j\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\b\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0010\u0007\n\u0002\b\u0002\n\u0002\u0010\u000b\n\u0002\b\u0016\b\u0086\u0003\u0018\u00002\u00020\u0001B\t\b\u0002\u00a2\u0006\u0004\b?\u0010@J\u001c\u0010\b\u001a\u00020\u00072\f\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00030\u00022\u0006\u0010\u0006\u001a\u00020\u0005J\u001c\u0010\u000b\u001a\u00020\u00072\f\u0010\n\u001a\b\u0012\u0004\u0012\u00020\t0\u00022\u0006\u0010\u0006\u001a\u00020\u0005J\u0016\u0010\u000e\u001a\u00020\u00072\u0006\u0010\r\u001a\u00020\f2\u0006\u0010\u0006\u001a\u00020\u0005J\u0014\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00110\u00022\u0006\u0010\u0010\u001a\u00020\u000fJ\u0010\u0010\u0013\u001a\u0004\u0018\u00010\u00112\u0006\u0010\u0010\u001a\u00020\u000fJ\u0010\u0010\u0014\u001a\u0004\u0018\u00010\u00112\u0006\u0010\u0010\u001a\u00020\u000fJ\u001a\u0010\u0018\u001a\u0004\u0018\u00010\u00112\b\u0010\u0015\u001a\u0004\u0018\u00010\u00112\u0006\u0010\u0017\u001a\u00020\u0016J\u0014\u0010\u0019\u001a\b\u0012\u0004\u0012\u00020\u00110\u00022\u0006\u0010\u0010\u001a\u00020\u000fJ\u001e\u0010\u001b\u001a\b\u0012\u0004\u0012\u00020\u00110\u00022\b\u0010\u0015\u001a\u0004\u0018\u00010\u00112\u0006\u0010\u001a\u001a\u00020\u000fJ(\u0010#\u001a\u0004\u0018\u00010\"2\u0006\u0010\u001d\u001a\u00020\u001c2\u0006\u0010\u001f\u001a\u00020\u001e2\u0006\u0010 \u001a\u00020\u00162\u0006\u0010!\u001a\u00020\u0016J&\u0010%\u001a\u00020\"2\u0006\u0010\u0015\u001a\u00020\u00112\u0006\u0010$\u001a\u00020\"2\u0006\u0010 \u001a\u00020\u00162\u0006\u0010!\u001a\u00020\u0016J\u0018\u0010'\u001a\u0004\u0018\u00010\u000f2\u0006\u0010&\u001a\u00020\u000f2\u0006\u0010\u0010\u001a\u00020\u000fJ&\u0010.\u001a\u00020+2\u0006\u0010)\u001a\u00020(2\u0006\u0010*\u001a\u00020\u00162\u0006\u0010,\u001a\u00020+2\u0006\u0010-\u001a\u00020+J!\u00101\u001a\u00020\u00162\b\u0010/\u001a\u0004\u0018\u00010\u00162\b\u00100\u001a\u0004\u0018\u00010\u0016\u00a2\u0006\u0004\b1\u00102R\u0017\u00103\u001a\u00020\u00168\u0006\u00a2\u0006\f\n\u0004\b3\u00104\u001a\u0004\b5\u00106R\u0014\u00107\u001a\u00020\u00058\u0006X\u0086T\u00a2\u0006\u0006\n\u0004\b7\u00108R\u0014\u00109\u001a\u00020(8\u0006X\u0086T\u00a2\u0006\u0006\n\u0004\b9\u0010:R\u0014\u0010;\u001a\u00020\u000f8\u0006X\u0086T\u00a2\u0006\u0006\n\u0004\b;\u0010<R\u0014\u0010=\u001a\u00020\u000f8\u0006X\u0086T\u00a2\u0006\u0006\n\u0004\b=\u0010<R\u0014\u0010>\u001a\u00020(8\u0006X\u0086T\u00a2\u0006\u0006\n\u0004\b>\u0010:\u00a8\u0006A"}, d2 = {"Lcom/tencent/mobileqq/wink/editor/WinkVideoTavCut$a;", "", "", "Lcom/tencent/videocut/picker/MediaData;", "mediaData", "", "totalDuration", "Lcom/tencent/mobileqq/wink/editor/draft/WinkEditData;", "d", "Lcom/tencent/videocut/model/MediaClip;", "clips", "c", "Lcom/tencent/videocut/model/MediaModel;", "mediaModel", "b", "", "templatePath", "Lorg/light/lightAssetKit/Entity;", tl.h.F, "k", "j", "entity", "", TemplateParser.KEY_ENTITY_ID, "i", "g", "componentTypeName", "f", "Lcamera/XEFFECT_MATERIALS_GENERAL_DATASTRUCT/MetaMaterial;", WadlProxyConsts.KEY_MATERIAL, "Lcom/tencent/mobileqq/wink/editor/dr;", "tavCut", "renderWidth", "renderHeight", "Lcom/tencent/mobileqq/wink/editor/sticker/WinkStickerModel;", "e", "inputStickerModel", "o", "inputSourceResId", "l", "", "renderSizeWidth", "paramsWidth", "", "isStretched", "isUsingTemplateMaterial", DomainData.DOMAIN_NAME, "containerViewHeight", "containerViewWidth", "a", "(Ljava/lang/Integer;Ljava/lang/Integer;)I", "PLAY_BG_COLOR", "I", QCircleScheme.AttrQQPublish.INPUT_TAB_MAGIC_STUDIO, "()I", "DEFAULT_DURATION", "J", "ORIGIN_SOUND_VOLUME_WHEN_USE_TEMPLATE", UserInfo.SEX_FEMALE, "RESOURCES", "Ljava/lang/String;", "TAG", "THRESHOLD_RATIO", "<init>", "()V", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* renamed from: com.tencent.mobileqq.wink.editor.WinkVideoTavCut$a, reason: from kotlin metadata */
+    /* loaded from: classes21.dex */
+    public static final class Companion {
+        public /* synthetic */ Companion(DefaultConstructorMarker defaultConstructorMarker) {
+            this();
+        }
+
+        public final int a(@Nullable Integer containerViewHeight, @Nullable Integer containerViewWidth) {
+            if (containerViewHeight != null && containerViewWidth != null) {
+                return (containerViewHeight.intValue() - ((containerViewWidth.intValue() * 9) / 3)) / 2;
+            }
+            return 0;
+        }
+
+        @NotNull
+        public final WinkEditData b(@NotNull MediaModel mediaModel, long totalDuration) {
+            MediaModel copy;
+            ResourceModel resourceModel;
+            Intrinsics.checkNotNullParameter(mediaModel, "mediaModel");
+            ArrayList arrayList = new ArrayList();
+            for (MediaClip mediaClip : mediaModel.videos) {
+                ResourceModel resourceModel2 = mediaClip.resource;
+                if (resourceModel2 != null) {
+                    resourceModel = resourceModel2.copy((r35 & 1) != 0 ? resourceModel2.id : null, (r35 & 2) != 0 ? resourceModel2.path : null, (r35 & 4) != 0 ? Long.valueOf(resourceModel2.scaleDuration) : null, (r35 & 8) != 0 ? Long.valueOf(resourceModel2.sourceStart) : null, (r35 & 16) != 0 ? Long.valueOf(resourceModel2.sourceDuration) : null, (r35 & 32) != 0 ? Long.valueOf(resourceModel2.selectStart) : null, (r35 & 64) != 0 ? Long.valueOf(resourceModel2.selectDuration) : null, (r35 & 128) != 0 ? resourceModel2.type : null, (r35 & 256) != 0 ? resourceModel2.size : null, (r35 & 512) != 0 ? Float.valueOf(resourceModel2.volume) : Float.valueOf(1.0f), (r35 & 1024) != 0 ? resourceModel2.extras : null, (r35 & 2048) != 0 ? resourceModel2.picClipRect : null, (r35 & 4096) != 0 ? resourceModel2.reversePath : null, (r35 & 8192) != 0 ? resourceModel2.normalPath : null, (r35 & 16384) != 0 ? resourceModel2.isReverseMode : null, (r35 & 32768) != 0 ? Float.valueOf(resourceModel2.deblurScore) : null, (r35 & 65536) != 0 ? resourceModel2.unknownFields() : null);
+                } else {
+                    resourceModel = null;
+                }
+                arrayList.add(MediaClip.copy$default(mediaClip, resourceModel, null, null, null, null, null, null, 126, null));
+            }
+            copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : arrayList, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+            return new WinkEditData(copy, totalDuration, null, null, null, null, false, null, null, null, null, null, false, null, null, null, false, null, 262140, null);
+        }
+
+        @NotNull
+        public final WinkEditData c(@NotNull List<? extends MediaClip> clips, long totalDuration) {
+            Intrinsics.checkNotNullParameter(clips, "clips");
+            return b(com.tencent.videocut.render.repository.a.f384196a.c(clips), totalDuration);
+        }
+
+        @NotNull
+        public final WinkEditData d(@NotNull List<MediaData> mediaData, long totalDuration) {
+            Intrinsics.checkNotNullParameter(mediaData, "mediaData");
+            return b(com.tencent.videocut.render.repository.a.f384196a.b(mediaData), totalDuration);
+        }
+
+        @Nullable
+        public final WinkStickerModel e(@NotNull MetaMaterial r17, @NotNull dr tavCut, int renderWidth, int renderHeight) {
+            long durationUs;
+            MetaMaterial material;
+            Intrinsics.checkNotNullParameter(r17, "material");
+            Intrinsics.checkNotNullParameter(tavCut, "tavCut");
+            IPlayer currentPlayer = tavCut.getCurrentPlayer();
+            if (currentPlayer != null) {
+                durationUs = currentPlayer.getDurationUs();
+            } else {
+                durationUs = tavCut.getDurationUs();
+            }
+            WinkStickerModel q16 = com.tencent.mobileqq.wink.editor.sticker.l.q(r17, tavCut, renderWidth, renderHeight, 0L, durationUs);
+            if (q16 != null && (material = q16.getMaterial()) != null) {
+                com.tencent.mobileqq.wink.editor.sticker.m.Z(material, 0);
+                q16.updatePositionInView(renderWidth, renderHeight, q16.scaleX, q16.scaleY, q16.centerX, q16.centerY);
+            }
+            return q16;
+        }
+
+        @NotNull
+        public final List<Entity> f(@Nullable Entity entity, @NotNull String componentTypeName) {
+            List<Entity> emptyList;
+            List<Entity> b16;
+            Intrinsics.checkNotNullParameter(componentTypeName, "componentTypeName");
+            if (entity == null || (b16 = com.tencent.videocut.render.extension.d.b(entity, componentTypeName)) == null) {
+                emptyList = CollectionsKt__CollectionsKt.emptyList();
+                return emptyList;
+            }
+            return b16;
+        }
+
+        @NotNull
+        public final List<Entity> g(@NotNull String templatePath) {
+            List<Entity> emptyList;
+            Intrinsics.checkNotNullParameter(templatePath, "templatePath");
+            LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+            if (d16 == null) {
+                emptyList = CollectionsKt__CollectionsKt.emptyList();
+                return emptyList;
+            }
+            Entity rootEntity = d16.getRootEntity();
+            ArrayList arrayList = new ArrayList();
+            Iterator<T> it = f(rootEntity, n.a.INSTANCE.d()).iterator();
+            while (true) {
+                boolean z16 = false;
+                if (!it.hasNext()) {
+                    break;
+                }
+                Entity entity = (Entity) it.next();
+                Collection<Component> components = entity.getComponents();
+                Intrinsics.checkNotNullExpressionValue(components, "assetEntity.components");
+                boolean z17 = false;
+                for (Component component : components) {
+                    if (component instanceof PAGAsset) {
+                        Intrinsics.checkNotNull(component, "null cannot be cast to non-null type org.light.lightAssetKit.components.PAGAsset");
+                        ArrayList<ReplaceItem> replacement = ((PAGAsset) component).getReplacement();
+                        Intrinsics.checkNotNullExpressionValue(replacement, "replacement");
+                        if (!replacement.isEmpty()) {
+                            Iterator<ReplaceItem> it5 = replacement.iterator();
+                            while (it5.hasNext()) {
+                                if (it5.next().replaceType == ReplaceType.Text) {
+                                    z17 = true;
+                                }
+                            }
+                        }
+                    } else if (component instanceof ScreenTransform) {
+                        Intrinsics.checkNotNull(component, "null cannot be cast to non-null type org.light.lightAssetKit.components.ScreenTransform");
+                        z16 = ((ScreenTransform) component).getInteractive();
+                    }
+                }
+                if (z16 && !z17) {
+                    arrayList.add(entity);
+                }
+            }
+            for (Entity entity2 : f(rootEntity, n.a.INSTANCE.b())) {
+                Collection<Component> components2 = entity2.getComponents();
+                Intrinsics.checkNotNullExpressionValue(components2, "entity.components");
+                boolean z18 = false;
+                boolean z19 = false;
+                for (Component component2 : components2) {
+                    if (component2 instanceof Image) {
+                        z19 = true;
+                    } else if (component2 instanceof ScreenTransform) {
+                        Intrinsics.checkNotNull(component2, "null cannot be cast to non-null type org.light.lightAssetKit.components.ScreenTransform");
+                        z18 = ((ScreenTransform) component2).getInteractive();
+                    }
+                }
+                if (z18 && z19) {
+                    arrayList.add(entity2);
+                }
+            }
+            return arrayList;
+        }
+
+        /* JADX WARN: Removed duplicated region for block: B:32:0x00a0  */
+        /* JADX WARN: Removed duplicated region for block: B:35:0x00a5 A[SYNTHETIC] */
+        /* JADX WARN: Removed duplicated region for block: B:37:? A[LOOP:1: B:20:0x0058->B:37:?, LOOP_END, SYNTHETIC] */
+        @NotNull
+        /*
+            Code decompiled incorrectly, please refer to instructions dump.
+        */
+        public final List<Entity> h(@NotNull String templatePath) {
+            boolean z16;
+            boolean z17;
+            boolean z18;
+            boolean z19;
+            List<Entity> emptyList;
+            Intrinsics.checkNotNullParameter(templatePath, "templatePath");
+            LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+            if (d16 == null) {
+                emptyList = CollectionsKt__CollectionsKt.emptyList();
+                return emptyList;
+            }
+            List<Entity> f16 = f(d16.getRootEntity(), n.a.INSTANCE.d());
+            ArrayList arrayList = new ArrayList();
+            for (Object obj : f16) {
+                Collection<Component> components = ((Entity) obj).getComponents();
+                Intrinsics.checkNotNullExpressionValue(components, "entity.components");
+                Collection<Component> collection = components;
+                boolean z26 = false;
+                if (!(collection instanceof Collection) || !collection.isEmpty()) {
+                    Iterator<T> it = collection.iterator();
+                    while (true) {
+                        if (!it.hasNext()) {
+                            break;
+                        }
+                        Component component = (Component) it.next();
+                        if (component instanceof PAGAsset) {
+                            ArrayList<ReplaceItem> replacement = ((PAGAsset) component).getReplacement();
+                            if (replacement != null) {
+                                if (!replacement.isEmpty()) {
+                                    for (ReplaceItem replaceItem : replacement) {
+                                        if (replaceItem.interactive && replaceItem.replaceType == ReplaceType.Text) {
+                                            z18 = true;
+                                        } else {
+                                            z18 = false;
+                                        }
+                                        if (z18) {
+                                            z19 = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                z19 = false;
+                                if (true == z19) {
+                                    z17 = true;
+                                    if (z17) {
+                                        z16 = true;
+                                        if (!z16) {
+                                            z26 = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            z17 = false;
+                            if (z17) {
+                            }
+                        }
+                        z16 = false;
+                        if (!z16) {
+                        }
+                    }
+                }
+                if (z26) {
+                    arrayList.add(obj);
+                }
+            }
+            return arrayList;
+        }
+
+        @Nullable
+        public final Entity i(@Nullable Entity entity, int r46) {
+            if (entity == null) {
+                return null;
+            }
+            if (entity.getId() == r46) {
+                return entity;
+            }
+            List<Entity> children = entity.getChildren();
+            if (children == null) {
+                return null;
+            }
+            Iterator<Entity> it = children.iterator();
+            while (it.hasNext()) {
+                Entity i3 = i(it.next(), r46);
+                if (i3 != null) {
+                    return i3;
+                }
+            }
+            return null;
+        }
+
+        @Nullable
+        public final Entity j(@NotNull String templatePath) {
+            Intrinsics.checkNotNullParameter(templatePath, "templatePath");
+            LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+            if (d16 == null) {
+                return null;
+            }
+            for (Entity entity : f(d16.getRootEntity(), n.a.INSTANCE.b())) {
+                Collection<Component> components = entity.getComponents();
+                Intrinsics.checkNotNullExpressionValue(components, "entity.components");
+                Iterator<T> it = components.iterator();
+                while (it.hasNext()) {
+                    if (((Component) it.next()) instanceof Image) {
+                        return entity;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Nullable
+        public final Entity k(@NotNull String templatePath) {
+            boolean z16;
+            boolean z17;
+            Intrinsics.checkNotNullParameter(templatePath, "templatePath");
+            LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+            if (d16 == null) {
+                return null;
+            }
+            for (Entity entity : f(d16.getRootEntity(), n.a.INSTANCE.d())) {
+                Collection<Component> components = entity.getComponents();
+                Intrinsics.checkNotNullExpressionValue(components, "entity.components");
+                for (Component component : components) {
+                    if (component instanceof PAGAsset) {
+                        ArrayList<ReplaceItem> replacement = ((PAGAsset) component).getReplacement();
+                        boolean z18 = false;
+                        if (replacement != null) {
+                            if (!replacement.isEmpty()) {
+                                Iterator<T> it = replacement.iterator();
+                                while (it.hasNext()) {
+                                    if (((ReplaceItem) it.next()).replaceType == ReplaceType.Text) {
+                                        z16 = true;
+                                    } else {
+                                        z16 = false;
+                                    }
+                                    if (z16) {
+                                        z17 = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            z17 = false;
+                            if (true == z17) {
+                                z18 = true;
+                            }
+                        }
+                        if (z18) {
+                            return entity;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        /* JADX WARN: Removed duplicated region for block: B:25:0x0064  */
+        /* JADX WARN: Removed duplicated region for block: B:31:? A[RETURN, SYNTHETIC] */
+        @Nullable
+        /*
+            Code decompiled incorrectly, please refer to instructions dump.
+        */
+        public final String l(@NotNull String inputSourceResId, @NotNull String templatePath) {
+            boolean z16;
+            String str;
+            boolean contains$default;
+            int lastIndexOf$default;
+            JsonObject jsonObject;
+            InputSource inputSource;
+            JsonElement jsonElement;
+            Intrinsics.checkNotNullParameter(inputSourceResId, "inputSourceResId");
+            Intrinsics.checkNotNullParameter(templatePath, "templatePath");
+            LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+            if (d16 == null) {
+                return null;
+            }
+            JsonObject inputSources = d16.getInputSources();
+            boolean z17 = true;
+            if (inputSources != null && inputSources.has(inputSourceResId)) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (z16) {
+                if (inputSources != null && (jsonElement = inputSources.get(inputSourceResId)) != null) {
+                    jsonObject = jsonElement.getAsJsonObject();
+                } else {
+                    jsonObject = null;
+                }
+                Gson create = new GsonBuilder().create();
+                if (create != null) {
+                    inputSource = (InputSource) create.fromJson(String.valueOf(jsonObject), InputSource.class);
+                } else {
+                    inputSource = null;
+                }
+                if (inputSource != null) {
+                    str = inputSource.getPath();
+                    if (str != null && str.length() != 0) {
+                        z17 = false;
+                    }
+                    if (!z17) {
+                        return null;
+                    }
+                    Intrinsics.checkNotNull(str);
+                    contains$default = StringsKt__StringsKt.contains$default((CharSequence) str, (CharSequence) "/", false, 2, (Object) null);
+                    if (!contains$default) {
+                        lastIndexOf$default = StringsKt__StringsKt.lastIndexOf$default((CharSequence) templatePath, '/', 0, false, 6, (Object) null);
+                        String substring = templatePath.substring(0, lastIndexOf$default);
+                        Intrinsics.checkNotNullExpressionValue(substring, "this as java.lang.String\u2026ing(startIndex, endIndex)");
+                        return substring + "/" + str;
+                    }
+                    return str;
+                }
+            }
+            str = null;
+            if (str != null) {
+                z17 = false;
+            }
+            if (!z17) {
+            }
+        }
+
+        public final int m() {
+            return WinkVideoTavCut.f318687m0;
+        }
+
+        public final boolean n(float f16, int i3, boolean z16, boolean z17) {
+            if (Math.abs(f16 - i3) >= 1.0E-4f && (!z16 || z17)) {
+                return false;
+            }
+            return true;
+        }
+
+        @NotNull
+        public final WinkStickerModel o(@NotNull Entity entity, @NotNull WinkStickerModel inputStickerModel, int renderWidth, int renderHeight) {
+            Intrinsics.checkNotNullParameter(entity, "entity");
+            Intrinsics.checkNotNullParameter(inputStickerModel, "inputStickerModel");
+            WinkStickerModel copyAndUpdate$default = WinkStickerModel.copyAndUpdate$default(inputStickerModel, null, null, 0L, 0L, 0, 0.0f, 0.0f, 0.0f, inputStickerModel.centerX, inputStickerModel.centerY, false, 0, 0, 0.0f, 0.0f, null, null, 0, null, null, null, null, 0, 0, 0L, null, null, null, null, 0.0f, null, null, 0.0f, 0.0f, null, null, null, null, null, null, null, null, null, null, false, null, null, false, 0.0f, 0.0f, null, false, -769, 1048575, null);
+            copyAndUpdate$default.updatePositionInView(renderWidth, renderHeight, copyAndUpdate$default.scaleX, copyAndUpdate$default.scaleY, copyAndUpdate$default.centerX, copyAndUpdate$default.centerY);
+            return copyAndUpdate$default;
+        }
+
+        Companion() {
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000&\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0010\u0007\n\u0002\b\u0003\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u001d\b\u0086\b\u0018\u00002\u00020\u0001BG\u0012\u0006\u0010\u0013\u001a\u00020\u0002\u0012\u0006\u0010\u0015\u001a\u00020\u0002\u0012\u0006\u0010\u0019\u001a\u00020\u0005\u0012\u0006\u0010\u001b\u001a\u00020\u0005\u0012\u0006\u0010\u001d\u001a\u00020\u0005\u0012\u0006\u0010\u001f\u001a\u00020\u0005\u0012\u0006\u0010!\u001a\u00020\u0005\u0012\u0006\u0010$\u001a\u00020\t\u00a2\u0006\u0004\b&\u0010'J\t\u0010\u0003\u001a\u00020\u0002H\u00c6\u0003J\t\u0010\u0004\u001a\u00020\u0002H\u00c6\u0003J\t\u0010\u0006\u001a\u00020\u0005H\u00c6\u0003J\t\u0010\u0007\u001a\u00020\u0005H\u00c6\u0003J\t\u0010\b\u001a\u00020\u0005H\u00c6\u0003J\t\u0010\n\u001a\u00020\tH\u00c6\u0003J\t\u0010\f\u001a\u00020\u000bH\u00d6\u0001J\t\u0010\r\u001a\u00020\u0002H\u00d6\u0001J\u0013\u0010\u000f\u001a\u00020\t2\b\u0010\u000e\u001a\u0004\u0018\u00010\u0001H\u00d6\u0003R\u0017\u0010\u0013\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0003\u0010\u0010\u001a\u0004\b\u0011\u0010\u0012R\u0017\u0010\u0015\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0004\u0010\u0010\u001a\u0004\b\u0014\u0010\u0012R\u0017\u0010\u0019\u001a\u00020\u00058\u0006\u00a2\u0006\f\n\u0004\b\u0006\u0010\u0016\u001a\u0004\b\u0017\u0010\u0018R\u0017\u0010\u001b\u001a\u00020\u00058\u0006\u00a2\u0006\f\n\u0004\b\u0007\u0010\u0016\u001a\u0004\b\u001a\u0010\u0018R\u0017\u0010\u001d\u001a\u00020\u00058\u0006\u00a2\u0006\f\n\u0004\b\b\u0010\u0016\u001a\u0004\b\u001c\u0010\u0018R\u0017\u0010\u001f\u001a\u00020\u00058\u0006\u00a2\u0006\f\n\u0004\b\n\u0010\u0016\u001a\u0004\b\u001e\u0010\u0018R\u0017\u0010!\u001a\u00020\u00058\u0006\u00a2\u0006\f\n\u0004\b \u0010\u0016\u001a\u0004\b \u0010\u0018R\u0017\u0010$\u001a\u00020\t8\u0006\u00a2\u0006\f\n\u0004\b\"\u0010#\u001a\u0004\b$\u0010%\u00a8\u0006("}, d2 = {"Lcom/tencent/mobileqq/wink/editor/WinkVideoTavCut$b;", "", "", "a", "b", "", "c", "d", "e", "", "f", "", "toString", "hashCode", "other", "equals", "I", "getRenderWidth", "()I", "renderWidth", "getRenderHeight", "renderHeight", UserInfo.SEX_FEMALE, "getOriginWidth", "()F", "originWidth", "getOriginHeight", "originHeight", "getOriginTopY", "originTopY", "getOriginBottomY", "originBottomY", "g", "originScale", tl.h.F, "Z", "isStretched", "()Z", "<init>", "(IIFFFFFZ)V", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* renamed from: com.tencent.mobileqq.wink.editor.WinkVideoTavCut$b, reason: from toString */
+    /* loaded from: classes21.dex */
+    public static final /* data */ class RenderSizeAndOriginSize {
+
+        /* renamed from: a, reason: from kotlin metadata and from toString */
+        private final int renderWidth;
+
+        /* renamed from: b, reason: from kotlin metadata and from toString */
+        private final int renderHeight;
+
+        /* renamed from: c, reason: from toString */
+        private final float originWidth;
+
+        /* renamed from: d, reason: from toString */
+        private final float originHeight;
+
+        /* renamed from: e, reason: from toString */
+        private final float originTopY;
+
+        /* renamed from: f, reason: from toString */
+        private final float originBottomY;
+
+        /* renamed from: g, reason: from toString */
+        private final float originScale;
+
+        /* renamed from: h, reason: from toString */
+        private final boolean isStretched;
+
+        public RenderSizeAndOriginSize(int i3, int i16, float f16, float f17, float f18, float f19, float f26, boolean z16) {
+            this.renderWidth = i3;
+            this.renderHeight = i16;
+            this.originWidth = f16;
+            this.originHeight = f17;
+            this.originTopY = f18;
+            this.originBottomY = f19;
+            this.originScale = f26;
+            this.isStretched = z16;
+        }
+
+        /* renamed from: a, reason: from getter */
+        public final int getRenderWidth() {
+            return this.renderWidth;
+        }
+
+        /* renamed from: b, reason: from getter */
+        public final int getRenderHeight() {
+            return this.renderHeight;
+        }
+
+        /* renamed from: c, reason: from getter */
+        public final float getOriginTopY() {
+            return this.originTopY;
+        }
+
+        /* renamed from: d, reason: from getter */
+        public final float getOriginBottomY() {
+            return this.originBottomY;
+        }
+
+        /* renamed from: e, reason: from getter */
+        public final float getOriginScale() {
+            return this.originScale;
+        }
+
+        public boolean equals(@Nullable Object other) {
+            if (this == other) {
+                return true;
+            }
+            if (!(other instanceof RenderSizeAndOriginSize)) {
+                return false;
+            }
+            RenderSizeAndOriginSize renderSizeAndOriginSize = (RenderSizeAndOriginSize) other;
+            if (this.renderWidth == renderSizeAndOriginSize.renderWidth && this.renderHeight == renderSizeAndOriginSize.renderHeight && Float.compare(this.originWidth, renderSizeAndOriginSize.originWidth) == 0 && Float.compare(this.originHeight, renderSizeAndOriginSize.originHeight) == 0 && Float.compare(this.originTopY, renderSizeAndOriginSize.originTopY) == 0 && Float.compare(this.originBottomY, renderSizeAndOriginSize.originBottomY) == 0 && Float.compare(this.originScale, renderSizeAndOriginSize.originScale) == 0 && this.isStretched == renderSizeAndOriginSize.isStretched) {
+                return true;
+            }
+            return false;
+        }
+
+        /* renamed from: f, reason: from getter */
+        public final boolean getIsStretched() {
+            return this.isStretched;
+        }
+
+        public final float g() {
+            return this.originScale;
+        }
+
+        /* JADX WARN: Multi-variable type inference failed */
+        public int hashCode() {
+            int floatToIntBits = ((((((((((((this.renderWidth * 31) + this.renderHeight) * 31) + Float.floatToIntBits(this.originWidth)) * 31) + Float.floatToIntBits(this.originHeight)) * 31) + Float.floatToIntBits(this.originTopY)) * 31) + Float.floatToIntBits(this.originBottomY)) * 31) + Float.floatToIntBits(this.originScale)) * 31;
+            boolean z16 = this.isStretched;
+            int i3 = z16;
+            if (z16 != 0) {
+                i3 = 1;
+            }
+            return floatToIntBits + i3;
+        }
+
+        @NotNull
+        public String toString() {
+            return "RenderSizeAndOriginSize(renderWidth=" + this.renderWidth + ", renderHeight=" + this.renderHeight + ", originWidth=" + this.originWidth + ", originHeight=" + this.originHeight + ", originTopY=" + this.originTopY + ", originBottomY=" + this.originBottomY + ", originScale=" + this.originScale + ", isStretched=" + this.isStretched + ")";
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000-\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010$\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\u0016\u0010\u0006\u001a\u00020\u00052\f\u0010\u0004\u001a\b\u0012\u0004\u0012\u00020\u00030\u0002H\u0016J\u0010\u0010\b\u001a\u00020\u00052\u0006\u0010\u0004\u001a\u00020\u0007H\u0016J\"\u0010\n\u001a\u00020\u00052\u0018\u0010\u0004\u001a\u0014\u0012\u0004\u0012\u00020\u0003\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00030\u00020\tH\u0016J\u001a\u0010\u000e\u001a\u00020\u00052\b\u0010\f\u001a\u0004\u0018\u00010\u000b2\u0006\u0010\r\u001a\u00020\u0003H\u0016\u00a8\u0006\u000f"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$c", "Lcom/tencent/mobileqq/wink/dect/b;", "", "", "result", "", "d", "Lcom/gyailib/library/GYVideoClassifyResult;", "b", "", "a", "Ljava/lang/Exception;", "e", "msg", "c", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class c implements com.tencent.mobileqq.wink.dect.b {
+
+        /* renamed from: b */
+        final /* synthetic */ com.tencent.mobileqq.wink.dect.e f318734b;
+
+        c(com.tencent.mobileqq.wink.dect.e eVar) {
+            this.f318734b = eVar;
+        }
+
+        @Override // com.tencent.mobileqq.wink.dect.b
+        public void a(@NotNull Map<String, ? extends List<String>> result) {
+            Intrinsics.checkNotNullParameter(result, "result");
+        }
+
+        @Override // com.tencent.mobileqq.wink.dect.b
+        public void b(@NotNull GYVideoClassifyResult result) {
+            Intrinsics.checkNotNullParameter(result, "result");
+            ms.a.a("WinkVideoTavCut", "labelDetect : onResultAvailable");
+            WinkVideoTavCut winkVideoTavCut = WinkVideoTavCut.this;
+            winkVideoTavCut.gyResultList = com.tencent.videocut.render.extension.e.B(com.tencent.mobileqq.wink.editor.draft.c.t(winkVideoTavCut.K1()), false, null, 3, null);
+            WinkVideoTavCut.this.gyResult = result;
+            this.f318734b.e();
+        }
+
+        @Override // com.tencent.mobileqq.wink.dect.b
+        public void c(@Nullable Exception e16, @NotNull String msg2) {
+            Intrinsics.checkNotNullParameter(msg2, "msg");
+            WinkVideoTavCut.this.labelDetectDuration = System.currentTimeMillis() - WinkVideoTavCut.this.labelDetectDuration;
+            w53.b.f("WinkVideoTavCut", "generateMediaLabels, onFailed: " + msg2 + "duration = " + WinkVideoTavCut.this.labelDetectDuration);
+            WinkVideoTavCut.this.isLabelDetected = false;
+            WinkVideoTavCut.this.mediaLabels.clear();
+            this.f318734b.e();
+        }
+
+        @Override // com.tencent.mobileqq.wink.dect.b
+        public void d(@NotNull List<String> result) {
+            Object orNull;
+            String str;
+            Intrinsics.checkNotNullParameter(result, "result");
+            WinkVideoTavCut.this.labelDetectDuration = System.currentTimeMillis() - WinkVideoTavCut.this.labelDetectDuration;
+            w53.b.f("WinkVideoTavCut", "generateMediaLabels, onResultAvailable, result.size = " + result.size() + ", duration = " + WinkVideoTavCut.this.labelDetectDuration);
+            WinkVideoTavCut.this.isLabelDetected = true;
+            orNull = CollectionsKt___CollectionsKt.getOrNull(WinkVideoTavCut.this.m1(), 0);
+            MediaModel mediaModel = (MediaModel) orNull;
+            if (mediaModel != null && (str = mediaModel.id) != null) {
+                WinkVideoTavCut winkVideoTavCut = WinkVideoTavCut.this;
+                winkVideoTavCut.mediaLabels.clear();
+            }
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u0011\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0002\b\u0002*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016\u00a8\u0006\u0004"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$d", "Lcom/tencent/tavcut/core/operator/b;", "", "b", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class d extends com.tencent.tavcut.core.operator.b {
+
+        /* renamed from: b */
+        final /* synthetic */ boolean f318735b;
+
+        d(boolean z16) {
+            this.f318735b = z16;
+        }
+
+        @Override // com.tencent.tavcut.core.operator.b, com.tencent.tavcut.core.operator.c
+        /* renamed from: b, reason: from getter */
+        public boolean getF318735b() {
+            return this.f318735b;
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000'\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\u000b\n\u0002\b\u0003*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J \u0010\b\u001a\u00020\u00072\u0006\u0010\u0003\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0006\u001a\u00020\u0004H\u0016J \u0010\t\u001a\u00020\u00072\u0006\u0010\u0003\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0006\u001a\u00020\u0004H\u0016J\u0010\u0010\u000b\u001a\u00020\n2\u0006\u0010\u0003\u001a\u00020\u0002H\u0016J\u0010\u0010\f\u001a\u00020\u00072\u0006\u0010\u0003\u001a\u00020\u0002H\u0016\u00a8\u0006\r"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$e", "Landroid/view/TextureView$SurfaceTextureListener;", "Landroid/graphics/SurfaceTexture;", "surface", "", "width", "height", "", "onSurfaceTextureAvailable", "onSurfaceTextureSizeChanged", "", "onSurfaceTextureDestroyed", "onSurfaceTextureUpdated", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class e implements TextureView.SurfaceTextureListener {
+
+        /* renamed from: d */
+        final /* synthetic */ TextureView f318736d;
+
+        /* renamed from: e */
+        final /* synthetic */ WinkVideoTavCut f318737e;
+
+        e(TextureView textureView, WinkVideoTavCut winkVideoTavCut) {
+            this.f318736d = textureView;
+            this.f318737e = winkVideoTavCut;
+        }
+
+        @Override // android.view.TextureView.SurfaceTextureListener
+        public void onSurfaceTextureAvailable(@NotNull SurfaceTexture surface, int width, int height) {
+            Integer num;
+            SurfaceTexture f16;
+            Intrinsics.checkNotNullParameter(surface, "surface");
+            an.Companion companion = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE;
+            if (companion != null && (f16 = companion.f()) != null) {
+                this.f318736d.setSurfaceTexture(f16);
+            }
+            TextureView textureView = this.f318736d;
+            Integer num2 = null;
+            if (textureView != null) {
+                num = Integer.valueOf(textureView.getWidth());
+            } else {
+                num = null;
+            }
+            TextureView textureView2 = this.f318736d;
+            if (textureView2 != null) {
+                num2 = Integer.valueOf(textureView2.getHeight());
+            }
+            w53.b.f("WinkVideoTavCut", "preload player onSurfaceTextureAvailable" + num + " height" + num2);
+        }
+
+        @Override // android.view.TextureView.SurfaceTextureListener
+        public boolean onSurfaceTextureDestroyed(@NotNull SurfaceTexture surface) {
+            Intrinsics.checkNotNullParameter(surface, "surface");
+            w53.b.f("WinkVideoTavCut", "preload player onSurfaceTextureDestroyed~~~");
+            com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE.l();
+            return false;
+        }
+
+        @Override // android.view.TextureView.SurfaceTextureListener
+        public void onSurfaceTextureSizeChanged(@NotNull SurfaceTexture surface, int width, int height) {
+            Intrinsics.checkNotNullParameter(surface, "surface");
+            IPlayer iPlayer = this.f318737e.currentPlayer;
+            if (iPlayer != null) {
+                iPlayer.changeSurfaceSize(width, height);
+            }
+            w53.b.a("WinkVideoTavCut", "preload player onSurfaceTextureSizeChanged~~~" + width + " " + height + " " + surface);
+        }
+
+        @Override // android.view.TextureView.SurfaceTextureListener
+        public void onSurfaceTextureUpdated(@NotNull SurfaceTexture surface) {
+            Intrinsics.checkNotNullParameter(surface, "surface");
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000%\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\t\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\u0010\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0003\u001a\u00020\u0002H\u0016J\u0018\u0010\t\u001a\u00020\u00042\u0006\u0010\u0007\u001a\u00020\u00062\u0006\u0010\b\u001a\u00020\u0006H\u0016J\u001a\u0010\f\u001a\u00020\u00042\b\u0010\u000b\u001a\u0004\u0018\u00010\n2\u0006\u0010\u0003\u001a\u00020\u0002H\u0016\u00a8\u0006\r"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$f", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerListener;", "Lcom/tencent/tavcut/core/render/player/IPlayer;", "iPlayer", "", "onPlayerSourceReady", "", "currentDurationUs", "playerDurationUs", "onPositionChanged", "Lcom/tencent/tavcut/core/render/player/IPlayer$PlayerStatus;", "status", "onStatusChanged", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class f implements IPlayer.PlayerListener {
+        f() {
+        }
+
+        @Override // com.tencent.tavcut.core.render.player.IPlayer.PlayerListener
+        public void onPlayerSourceReady(@NotNull IPlayer iPlayer) {
+            Intrinsics.checkNotNullParameter(iPlayer, "iPlayer");
+            Iterator it = WinkVideoTavCut.this.playerListenerList.iterator();
+            while (it.hasNext()) {
+                ((IPlayer.PlayerListener) it.next()).onPlayerSourceReady(iPlayer);
+            }
+        }
+
+        @Override // com.tencent.tavcut.core.render.player.IPlayer.PlayerListener
+        public void onPositionChanged(long currentDurationUs, long playerDurationUs) {
+            Iterator it = WinkVideoTavCut.this.playerListenerList.iterator();
+            while (it.hasNext()) {
+                ((IPlayer.PlayerListener) it.next()).onPositionChanged(currentDurationUs, playerDurationUs);
+            }
+        }
+
+        @Override // com.tencent.tavcut.core.render.player.IPlayer.PlayerListener
+        public void onStatusChanged(@Nullable IPlayer.PlayerStatus status, @NotNull IPlayer iPlayer) {
+            Intrinsics.checkNotNullParameter(iPlayer, "iPlayer");
+            Iterator it = WinkVideoTavCut.this.playerListenerList.iterator();
+            while (it.hasNext()) {
+                ((IPlayer.PlayerListener) it.next()).onStatusChanged(status, iPlayer);
+            }
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u001d\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0002\b\u000b*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016J \u0010\t\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0007\u001a\u00020\u00062\u0006\u0010\b\u001a\u00020\u0006H\u0016R\"\u0010\u0010\u001a\u00020\u00068\u0006@\u0006X\u0086\u000e\u00a2\u0006\u0012\n\u0004\b\n\u0010\u000b\u001a\u0004\b\f\u0010\r\"\u0004\b\u000e\u0010\u000f\u00a8\u0006\u0011"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$g", "Lcom/tencent/tavcut/core/session/ISessionListener;", "", "onRenderDataApplied", "Lcom/tencent/tavcut/core/render/builder/light/model/LAKRenderModel;", "newData", "", "duration", "mediaDuration", "onRenderDataChanged", "a", "J", "getListenerDuration", "()J", "setListenerDuration", "(J)V", "listenerDuration", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class g implements ISessionListener {
+
+        /* renamed from: a, reason: from kotlin metadata */
+        private long listenerDuration;
+
+        g() {
+        }
+
+        public static final void b(WinkVideoTavCut this$0, long j3, long j16, long j17, long j18) {
+            Intrinsics.checkNotNullParameter(this$0, "this$0");
+            this$0.h3(j3);
+            this$0.L2(true);
+            ms.a.f("WinkVideoTavCut", "onRenderDataChanged duration:" + j16 + ", mediaDuration:" + j17 + ", editorDataDuration:" + j18);
+        }
+
+        @Override // com.tencent.tavcut.core.session.ISessionListener
+        public void onRenderDataApplied() {
+            WinkVideoTavCut.this.isReady = true;
+        }
+
+        @Override // com.tencent.tavcut.core.session.ISessionListener
+        public void onRenderDataChanged(@NotNull LAKRenderModel newData, final long duration, final long mediaDuration) {
+            long j3;
+            Intrinsics.checkNotNullParameter(newData, "newData");
+            boolean k26 = WinkVideoTavCut.this.k2();
+            if (!k26 && mediaDuration <= 0) {
+                ms.a.f("WinkVideoTavCut", "mediaDuration error:" + mediaDuration);
+                return;
+            }
+            if (k26) {
+                j3 = duration;
+            } else {
+                j3 = mediaDuration;
+            }
+            final long durationUs = WinkVideoTavCut.this.K1().getDurationUs();
+            if (j3 != durationUs || this.listenerDuration <= 0) {
+                this.listenerDuration = j3;
+                Handler uIHandlerV2 = ThreadManagerV2.getUIHandlerV2();
+                final WinkVideoTavCut winkVideoTavCut = WinkVideoTavCut.this;
+                final long j16 = j3;
+                uIHandlerV2.post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.eb
+                    @Override // java.lang.Runnable
+                    public final void run() {
+                        WinkVideoTavCut.g.b(WinkVideoTavCut.this, j16, duration, mediaDuration, durationUs);
+                    }
+                });
+            }
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u0017\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016J\u0012\u0010\u0006\u001a\u00020\u00022\b\u0010\u0005\u001a\u0004\u0018\u00010\u0004H\u0016\u00a8\u0006\u0007"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$h", "Lcom/tencent/tavcut/core/session/ICutStatusCallback;", "", "onRenderChainReady", "Lorg/light/lightAssetKit/Entity;", "rootEntity", "onLightEntityReload", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class h implements ICutStatusCallback {
+
+        /* renamed from: b */
+        final /* synthetic */ MetaMaterial f318742b;
+
+        h(MetaMaterial metaMaterial) {
+            this.f318742b = metaMaterial;
+        }
+
+        /* JADX WARN: Code restructure failed: missing block: B:7:0x0027, code lost:
+        
+            if (r5 == null) goto L30;
+         */
+        /*
+            Code decompiled incorrectly, please refer to instructions dump.
+        */
+        public static final void b(Entity entity, WinkVideoTavCut this$0, MetaMaterial metaMaterial) {
+            Map<Integer, Entity> emptyMap;
+            Intrinsics.checkNotNullParameter(this$0, "this$0");
+            long currentTimeMillis = System.currentTimeMillis();
+            ms.a.f("WinkVideoTavCut", "onLightEntityReload mainThread begin ");
+            ComposeRenderLayer composeRenderLayer = null;
+            if (entity != null) {
+                ComposeRenderLayer composeRenderLayer2 = this$0.renderLayerHelper;
+                if (composeRenderLayer2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer2 = null;
+                }
+                emptyMap = composeRenderLayer2.r(entity);
+            }
+            emptyMap = MapsKt__MapsKt.emptyMap();
+            this$0.S2();
+            this$0.s2(emptyMap);
+            this$0.u2(emptyMap);
+            this$0.J3();
+            if (this$0.getIsFromQzoneText()) {
+                ComposeRenderLayer composeRenderLayer3 = this$0.renderLayerHelper;
+                if (composeRenderLayer3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                } else {
+                    composeRenderLayer = composeRenderLayer3;
+                }
+                composeRenderLayer.e();
+                if (!this$0.getIsBackgroundTemplateInited()) {
+                    ms.a.f("WinkVideoTavCut", "onLightEntityReload initBackgroundTextSticker step in");
+                    this$0.H2(this$0.Q1(entity, 0L, metaMaterial));
+                }
+            }
+            ms.a.f("WinkVideoTavCut", "onLightEntityReload mainThread end cost " + (System.currentTimeMillis() - currentTimeMillis) + " ms");
+            this$0.isLightEntityReloading = false;
+        }
+
+        @Override // com.tencent.tavcut.core.session.ICutStatusCallback
+        public void onLightEntityReload(@Nullable final Entity rootEntity) {
+            WinkVideoTavCut.this.isLightEntityReloading = true;
+            long currentTimeMillis = System.currentTimeMillis();
+            ms.a.a("WinkVideoTavCut", "ronLightEntityReload begin " + Thread.currentThread() + ", " + rootEntity + "}");
+            Handler uIHandlerV2 = ThreadManagerV2.getUIHandlerV2();
+            final WinkVideoTavCut winkVideoTavCut = WinkVideoTavCut.this;
+            final MetaMaterial metaMaterial = this.f318742b;
+            uIHandlerV2.post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.ec
+                @Override // java.lang.Runnable
+                public final void run() {
+                    WinkVideoTavCut.h.b(Entity.this, winkVideoTavCut, metaMaterial);
+                }
+            });
+            ms.a.c("WinkVideoTavCut", "onLightEntityReload thread continue");
+            Iterator it = WinkVideoTavCut.this.cutStatusCallBackList.iterator();
+            while (it.hasNext()) {
+                ((ICutStatusCallback) it.next()).onLightEntityReload(rootEntity);
+            }
+            ms.a.a("WinkVideoTavCut", "onLightEntityReload reload end  " + (System.currentTimeMillis() - currentTimeMillis) + " ms");
+        }
+
+        @Override // com.tencent.tavcut.core.session.ICutStatusCallback
+        public void onRenderChainReady() {
+            Iterator it = WinkVideoTavCut.this.cutStatusCallBackList.iterator();
+            while (it.hasNext()) {
+                ((ICutStatusCallback) it.next()).onRenderChainReady();
+            }
+            if (WinkVideoTavCut.this.isZShowTemplate) {
+                WinkVideoTavCut.this.I2(false);
+            }
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u0011\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0002\b\u0002*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016\u00a8\u0006\u0004"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$j", "Lcom/tencent/tavcut/core/operator/b;", "", "b", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class j extends com.tencent.tavcut.core.operator.b {
+
+        /* renamed from: b */
+        final /* synthetic */ x.UpdateTemplateAction f318745b;
+
+        j(x.UpdateTemplateAction updateTemplateAction) {
+            this.f318745b = updateTemplateAction;
+        }
+
+        @Override // com.tencent.tavcut.core.operator.b, com.tencent.tavcut.core.operator.c
+        /* renamed from: b */
+        public boolean getF318735b() {
+            return this.f318745b.getModifyClipsDuration();
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u0011\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0002\b\u0002*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016\u00a8\u0006\u0004"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$k", "Lcom/tencent/tavcut/core/operator/b;", "", "b", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class k extends com.tencent.tavcut.core.operator.b {
+
+        /* renamed from: b */
+        final /* synthetic */ x.UpdateTemplateClipsAction f318746b;
+
+        k(x.UpdateTemplateClipsAction updateTemplateClipsAction) {
+            this.f318746b = updateTemplateClipsAction;
+        }
+
+        @Override // com.tencent.tavcut.core.operator.b, com.tencent.tavcut.core.operator.c
+        /* renamed from: b */
+        public boolean getF318735b() {
+            return this.f318746b.getModifyClipsDuration();
+        }
+    }
+
+    public WinkVideoTavCut() {
+        this(null, 1, null);
+    }
+
+    private final void A2(MetaMaterial metaMaterial) {
+        F(new g());
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.setCutStatusListener(new h(metaMaterial));
+    }
+
+    private final void B2(List<? extends WinkStickerModel> stickerModelList) {
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.f(stickerModelList);
+    }
+
+    private final void B3(LAKRenderModel templateRenderModel, List<? extends Map<String, String>> mediaClipExtras, String color, int fillMode) {
+        BackgroundFillMode backgroundFillMode;
+        BackgroundModel backgroundModel;
+        Map<String, WinkStickerModel> mutableMap;
+        boolean z16;
+        WinkEditData K1 = K1();
+        List<MediaClip> H = com.tencent.videocut.render.extension.e.H(com.tencent.videocut.render.extension.e.I(com.tencent.videocut.render.extension.e.D(templateRenderModel.getClipsAssets(), mediaClipExtras), K1.getMediaModel().videos), K1.getMediaModel().videos);
+        if (fillMode == -1) {
+            if (getTemplatePath() != null) {
+                if (n1(getTemplatePath()) == org.light.lightAssetKit.enums.BackgroundFillMode.GaussianBlur) {
+                    backgroundFillMode = BackgroundFillMode.PAG;
+                } else {
+                    backgroundFillMode = BackgroundFillMode.SOLID_COLOR;
+                }
+            } else {
+                backgroundFillMode = BackgroundFillMode.SOLID_COLOR;
+            }
+        } else if (fillMode == 0) {
+            backgroundFillMode = BackgroundFillMode.PAG;
+        } else {
+            backgroundFillMode = BackgroundFillMode.SOLID_COLOR;
+        }
+        BackgroundFillMode backgroundFillMode2 = backgroundFillMode;
+        String str = K1.getMediaModel().id;
+        BackgroundModel backgroundModel2 = K1.getMediaModel().backgroundModel;
+        if (backgroundModel2 != null) {
+            backgroundModel = backgroundModel2.copy((r24 & 1) != 0 ? backgroundModel2.id : null, (r24 & 2) != 0 ? backgroundModel2.renderSize : null, (r24 & 4) != 0 ? backgroundModel2.bgFillMode : backgroundFillMode2, (r24 & 8) != 0 ? backgroundModel2.bgColor : color, (r24 & 16) != 0 ? backgroundModel2.bgPagPath : null, (r24 & 32) != 0 ? backgroundModel2.ratioType : null, (r24 & 64) != 0 ? backgroundModel2.resPack : null, (r24 & 128) != 0 ? backgroundModel2.categoryId : null, (r24 & 256) != 0 ? backgroundModel2.fillScale : 0.0f, (r24 & 512) != 0 ? backgroundModel2.imageEffect : o1(getTemplatePath()), (r24 & 1024) != 0 ? backgroundModel2.unknownFields() : null);
+        } else {
+            backgroundModel = null;
+        }
+        K1.setMediaModel(new MediaModel(str, null, null, null, null, null, H, null, null, backgroundModel, null, null, null, null, null, null, null, null, null, null, null, 2031038, null));
+        K1.setTemplateMaterialMap(new LinkedHashMap());
+        if (this.templateMaterial != null) {
+            Map<String, MetaMaterial> templateMaterialMap = K1.getTemplateMaterialMap();
+            Intrinsics.checkNotNull(templateMaterialMap);
+            MetaMaterial metaMaterial = this.templateMaterial;
+            Intrinsics.checkNotNull(metaMaterial);
+            String str2 = metaMaterial.f30533id;
+            Intrinsics.checkNotNullExpressionValue(str2, "templateMaterial!!.id");
+            MetaMaterial metaMaterial2 = this.templateMaterial;
+            Intrinsics.checkNotNull(metaMaterial2);
+            templateMaterialMap.put(str2, metaMaterial2);
+            MetaMaterial metaMaterial3 = this.templateMaterial;
+            Intrinsics.checkNotNull(metaMaterial3);
+            ms.a.a("templateTest", metaMaterial3.f30533id);
+        }
+        if (!this.isSinglePlayerModel) {
+            K1.setStickerModelMap(new LinkedHashMap());
+            K1.setFilterModelMap(new LinkedHashMap());
+            K1.setEffectModelMap(new LinkedHashMap());
+            return;
+        }
+        Map<String, WinkStickerModel> stickerModelMap = K1.getStickerModelMap();
+        if (stickerModelMap == null) {
+            stickerModelMap = new LinkedHashMap<>();
+        }
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+        for (Map.Entry<String, WinkStickerModel> entry : stickerModelMap.entrySet()) {
+            if (entry.getValue().type != StickerModel.Type.IMAGE_TEMPLATE && entry.getValue().type != StickerModel.Type.TEXT_TEMPLATE) {
+                z16 = false;
+            } else {
+                z16 = true;
+            }
+            if (!z16) {
+                linkedHashMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        mutableMap = MapsKt__MapsKt.toMutableMap(linkedHashMap);
+        K1.setStickerModelMap(mutableMap);
+    }
+
+    private final void C2() {
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.g();
+    }
+
+    private final void C3(String templatePath, MetaMaterial metaMaterial, LAKRenderModel renderModel, HashMap<String, String> assetData, boolean applyNewTemplate, boolean enableImageTemplateEdit, boolean isClearStickers, long currentTimeUs, boolean needRecoveryTemplateFromDraft) {
+        boolean z16;
+        String str;
+        Unit unit;
+        Map<String, String> map;
+        ms.a.f("WinkVideoTavCut", "updateTemplateInternal " + templatePath);
+        R2(templatePath);
+        this.templateMaterial = metaMaterial;
+        if (templatePath != null && templatePath.length() != 0) {
+            z16 = false;
+        } else {
+            z16 = true;
+        }
+        if (z16) {
+            D3(r73.a.f430927a.b());
+        } else {
+            D3(templatePath);
+        }
+        if (metaMaterial != null && (map = metaMaterial.additionalFields) != null) {
+            str = map.get(QQWinkConstants.ZSHOW_MATERIAL_SCENE_KEY);
+        } else {
+            str = null;
+        }
+        boolean areEqual = Intrinsics.areEqual(str, QQWinkConstants.BUSINESS_ZSHOW_NAME);
+        this.isZShowTemplate = areEqual;
+        if (templatePath != null) {
+            if (!this.isFromQzoneText) {
+                if (areEqual) {
+                    k3(renderModel, metaMaterial);
+                }
+                F3(renderModel, metaMaterial);
+            }
+            TemplateMusicInfoParseResult n3 = com.tencent.mobileqq.wink.editor.smartclip.c.n(templatePath);
+            if (n3 != null) {
+                com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a aVar = com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.f321532a;
+                aVar.h(n3.getMusicInfo());
+                aVar.g(n3.getFixedClipConfig());
+                unit = Unit.INSTANCE;
+            } else {
+                unit = null;
+            }
+            if (unit == null) {
+                com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a aVar2 = com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.f321532a;
+                aVar2.h(null);
+                aVar2.g(null);
+            }
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            iCutSession.setRenderModel(renderModel);
+        }
+        t2(this, null, 1, null);
+        v2(this, null, 1, null);
+        w2(applyNewTemplate, enableImageTemplateEdit, isClearStickers, currentTimeUs, needRecoveryTemplateFromDraft);
+        if (assetData != null) {
+            G2(assetData);
+        }
+    }
+
+    private final LAKRenderModel E3(boolean modifyClipsDuration, String bgColor, int fillMode, List<ClipSource> clipSources) {
+        org.light.lightAssetKit.enums.BackgroundFillMode backgroundFillMode;
+        String backgroundColor;
+        String pagPath;
+        String str;
+        rd4.c cVar = rd4.c.f431135f;
+        LAKRenderModel y16 = cVar.y(clipSources);
+        if (modifyClipsDuration) {
+            String templatePath = getTemplatePath();
+            if (templatePath == null) {
+                templatePath = r73.a.f430927a.b();
+            }
+            LAKRenderModel k3 = cVar.k(templatePath, clipSources, modifyClipsDuration);
+            if (k3 == null) {
+                k3 = cVar.y(clipSources);
+            }
+            y16 = k3;
+            y16.setModifyClipsDuration(true);
+        } else {
+            y16.setModifyClipsDuration(false);
+        }
+        if (fillMode == -1) {
+            backgroundFillMode = n1(getTemplatePath());
+        } else if (fillMode == 0) {
+            backgroundFillMode = org.light.lightAssetKit.enums.BackgroundFillMode.GaussianBlur;
+        } else {
+            backgroundFillMode = org.light.lightAssetKit.enums.BackgroundFillMode.SolidColorFill;
+        }
+        if (getTemplatePath() == null) {
+            BackgroundModel backgroundModel = V().backgroundModel;
+            if (backgroundModel != null && (str = backgroundModel.bgColor) != null) {
+                y16.setPainting(new Painting(org.light.lightAssetKit.enums.BackgroundFillMode.SolidColorFill, com.tencent.videocut.utils.d.f384234a.a(str), LAKRenderModel.INSTANCE.getDEFAULT_SIZE(), null, null, 24, null));
+            }
+        } else if (!Intrinsics.areEqual(bgColor, "") || fillMode != -1) {
+            Painting painting = y16.getPainting();
+            if (!Intrinsics.areEqual(bgColor, "")) {
+                backgroundColor = com.tencent.videocut.utils.d.f384234a.a(bgColor);
+            } else {
+                backgroundColor = y16.getPainting().getBackgroundColor();
+            }
+            String str2 = backgroundColor;
+            if (fillMode == -1) {
+                backgroundFillMode = y16.getPainting().getBackgroundFillMode();
+            }
+            org.light.lightAssetKit.enums.BackgroundFillMode backgroundFillMode2 = backgroundFillMode;
+            if (fillMode != -1) {
+                pagPath = WinkExportUtils.t();
+            } else {
+                pagPath = y16.getPainting().getPagPath();
+            }
+            y16.setPainting(Painting.copy$default(painting, backgroundFillMode2, str2, null, null, pagPath, 12, null));
+        }
+        if (!this.isSinglePlayerModel) {
+            a3(this, K1().getMediaModel(), false, 0L, 4, null);
+        }
+        return y16;
+    }
+
+    private final void F3(LAKRenderModel templateRenderModel, MetaMaterial r17) {
+        Serializable serializable;
+        boolean z16;
+        LightAsset LoadFromString;
+        JsonElement jsonElement;
+        Map<String, Serializable> map;
+        if (TextUtils.isEmpty(getTemplatePath())) {
+            return;
+        }
+        if (r17 != null && (map = r17.additionalObjectFields) != null) {
+            serializable = map.get(QQWinkConstants.PICK_TEMPLATE_TTS_MODEL);
+        } else {
+            serializable = null;
+        }
+        TTSAudioInfo tTSAudioInfo = (TTSAudioInfo) serializable;
+        if (tTSAudioInfo != null && tTSAudioInfo.getAudioItems() != null) {
+            TTSAudioItem[] audioItems = tTSAudioInfo.getAudioItems();
+            Intrinsics.checkNotNullExpressionValue(audioItems, "ttsAudioInfo.audioItems");
+            if (audioItems.length == 0) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (!z16) {
+                if (TextUtils.isEmpty(templateRenderModel.getJsonData())) {
+                    LoadFromString = LightAsset.Load(getTemplatePath(), 0);
+                } else {
+                    LoadFromString = LightAsset.LoadFromString(getTemplatePath(), templateRenderModel.getJsonData(), 0);
+                }
+                LightAssetDataContext make = LightAssetDataContext.make(LoadFromString, LightAssetDataType.EntityTree);
+                List<Entity> a16 = com.tencent.videocut.render.extension.a.a(make.getRootEntity(), AudioSourceType.TTS);
+                if (a16.isEmpty()) {
+                    return;
+                }
+                TTSAudioItem tTSAudioItem = tTSAudioInfo.getAudioItems()[0];
+                Collection<Component> components = a16.get(0).getComponents();
+                Intrinsics.checkNotNullExpressionValue(components, "audioSourceEntities[0].components");
+                for (Component component : components) {
+                    if (component instanceof AudioSource) {
+                        w53.b.a("WinkVideoTavCut", "tts localPath:" + tTSAudioItem.getLocalPath());
+                        String localPath = tTSAudioItem.getLocalPath();
+                        if (localPath != null) {
+                            Intrinsics.checkNotNullExpressionValue(localPath, "localPath");
+                            InputSource b16 = g.a.b(rd4.c.f431135f.r(), localPath, new TimeRange(0L, 6000000000L), null, 4, null);
+                            Gson create = new GsonBuilder().create();
+                            if (create != null) {
+                                jsonElement = create.toJsonTree(b16);
+                            } else {
+                                jsonElement = null;
+                            }
+                            AudioSource audioSource = (AudioSource) component;
+                            make.updateInputSource(audioSource.getSrc(), null);
+                            make.updateInputSource(b16.getKey(), jsonElement);
+                            audioSource.setSrc(b16.getKey());
+                            audioSource.setVolume(tTSAudioItem.getVolume());
+                            w53.b.a("WinkVideoTavCut", "tts volume:" + tTSAudioItem.getVolume());
+                            templateRenderModel.setJsonData(LightAssetUtils.getAssetJsonString(make.exportLightAsset()));
+                        }
+                    } else if (component instanceof TimeOffset) {
+                        TimeOffset timeOffset = (TimeOffset) component;
+                        tTSAudioItem.setStartTime(timeOffset.getStartOffset());
+                        timeOffset.setEndOffset(WebViewConstants.WV.ENABLE_WEBAIO_SWITCH);
+                        timeOffset.setLoopCount(0);
+                        timeOffset.setDuration(tTSAudioItem.getDuration());
+                        w53.b.a("WinkVideoTavCut", "start:" + timeOffset.getStartOffset() + "\uff0cduration: " + timeOffset.getDuration());
+                    }
+                }
+            }
+        }
+    }
+
+    private final boolean H1() {
+        boolean z16;
+        boolean isBlank;
+        String templatePath = getTemplatePath();
+        if (templatePath != null) {
+            isBlank = StringsKt__StringsJVMKt.isBlank(templatePath);
+            if (!isBlank) {
+                z16 = false;
+                return !z16;
+            }
+        }
+        z16 = true;
+        return !z16;
+    }
+
+    public static /* synthetic */ void H3(WinkVideoTavCut winkVideoTavCut, float f16, AudioSourceType audioSourceType, int i3, Object obj) {
+        if ((i3 & 2) != 0) {
+            audioSourceType = null;
+        }
+        winkVideoTavCut.G3(f16, audioSourceType);
+    }
+
+    public final void I3(List<? extends Entity> entityList) {
+        MediaModel copy;
+        String templatePath = getTemplatePath();
+        if (templatePath != null) {
+            List<WinkStickerModel> d16 = com.tencent.videocut.render.utils.c.f384212a.d(entityList, templatePath, this.renderWidth, this.renderHeight);
+            WinkEditData K1 = K1();
+            Map<String, WinkStickerModel> stickerModelMap = K1.getStickerModelMap();
+            if (stickerModelMap != null) {
+                for (Map.Entry<String, WinkStickerModel> entry : stickerModelMap.entrySet()) {
+                    for (WinkStickerModel winkStickerModel : d16) {
+                        if (Intrinsics.areEqual(winkStickerModel.id, entry.getKey())) {
+                            stickerModelMap.put(winkStickerModel.id, winkStickerModel);
+                        }
+                    }
+                }
+                copy = r3.copy((r39 & 1) != 0 ? r3.id : null, (r39 & 2) != 0 ? r3.name : null, (r39 & 4) != 0 ? r3.version : null, (r39 & 8) != 0 ? r3.createTime : null, (r39 & 16) != 0 ? r3.updateTime : null, (r39 & 32) != 0 ? r3.duration : null, (r39 & 64) != 0 ? r3.videos : null, (r39 & 128) != 0 ? r3.audios : null, (r39 & 256) != 0 ? r3.stickers : stickerModelMap, (r39 & 512) != 0 ? r3.backgroundModel : null, (r39 & 1024) != 0 ? r3.filterModels : null, (r39 & 2048) != 0 ? r3.specialEffects : null, (r39 & 4096) != 0 ? r3.transitions : null, (r39 & 8192) != 0 ? r3.templateModel : null, (r39 & 16384) != 0 ? r3.coverInfo : null, (r39 & 32768) != 0 ? r3.exportSetting : null, (r39 & 65536) != 0 ? r3.openHDR : null, (r39 & 131072) != 0 ? r3.hdrModels : null, (r39 & 262144) != 0 ? r3.smoothModels : null, (r39 & 524288) != 0 ? r3.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+                K1.setMediaModel(copy);
+            }
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            composeRenderLayer.t(K1.getMediaModel(), true, getCurrentPlayUs(), true);
+        }
+    }
+
+    public static /* synthetic */ void L3(WinkVideoTavCut winkVideoTavCut, ArrayList arrayList, String str, IStickerUpdateCallback iStickerUpdateCallback, int i3, Object obj) {
+        if ((i3 & 4) != 0) {
+            iStickerUpdateCallback = null;
+        }
+        winkVideoTavCut.K3(arrayList, str, iStickerUpdateCallback);
+    }
+
+    public static final void M1(boolean z16, WinkVideoTavCut this$0) {
+        boolean z17;
+        Intrinsics.checkNotNullParameter(this$0, "this$0");
+        if (!z16) {
+            w53.b.f("WinkVideoTavCut", "invisiblePlayerContainer");
+            FrameLayout frameLayout = this$0.playerContainerWrapper;
+            if (frameLayout != null) {
+                frameLayout.setVisibility(8);
+            }
+            IPlayer iPlayer = this$0.currentPlayer;
+            if (iPlayer != null) {
+                iPlayer.pause();
+                return;
+            }
+            return;
+        }
+        FrameLayout frameLayout2 = this$0.playerContainerWrapper;
+        if (frameLayout2 != null && frameLayout2.getVisibility() == 8) {
+            z17 = true;
+        } else {
+            z17 = false;
+        }
+        if (z17) {
+            w53.b.f("WinkVideoTavCut", "visiblePlayerContainer");
+            FrameLayout frameLayout3 = this$0.playerContainerWrapper;
+            if (frameLayout3 != null) {
+                frameLayout3.setVisibility(0);
+            }
+            IPlayer iPlayer2 = this$0.currentPlayer;
+            if (iPlayer2 != null) {
+                iPlayer2.play();
+            }
+        }
+    }
+
+    public static final void N3(WinkEditData this_with, Map transitionModelMap, WinkVideoTavCut this$0) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(this_with, "$this_with");
+        Intrinsics.checkNotNullParameter(transitionModelMap, "$transitionModelMap");
+        Intrinsics.checkNotNullParameter(this$0, "this$0");
+        copy = r2.copy((r39 & 1) != 0 ? r2.id : null, (r39 & 2) != 0 ? r2.name : null, (r39 & 4) != 0 ? r2.version : null, (r39 & 8) != 0 ? r2.createTime : null, (r39 & 16) != 0 ? r2.updateTime : null, (r39 & 32) != 0 ? r2.duration : null, (r39 & 64) != 0 ? r2.videos : null, (r39 & 128) != 0 ? r2.audios : null, (r39 & 256) != 0 ? r2.stickers : null, (r39 & 512) != 0 ? r2.backgroundModel : null, (r39 & 1024) != 0 ? r2.filterModels : null, (r39 & 2048) != 0 ? r2.specialEffects : null, (r39 & 4096) != 0 ? r2.transitions : transitionModelMap, (r39 & 8192) != 0 ? r2.templateModel : null, (r39 & 16384) != 0 ? r2.coverInfo : null, (r39 & 32768) != 0 ? r2.exportSetting : null, (r39 & 65536) != 0 ? r2.openHDR : null, (r39 & 131072) != 0 ? r2.hdrModels : null, (r39 & 262144) != 0 ? r2.smoothModels : null, (r39 & 524288) != 0 ? r2.openSuperHDR : null, (r39 & 1048576) != 0 ? this_with.getMediaModel().unknownFields() : null);
+        this_with.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this$0.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, this_with.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    public static /* synthetic */ void P1(WinkVideoTavCut winkVideoTavCut, BasePartFragment basePartFragment, dr.WinkTavCutParams winkTavCutParams, boolean z16, long j3, HashMap hashMap, OnClipAssetListener onClipAssetListener, int i3, Object obj) {
+        long j16;
+        HashMap hashMap2;
+        OnClipAssetListener onClipAssetListener2;
+        if ((i3 & 8) != 0) {
+            j16 = 0;
+        } else {
+            j16 = j3;
+        }
+        if ((i3 & 16) != 0) {
+            hashMap2 = new HashMap();
+        } else {
+            hashMap2 = hashMap;
+        }
+        if ((i3 & 32) != 0) {
+            onClipAssetListener2 = null;
+        } else {
+            onClipAssetListener2 = onClipAssetListener;
+        }
+        winkVideoTavCut.N1(basePartFragment, winkTavCutParams, z16, j16, hashMap2, onClipAssetListener2);
+    }
+
+    private final void P3(MediaModel mediaModel, boolean needUpdate, long initTime) {
+        boolean z16;
+        ms.a.c("WinkVideoTavCut", "updateWithHorizontalPlayer");
+        dr.WinkTavCutParams winkTavCutParams = null;
+        if (this.currentPlayer != null && !this.useVerticalPlayer) {
+            if (needUpdate) {
+                ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+                if (composeRenderLayer == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                }
+                composeRenderLayer.l(mediaModel);
+            }
+        } else {
+            if (this.horizontalPlayer == null) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (z16) {
+                FrameLayout frameLayout = this.horizontalPlayerViewContainer;
+                if (frameLayout == null) {
+                    FrameLayout frameLayout2 = this.backPlayerViewContainer;
+                    Intrinsics.checkNotNull(frameLayout2);
+                    S1(frameLayout2);
+                } else {
+                    Intrinsics.checkNotNull(frameLayout);
+                    S1(frameLayout);
+                }
+            }
+            IPlayer iPlayer = this.horizontalPlayer;
+            Intrinsics.checkNotNull(iPlayer);
+            S0(iPlayer);
+            if (!m2()) {
+                if (needUpdate) {
+                    ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+                    if (composeRenderLayer2 == null) {
+                        Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                        composeRenderLayer2 = null;
+                    }
+                    ComposeRenderLayer.q(composeRenderLayer2, mediaModel, null, 0L, true, 6, null);
+                }
+                if (z16) {
+                    IPlayer iPlayer2 = this.currentPlayer;
+                    Intrinsics.checkNotNull(iPlayer2);
+                    iPlayer2.seek(initTime);
+                    IPlayer iPlayer3 = this.currentPlayer;
+                    Intrinsics.checkNotNull(iPlayer3);
+                    iPlayer3.play();
+                }
+            }
+            FrameLayout frameLayout3 = this.verticalPlayerViewContainer;
+            if (frameLayout3 != null) {
+                frameLayout3.setVisibility(8);
+            }
+            FrameLayout frameLayout4 = this.horizontalPlayerViewContainer;
+            if (frameLayout4 != null) {
+                frameLayout4.setVisibility(0);
+            }
+        }
+        if (m2()) {
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams = winkTavCutParams2;
+            }
+            winkTavCutParams.y(WinkTavCutScene.Editor);
+        }
+        this.currentPlayerViewContainer = this.horizontalPlayerViewContainer;
+        SimpleEventBus.getInstance().dispatchEvent(new StickerEditEvent(3, 100));
+    }
+
+    private final void Q3(MediaModel mediaModel, boolean needUpdate, long initTime) {
+        SizeF V0;
+        float f16;
+        w53.b.f("WinkVideoTavCut", "updateWithNoSurface needUpdate:" + needUpdate + ", initTime:" + initTime);
+        try {
+            dr.WinkTavCutParams winkTavCutParams = null;
+            if (this.notChangeSize) {
+                dr.WinkTavCutParams winkTavCutParams2 = this.params;
+                if (winkTavCutParams2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams2 = null;
+                }
+                float width = winkTavCutParams2.getWidth();
+                dr.WinkTavCutParams winkTavCutParams3 = this.params;
+                if (winkTavCutParams3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams3 = null;
+                }
+                V0 = new SizeF(width, winkTavCutParams3.getHeight(), null, 4, null);
+            } else {
+                dr.WinkTavCutParams winkTavCutParams4 = this.params;
+                if (winkTavCutParams4 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams4 = null;
+                }
+                int width2 = winkTavCutParams4.getWidth();
+                dr.WinkTavCutParams winkTavCutParams5 = this.params;
+                if (winkTavCutParams5 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams5 = null;
+                }
+                V0 = V0(mediaModel, width2, winkTavCutParams5.getHeight());
+                if (H1()) {
+                    f16 = 1.0f;
+                } else if (V0.width > V0.height) {
+                    f16 = 99999.0f;
+                } else {
+                    f16 = 0.0f;
+                }
+                mediaModel = d3(mediaModel, V0, f16);
+            }
+            float f17 = V0.width;
+            float f18 = V0.height;
+            dr.WinkTavCutParams winkTavCutParams6 = this.params;
+            if (winkTavCutParams6 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams6 = null;
+            }
+            int width3 = winkTavCutParams6.getWidth();
+            dr.WinkTavCutParams winkTavCutParams7 = this.params;
+            if (winkTavCutParams7 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams = winkTavCutParams7;
+            }
+            ms.a.c("WinkVideoTavCut", "renderSize: width = " + f17 + " height = " + f18 + "params w = " + width3 + " h = " + winkTavCutParams.getHeight());
+            K1().setMediaModel(mediaModel);
+            if (!V2(V0) && !this.isSinglePlayerModel) {
+                P3(mediaModel, needUpdate, initTime);
+                return;
+            }
+            S3(mediaModel, needUpdate, initTime);
+        } catch (Exception e16) {
+            ms.a.e("WinkVideoTavCut", e16);
+        }
+    }
+
+    private final void R1(boolean isFromQzoneText) {
+        ICutSession iCutSession;
+        dr.WinkTavCutParams winkTavCutParams = null;
+        if (m2()) {
+            w53.b.a("WinkVideoTavCut", "needPreloadPlayer!!");
+            ComposeRenderLayer e16 = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE.e();
+            if (e16 != null) {
+                this.renderLayerHelper = e16;
+            }
+        } else {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            } else {
+                iCutSession = iCutSession2;
+            }
+            this.renderLayerHelper = new ComposeRenderLayer(iCutSession, null, null, null, 14, null);
+        }
+        if (isFromQzoneText) {
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            composeRenderLayer.e();
+        }
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer2 = null;
+        }
+        dr.WinkTavCutParams winkTavCutParams2 = this.params;
+        if (winkTavCutParams2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+        } else {
+            winkTavCutParams = winkTavCutParams2;
+        }
+        composeRenderLayer2.a(winkTavCutParams.getEnableVideoFilter());
+    }
+
+    private final void R3(MediaModel mediaModel) {
+        w53.b.f("WinkVideoTavCut", "updateWithSurface");
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        dr.WinkTavCutParams winkTavCutParams2 = null;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (winkTavCutParams.getPlayerSurface() != null) {
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            dr.WinkTavCutParams winkTavCutParams3 = this.params;
+            if (winkTavCutParams3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams3 = null;
+            }
+            int width = winkTavCutParams3.getWidth();
+            dr.WinkTavCutParams winkTavCutParams4 = this.params;
+            if (winkTavCutParams4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams2 = winkTavCutParams4;
+            }
+            iCutSession.updateRenderSize(new org.light.lightAssetKit.components.Size(width, winkTavCutParams2.getHeight()));
+            r3(mediaModel);
+            IPlayer.PlayerListener playerListener = this.playerListener;
+            if (playerListener != null) {
+                IPlayer iPlayer = this.currentPlayer;
+                if (iPlayer != null) {
+                    iPlayer.removePlayerListener(playerListener);
+                }
+                IPlayer iPlayer2 = this.currentPlayer;
+                if (iPlayer2 != null) {
+                    iPlayer2.addPlayerListener(playerListener);
+                }
+            }
+            K1().setMediaModel(mediaModel);
+        }
+    }
+
+    private final void S0(IPlayer player) {
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        IPlayer player2 = iCutSession.getPlayer();
+        if (player2 != null) {
+            player2.pause();
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession3 = null;
+            }
+            iCutSession3.unbindCutPlayer(player2);
+        }
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (winkTavCutParams.getScene() == WinkTavCutScene.Cover) {
+            player.setSeekToLastPosition(true);
+        }
+        ICutSession iCutSession4 = this.cutSession;
+        if (iCutSession4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession2 = iCutSession4;
+        }
+        this.currentPlayer = iCutSession2.bindCutPlayer(player);
+        this.useVerticalPlayer = Intrinsics.areEqual(player, this.verticalPlayer);
+    }
+
+    private final void S1(FrameLayout playerViewContainer) {
+        IPlayer iPlayer;
+        IPlayer iPlayer2;
+        ms.a.c("WinkVideoTavCut", "initHorizontalPlayer");
+        if (this.horizontalPlayer == null) {
+            ViewGroup.LayoutParams layoutParams = playerViewContainer.getLayoutParams();
+            Intrinsics.checkNotNull(layoutParams, "null cannot be cast to non-null type android.widget.FrameLayout.LayoutParams");
+            ((FrameLayout.LayoutParams) layoutParams).setMargins(ViewUtils.dpToPx(-300.0f), 0, ViewUtils.dpToPx(-300.0f), 0);
+            dr.WinkTavCutParams winkTavCutParams = null;
+            if (m2()) {
+                ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+                if (composeRenderLayer == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                }
+                composeRenderLayer.h(K1().getMediaModel());
+                this.horizontalPlayer = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE.d();
+                p2(playerViewContainer);
+            } else {
+                this.horizontalPlayer = rd4.c.f431135f.g(playerViewContainer);
+            }
+            IPlayer iPlayer3 = this.horizontalPlayer;
+            Intrinsics.checkNotNull(iPlayer3);
+            iPlayer3.setLoopPlay(true);
+            IPlayer iPlayer4 = this.horizontalPlayer;
+            Intrinsics.checkNotNull(iPlayer4);
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams = winkTavCutParams2;
+            }
+            iPlayer4.setAutoPlay(winkTavCutParams.getAutoPlay());
+            this.horizontalPlayerViewContainer = playerViewContainer;
+            IPlayer.PlayerListener playerListener = this.playerListener;
+            if (playerListener != null && (iPlayer2 = this.horizontalPlayer) != null) {
+                iPlayer2.addPlayerListener(playerListener);
+            }
+            TextureView.SurfaceTextureListener surfaceTextureListener = this.playerSurfaceTextureListener;
+            if (surfaceTextureListener != null && (iPlayer = this.horizontalPlayer) != null) {
+                iPlayer.setSurfaceTextureListener(surfaceTextureListener);
+            }
+        }
+    }
+
+    public final void S2() {
+        if (G()) {
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            ICutSession iCutSession = null;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession = iCutSession2;
+            }
+            composeRenderLayer.j(iCutSession.getRootEntity(), new Function1<List<Entity>, Unit>() { // from class: com.tencent.mobileqq.wink.editor.WinkVideoTavCut$setTextTemplateCallback$1
+                /* JADX INFO: Access modifiers changed from: package-private */
+                {
+                    super(1);
+                }
+
+                @Override // kotlin.jvm.functions.Function1
+                public /* bridge */ /* synthetic */ Unit invoke(List<Entity> list) {
+                    invoke2(list);
+                    return Unit.INSTANCE;
+                }
+
+                /* renamed from: invoke, reason: avoid collision after fix types in other method */
+                public final void invoke2(@NotNull List<Entity> assetEntityList) {
+                    Intrinsics.checkNotNullParameter(assetEntityList, "assetEntityList");
+                    WinkVideoTavCut.this.I3(assetEntityList);
+                }
+            });
+        }
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    private final void S3(MediaModel mediaModel, boolean needUpdate, long initTime) {
+        byte b16;
+        ComposeRenderLayer composeRenderLayer;
+        ms.a.c("WinkVideoTavCut", "updateWithVerticalPlayer");
+        dr.WinkTavCutParams winkTavCutParams = null;
+        ComposeRenderLayer composeRenderLayer2 = null;
+        if (this.currentPlayer != null && this.useVerticalPlayer) {
+            if (needUpdate) {
+                ComposeRenderLayer composeRenderLayer3 = this.renderLayerHelper;
+                if (composeRenderLayer3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                } else {
+                    composeRenderLayer2 = composeRenderLayer3;
+                }
+                composeRenderLayer2.l(mediaModel);
+            }
+        } else {
+            if (this.verticalPlayer == null) {
+                b16 = true;
+            } else {
+                b16 = false;
+            }
+            if (b16 != false) {
+                FrameLayout frameLayout = this.verticalPlayerViewContainer;
+                if (frameLayout == null) {
+                    FrameLayout frameLayout2 = this.frontPlayerViewContainer;
+                    Intrinsics.checkNotNull(frameLayout2);
+                    Y1(frameLayout2);
+                } else {
+                    Intrinsics.checkNotNull(frameLayout);
+                    Y1(frameLayout);
+                }
+            }
+            IPlayer iPlayer = this.verticalPlayer;
+            Intrinsics.checkNotNull(iPlayer);
+            S0(iPlayer);
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams2 = null;
+            }
+            if (winkTavCutParams2.getScene() == WinkTavCutScene.Cover && needUpdate) {
+                ComposeRenderLayer composeRenderLayer4 = this.renderLayerHelper;
+                if (composeRenderLayer4 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                } else {
+                    composeRenderLayer = composeRenderLayer4;
+                }
+                ComposeRenderLayer.u(composeRenderLayer, MediaModel.INSTANCE.getEMPTY(), false, initTime, false, 10, null);
+                ComposeRenderLayer composeRenderLayer5 = this.renderLayerHelper;
+                if (composeRenderLayer5 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer5 = null;
+                }
+                ComposeRenderLayer.u(composeRenderLayer5, mediaModel, false, initTime, false, 10, null);
+            } else if (needUpdate && !m2()) {
+                ComposeRenderLayer composeRenderLayer6 = this.renderLayerHelper;
+                if (composeRenderLayer6 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer6 = null;
+                }
+                ComposeRenderLayer.q(composeRenderLayer6, mediaModel, null, 0L, true, 6, null);
+            }
+            if (b16 != false && !m2()) {
+                IPlayer iPlayer2 = this.currentPlayer;
+                Intrinsics.checkNotNull(iPlayer2);
+                iPlayer2.seek(initTime);
+                IPlayer iPlayer3 = this.currentPlayer;
+                Intrinsics.checkNotNull(iPlayer3);
+                iPlayer3.play();
+            }
+            if (m2()) {
+                dr.WinkTavCutParams winkTavCutParams3 = this.params;
+                if (winkTavCutParams3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                } else {
+                    winkTavCutParams = winkTavCutParams3;
+                }
+                winkTavCutParams.y(WinkTavCutScene.Editor);
+            }
+            FrameLayout frameLayout3 = this.horizontalPlayerViewContainer;
+            if (frameLayout3 != null) {
+                frameLayout3.setVisibility(8);
+            }
+            FrameLayout frameLayout4 = this.verticalPlayerViewContainer;
+            if (frameLayout4 != null) {
+                frameLayout4.setVisibility(0);
+            }
+        }
+        this.currentPlayerViewContainer = this.verticalPlayerViewContainer;
+        SimpleEventBus.getInstance().dispatchEvent(new StickerEditEvent(3, 100));
+    }
+
+    private final RenderSizeAndOriginSize T0(float width, float height, int paramsWidth, int paramsHeight) {
+        Context context;
+        int roundToInt;
+        int roundToInt2;
+        if (this.isSinglePlayerModel) {
+            float f16 = paramsWidth * 1.0f;
+            float f17 = (f16 * height) / width;
+            float f18 = paramsHeight;
+            if (f17 < f18) {
+                f17 = f18 * 1.0f;
+                f16 = ((width * 1.0f) * f17) / height;
+            }
+            roundToInt = MathKt__MathJVMKt.roundToInt(f16);
+            roundToInt2 = MathKt__MathJVMKt.roundToInt(f17);
+            return new RenderSizeAndOriginSize(roundToInt, roundToInt2, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, false);
+        }
+        com.tencent.mobileqq.wink.editor.util.f fVar = com.tencent.mobileqq.wink.editor.util.f.f322633a;
+        FrameLayout frameLayout = this.playerContainerWrapper;
+        if (frameLayout != null) {
+            context = frameLayout.getContext();
+        } else {
+            context = null;
+        }
+        int b16 = fVar.b(width, height, context);
+        this.renderFillType = b16;
+        Pair<RenderSizeAndOriginSize, WinkEditStretchedData> a16 = fVar.a(b16, paramsWidth, paramsHeight, width, height);
+        if (this.params != null && !com.tencent.mobileqq.wink.editor.draft.c.B(K1())) {
+            K1().setStretchData(a16.getSecond());
+        }
+        return a16.getFirst();
+    }
+
+    private final void T1(WinkPlayerContainerView containerView, dr.WinkTavCutParams params, HashMap<String, Object> r17, boolean isSinglePlayer, long initTime, OnLoadAssetListener loadAssetListener, OnClipAssetListener onClipAssetListener) {
+        boolean z16;
+        ms.a.f("WinkVideoTavCut", "init start.params:" + params);
+        this.params = params;
+        this.isSinglePlayerModel = isSinglePlayer;
+        o2(params);
+        CustomRenderConfig customRenderConfig = new CustomRenderConfig();
+        customRenderConfig.setEnableFastSoftDecode(params.getEnableSoftDecode());
+        customRenderConfig.setSoftDecodeThreadCount(params.getSoftDecodeThreadCount());
+        customRenderConfig.setEnableNeedPaintingFlush(params.getNeedPaintingFlush());
+        w53.b.f("WinkVideoTavCut", "painting" + customRenderConfig.getEnableNeedPaintingFlush());
+        X1(customRenderConfig, onClipAssetListener);
+        R1(this.isFromQzoneText);
+        this.playerContainerWrapper = containerView;
+        A2(s73.c.e(r17));
+        y2();
+        WinkEditorResourceManager.a1().i0(s73.c.d(r17));
+        z2();
+        x2(getTemplatePath());
+        boolean areEqual = Intrinsics.areEqual(Boolean.TRUE, params.getIsFromTemplateColl());
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.getIClipSourceOperator().h(new d(areEqual));
+        if (s73.c.a(r17) != MediaPickerScene.TEMPLATE_ZSHOW && s73.c.a(r17) != MediaPickerScene.TEMPLATE_ZSHOW_REPLACE) {
+            z16 = false;
+        } else {
+            z16 = true;
+        }
+        this.isZShowTemplate = z16;
+        w53.b.f("WinkVideoTavCut", "isZShowTemplate:" + z16);
+        LAKRenderModel r26 = r2(areEqual, q2(this.isZShowTemplate));
+        W0(r26);
+        WatermarkConfig watermarkConfig = params.getWatermarkConfig();
+        if (watermarkConfig != null) {
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession3 = null;
+            }
+            iCutSession3.setWatermarkConfig(watermarkConfig);
+        }
+        w53.b.f("WinkVideoTavCut", "setLoadAssetListener:" + loadAssetListener);
+        if (loadAssetListener != null) {
+            ICutSession iCutSession4 = this.cutSession;
+            if (iCutSession4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession2 = iCutSession4;
+            }
+            iCutSession2.setLoadAssetListener(loadAssetListener);
+        }
+        C3(getTemplatePath(), s73.c.d(r17), r26, params.c(), false, params.getEnableImageTemplateEdit(), true, initTime, s73.c.b(r17));
+        W1();
+        if (s73.c.c(r17)) {
+            M3();
+        }
+        a3(this, c3(params.getScene()), false, initTime, 2, null);
+        ms.a.f("WinkVideoTavCut", "init end. " + getTemplatePath() + "  template load");
+    }
+
+    static /* synthetic */ RenderSizeAndOriginSize U0(WinkVideoTavCut winkVideoTavCut, float f16, float f17, int i3, int i16, int i17, Object obj) {
+        dr.WinkTavCutParams winkTavCutParams = null;
+        if ((i17 & 4) != 0) {
+            dr.WinkTavCutParams winkTavCutParams2 = winkVideoTavCut.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams2 = null;
+            }
+            i3 = winkTavCutParams2.getWidth();
+        }
+        if ((i17 & 8) != 0) {
+            dr.WinkTavCutParams winkTavCutParams3 = winkVideoTavCut.params;
+            if (winkTavCutParams3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams = winkTavCutParams3;
+            }
+            i16 = winkTavCutParams.getHeight();
+        }
+        return winkVideoTavCut.T0(f16, f17, i3, i16);
+    }
+
+    static /* synthetic */ void U1(WinkVideoTavCut winkVideoTavCut, WinkPlayerContainerView winkPlayerContainerView, dr.WinkTavCutParams winkTavCutParams, HashMap hashMap, boolean z16, long j3, OnLoadAssetListener onLoadAssetListener, OnClipAssetListener onClipAssetListener, int i3, Object obj) {
+        long j16;
+        OnLoadAssetListener onLoadAssetListener2;
+        OnClipAssetListener onClipAssetListener2;
+        if ((i3 & 16) != 0) {
+            j16 = 0;
+        } else {
+            j16 = j3;
+        }
+        if ((i3 & 32) != 0) {
+            onLoadAssetListener2 = null;
+        } else {
+            onLoadAssetListener2 = onLoadAssetListener;
+        }
+        if ((i3 & 64) != 0) {
+            onClipAssetListener2 = null;
+        } else {
+            onClipAssetListener2 = onClipAssetListener;
+        }
+        winkVideoTavCut.T1(winkPlayerContainerView, winkTavCutParams, hashMap, z16, j16, onLoadAssetListener2, onClipAssetListener2);
+    }
+
+    private final void W0(LAKRenderModel renderModel) {
+        BackgroundFillMode backgroundFillMode;
+        org.light.lightAssetKit.enums.BackgroundFillMode backgroundFillMode2;
+        String str;
+        String str2;
+        SizeF sizeF;
+        String backgroundColor;
+        boolean z16;
+        if (!this.notChangeSize) {
+            return;
+        }
+        BackgroundModel backgroundModel = K1().getMediaModel().backgroundModel;
+        String str3 = null;
+        if (backgroundModel != null) {
+            backgroundFillMode = backgroundModel.bgFillMode;
+        } else {
+            backgroundFillMode = null;
+        }
+        if (backgroundFillMode == BackgroundFillMode.PAG) {
+            backgroundFillMode2 = org.light.lightAssetKit.enums.BackgroundFillMode.GaussianBlur;
+        } else {
+            backgroundFillMode2 = org.light.lightAssetKit.enums.BackgroundFillMode.SolidColorFill;
+        }
+        org.light.lightAssetKit.enums.BackgroundFillMode backgroundFillMode3 = backgroundFillMode2;
+        BackgroundModel backgroundModel2 = K1().getMediaModel().backgroundModel;
+        if (backgroundModel2 != null) {
+            str = backgroundModel2.bgColor;
+        } else {
+            str = null;
+        }
+        BackgroundModel backgroundModel3 = K1().getMediaModel().backgroundModel;
+        if (backgroundModel3 != null) {
+            str2 = backgroundModel3.bgPagPath;
+        } else {
+            str2 = null;
+        }
+        BackgroundModel backgroundModel4 = K1().getMediaModel().backgroundModel;
+        if (backgroundModel4 != null && (sizeF = backgroundModel4.renderSize) != null) {
+            Painting painting = renderModel.getPainting();
+            org.light.lightAssetKit.components.Size size = new org.light.lightAssetKit.components.Size((int) sizeF.width, (int) sizeF.height);
+            if (str != null && !Intrinsics.areEqual(str, "")) {
+                backgroundColor = com.tencent.videocut.utils.d.f384234a.a(str);
+            } else {
+                backgroundColor = renderModel.getPainting().getBackgroundColor();
+            }
+            String str4 = backgroundColor;
+            if (str2 != null) {
+                if (str2.length() == 0) {
+                    z16 = true;
+                } else {
+                    z16 = false;
+                }
+                if (z16) {
+                    str3 = renderModel.getPainting().getPagPath();
+                } else {
+                    str3 = str2;
+                }
+            }
+            renderModel.setPainting(Painting.copy$default(painting, backgroundFillMode3, str4, size, null, str3, 8, null));
+        }
+    }
+
+    private final void W1() {
+        this.needStretchBack = true;
+        this.originTopY = 0.0f;
+        this.originBottomY = 0.0f;
+        this.originScale = 1.0f;
+    }
+
+    private final void X0(LAKRenderModel renderModel) {
+        BackgroundModel backgroundModel;
+        SizeF sizeF;
+        if (this.notChangeSize && (backgroundModel = K1().getMediaModel().backgroundModel) != null && (sizeF = backgroundModel.renderSize) != null) {
+            renderModel.setPainting(Painting.copy$default(renderModel.getPainting(), null, null, new org.light.lightAssetKit.components.Size((int) sizeF.width, (int) sizeF.height), null, null, 27, null));
+        }
+    }
+
+    private final void X1(CustomRenderConfig customRenderConfig, OnClipAssetListener onClipAssetListener) {
+        LAKCutSession lAKCutSession;
+        BaseApplication context = BaseApplication.getContext();
+        Intrinsics.checkNotNullExpressionValue(context, "getContext()");
+        dr.WinkTavCutParams winkTavCutParams = null;
+        rd4.c.t(context, "", "lightsdk_qq", WinkContext.Companion.j(WinkContext.INSTANCE, false, 1, null));
+        if (m2()) {
+            w53.b.a("WinkVideoTavCut", "needPreloadPlayer!!");
+            ICutSession c16 = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE.c();
+            if (c16 != null) {
+                this.cutSession = c16;
+            }
+        } else {
+            this.cutSession = rd4.c.f431135f.h(customRenderConfig);
+        }
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        if (iCutSession instanceof LAKCutSession) {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession2 = null;
+            }
+            ((LAKCutSession) iCutSession2).setSwitchReloadAsset(this.isUsetNewReload);
+            if (onClipAssetListener == null) {
+                ICutSession iCutSession3 = this.cutSession;
+                if (iCutSession3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession3 = null;
+                }
+                ((LAKCutSession) iCutSession3).setClipAssetListener(this.defaultOnClipAssetListener);
+            } else {
+                ICutSession iCutSession4 = this.cutSession;
+                if (iCutSession4 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession4 = null;
+                }
+                ((LAKCutSession) iCutSession4).setClipAssetListener(onClipAssetListener);
+            }
+        }
+        ICutSession iCutSession5 = this.cutSession;
+        if (iCutSession5 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession5 = null;
+        }
+        iCutSession5.setMediasTotalDurationLimitationFlag(true);
+        ICutSession iCutSession6 = this.cutSession;
+        if (iCutSession6 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession6 = null;
+        }
+        IPlayer player = iCutSession6.getPlayer();
+        if (player != null) {
+            player.setSeekToLastPosition(true);
+        }
+        if (this.isMovieControllDurationInTempColl) {
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams2 = null;
+            }
+            ms.a.f("WinkVideoTavCut", "templateColl use movieController time, is templateColl:" + winkTavCutParams2.getIsFromTemplateColl());
+            ICutSession iCutSession7 = this.cutSession;
+            if (iCutSession7 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession7 = null;
+            }
+            if (iCutSession7 instanceof LAKCutSession) {
+                lAKCutSession = (LAKCutSession) iCutSession7;
+            } else {
+                lAKCutSession = null;
+            }
+            if (lAKCutSession != null) {
+                dr.WinkTavCutParams winkTavCutParams3 = this.params;
+                if (winkTavCutParams3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                } else {
+                    winkTavCutParams = winkTavCutParams3;
+                }
+                lAKCutSession.setIsUseTemplateTime(Intrinsics.areEqual(winkTavCutParams.getIsFromTemplateColl(), Boolean.TRUE));
+            }
+        }
+    }
+
+    private final void Y1(FrameLayout playerViewContainer) {
+        int width;
+        int height;
+        int a16;
+        IPlayer iPlayer;
+        IPlayer iPlayer2;
+        ms.a.c("WinkVideoTavCut", "initVerticalPlayer");
+        if (this.verticalPlayer == null) {
+            ViewGroup.LayoutParams layoutParams = playerViewContainer.getLayoutParams();
+            Intrinsics.checkNotNull(layoutParams, "null cannot be cast to non-null type android.view.ViewGroup.MarginLayoutParams");
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            dr.WinkTavCutParams winkTavCutParams = null;
+            if (playerViewContainer.getWidth() > 0) {
+                width = playerViewContainer.getWidth();
+            } else {
+                dr.WinkTavCutParams winkTavCutParams2 = this.params;
+                if (winkTavCutParams2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams2 = null;
+                }
+                width = winkTavCutParams2.getWidth();
+            }
+            if (playerViewContainer.getHeight() > 0) {
+                height = playerViewContainer.getHeight();
+            } else {
+                dr.WinkTavCutParams winkTavCutParams3 = this.params;
+                if (winkTavCutParams3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams3 = null;
+                }
+                height = winkTavCutParams3.getHeight();
+            }
+            dr.WinkTavCutParams winkTavCutParams4 = this.params;
+            if (winkTavCutParams4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams4 = null;
+            }
+            if (winkTavCutParams4.getScene() == WinkTavCutScene.DYNAMIC_AVATAR) {
+                a16 = 0;
+            } else {
+                a16 = INSTANCE.a(Integer.valueOf(height), Integer.valueOf(width));
+            }
+            marginLayoutParams.setMargins(0, a16, 0, a16);
+            if (m2()) {
+                ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+                if (composeRenderLayer == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                }
+                ms.a.a("WinkVideoTavCut", "renderLayerHelper~~~" + composeRenderLayer);
+                ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+                if (composeRenderLayer2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer2 = null;
+                }
+                composeRenderLayer2.h(K1().getMediaModel());
+                this.verticalPlayer = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE.d();
+                p2(playerViewContainer);
+            } else {
+                this.verticalPlayer = rd4.c.f431135f.g(playerViewContainer);
+            }
+            dr.WinkTavCutParams winkTavCutParams5 = this.params;
+            if (winkTavCutParams5 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams5 = null;
+            }
+            if (winkTavCutParams5.getScene() != WinkTavCutScene.Cover) {
+                IPlayer iPlayer3 = this.verticalPlayer;
+                Intrinsics.checkNotNull(iPlayer3);
+                iPlayer3.setLoopPlay(true);
+                IPlayer iPlayer4 = this.verticalPlayer;
+                Intrinsics.checkNotNull(iPlayer4);
+                dr.WinkTavCutParams winkTavCutParams6 = this.params;
+                if (winkTavCutParams6 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                } else {
+                    winkTavCutParams = winkTavCutParams6;
+                }
+                iPlayer4.setAutoPlay(winkTavCutParams.getAutoPlay());
+            }
+            this.verticalPlayerViewContainer = playerViewContainer;
+            IPlayer.PlayerListener playerListener = this.playerListener;
+            if (playerListener != null && (iPlayer2 = this.verticalPlayer) != null) {
+                iPlayer2.addPlayerListener(playerListener);
+            }
+            TextureView.SurfaceTextureListener surfaceTextureListener = this.playerSurfaceTextureListener;
+            if (surfaceTextureListener != null && (iPlayer = this.verticalPlayer) != null) {
+                iPlayer.setSurfaceTextureListener(surfaceTextureListener);
+            }
+            IPlayer iPlayer5 = this.currentPlayer;
+            if (iPlayer5 != null) {
+                iPlayer5.setSeekToLastPosition(true);
+            }
+        }
+    }
+
+    private final org.light.lightAssetKit.components.Size Z0(MediaModel mediaModel, int paramsWidth, int paramsHeight) {
+        try {
+            BackgroundModel backgroundModel = mediaModel.backgroundModel;
+            if (backgroundModel == null || backgroundModel.renderSize == null) {
+                float f16 = com.tencent.videocut.render.extension.e.o(mediaModel.videos.get(0)).width;
+            }
+            BackgroundModel backgroundModel2 = mediaModel.backgroundModel;
+            if (backgroundModel2 == null || backgroundModel2.renderSize == null) {
+                float f17 = com.tencent.videocut.render.extension.e.o(mediaModel.videos.get(0)).height;
+            }
+            SizeF c16 = com.tencent.mobileqq.wink.editor.util.m.f322645a.c(mediaModel.videos);
+            RenderSizeAndOriginSize T0 = T0(c16.width, c16.height, paramsWidth, paramsHeight);
+            int renderWidth = T0.getRenderWidth();
+            int renderHeight = T0.getRenderHeight();
+            float originTopY = T0.getOriginTopY();
+            float originBottomY = T0.getOriginBottomY();
+            float originScale = T0.getOriginScale();
+            this.renderWidth = renderWidth;
+            this.renderHeight = renderHeight;
+            this.originTopY = originTopY;
+            this.originBottomY = originBottomY;
+            this.originScale = originScale;
+            ms.a.c("WinkVideoTavCut", "[ratioFeature] -> [computerRenderSize], result width:" + renderWidth + " renderHeight:" + renderHeight);
+            return new org.light.lightAssetKit.components.Size(this.renderWidth, this.renderHeight);
+        } catch (Exception e16) {
+            ms.a.e("WinkVideoTavCut", e16);
+            return com.tencent.mobileqq.wink.editor.util.m.f322645a.b();
+        }
+    }
+
+    public static final void a1(final int i3, String str) {
+        ThreadManagerV2.getUIHandlerV2().post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.dx
+            @Override // java.lang.Runnable
+            public final void run() {
+                WinkVideoTavCut.b1(i3);
+            }
+        });
+        w53.b.c("WinkVideoTavCut", "\u5a92\u4f53\u8bfb\u53d6\u5931\u8d25" + i3 + ",path=" + str + ",\u8bf7\u91cd\u8bd5");
+    }
+
+    public static /* synthetic */ void a3(WinkVideoTavCut winkVideoTavCut, MediaModel mediaModel, boolean z16, long j3, int i3, Object obj) {
+        if ((i3 & 2) != 0) {
+            z16 = true;
+        }
+        if ((i3 & 4) != 0) {
+            j3 = 0;
+        }
+        winkVideoTavCut.Z2(mediaModel, z16, j3);
+    }
+
+    public static final void b1(int i3) {
+        QQToast.makeText(BaseApplication.getContext(), "\u5a92\u4f53\u8bfb\u53d6\u5931\u8d25" + i3 + ",\u8bf7\u91cd\u8bd5", 0).show();
+    }
+
+    private final boolean c2() {
+        if (com.tencent.mobileqq.wink.editor.draft.c.B(K1()) && TextUtils.isEmpty(getTemplatePath()) && !com.tencent.mobileqq.wink.editor.sticker.g.INSTANCE.e(m(), this.originTopY, this.originBottomY)) {
+            return true;
+        }
+        return false;
+    }
+
+    private final MediaModel c3(WinkTavCutScene scene) {
+        if (scene == WinkTavCutScene.Crop) {
+            MediaModel V = V();
+            V.copy((r39 & 1) != 0 ? V.id : null, (r39 & 2) != 0 ? V.name : null, (r39 & 4) != 0 ? V.version : null, (r39 & 8) != 0 ? V.createTime : null, (r39 & 16) != 0 ? V.updateTime : null, (r39 & 32) != 0 ? V.duration : null, (r39 & 64) != 0 ? V.videos : null, (r39 & 128) != 0 ? V.audios : null, (r39 & 256) != 0 ? V.stickers : null, (r39 & 512) != 0 ? V.backgroundModel : com.tencent.videocut.render.g.e(V.videos, 0.0f, V.backgroundModel, 2, null), (r39 & 1024) != 0 ? V.filterModels : null, (r39 & 2048) != 0 ? V.specialEffects : null, (r39 & 4096) != 0 ? V.transitions : null, (r39 & 8192) != 0 ? V.templateModel : null, (r39 & 16384) != 0 ? V.coverInfo : null, (r39 & 32768) != 0 ? V.exportSetting : null, (r39 & 65536) != 0 ? V.openHDR : null, (r39 & 131072) != 0 ? V.hdrModels : null, (r39 & 262144) != 0 ? V.smoothModels : null, (r39 & 524288) != 0 ? V.openSuperHDR : null, (r39 & 1048576) != 0 ? V.unknownFields() : null);
+            return V;
+        }
+        return V();
+    }
+
+    private final ArrayList<GYTrackStickerInfo> d1(ArrayList<TrackStickerInfo> trackStickerInfos) {
+        if (trackStickerInfos != null) {
+            ArrayList<GYTrackStickerInfo> arrayList = new ArrayList<>();
+            Iterator<TrackStickerInfo> it = trackStickerInfos.iterator();
+            while (it.hasNext()) {
+                TrackStickerInfo next = it.next();
+                GYTrackStickerInfo gYTrackStickerInfo = new GYTrackStickerInfo();
+                gYTrackStickerInfo.imageW = next.getImageW();
+                gYTrackStickerInfo.confidence = next.getConfidence();
+                gYTrackStickerInfo.imageH = next.getImageH();
+                gYTrackStickerInfo.f35990h = next.getH();
+                gYTrackStickerInfo.radian = next.getRadian();
+                gYTrackStickerInfo.timestamp = next.getTimestamp();
+                gYTrackStickerInfo.f35991w = next.getW();
+                gYTrackStickerInfo.f35992x = next.getX();
+                gYTrackStickerInfo.f35993y = next.getY();
+                arrayList.add(gYTrackStickerInfo);
+            }
+            return arrayList;
+        }
+        return null;
+    }
+
+    public static final void e1(WinkVideoTavCut this$0) {
+        Object orNull;
+        Intrinsics.checkNotNullParameter(this$0, "this$0");
+        orNull = CollectionsKt___CollectionsKt.getOrNull(this$0.m1(), 0);
+        MediaModel mediaModel = (MediaModel) orNull;
+        if (mediaModel != null) {
+            com.tencent.mobileqq.wink.dect.e eVar = new com.tencent.mobileqq.wink.dect.e(mediaModel);
+            eVar.n(com.tencent.mobileqq.wink.dect.c.INSTANCE.a(), new c(eVar));
+        }
+    }
+
+    private final boolean e2() {
+        if (K1().getMediaModel().videos.size() > 1) {
+            return true;
+        }
+        return false;
+    }
+
+    private final List<Entity> f1(String templatePath, AudioSourceType type) {
+        List<Entity> emptyList;
+        LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+        if (d16 == null) {
+            emptyList = CollectionsKt__CollectionsKt.emptyList();
+            return emptyList;
+        }
+        Entity rootEntity = d16.getRootEntity();
+        if (type == null) {
+            return INSTANCE.f(rootEntity, n.a.INSTANCE.a());
+        }
+        return com.tencent.videocut.render.extension.a.a(rootEntity, type);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    /* JADX WARN: Removed duplicated region for block: B:183:0x03de  */
+    /* JADX WARN: Removed duplicated region for block: B:186:0x03ef  */
+    /* JADX WARN: Removed duplicated region for block: B:200:0x0421  */
+    /* JADX WARN: Removed duplicated region for block: B:208:0x0454  */
+    /* JADX WARN: Removed duplicated region for block: B:217:0x0491  */
+    /* JADX WARN: Removed duplicated region for block: B:243:0x03db  */
+    /* JADX WARN: Removed duplicated region for block: B:27:0x006a  */
+    /* JADX WARN: Removed duplicated region for block: B:77:0x01ad  */
+    /* JADX WARN: Type inference failed for: r11v4, types: [java.util.List, T] */
+    /* JADX WARN: Type inference failed for: r3v17 */
+    /* JADX WARN: Type inference failed for: r3v18, types: [com.tencent.mobileqq.wink.editor.smartclip.algorithm.f, com.tencent.mobileqq.wink.editor.smartclip.algorithm.g] */
+    /* JADX WARN: Type inference failed for: r3v53, types: [T, java.util.Collection, java.util.ArrayList] */
+    /* JADX WARN: Type inference failed for: r3v70 */
+    /* JADX WARN: Type inference failed for: r3v8, types: [T, java.util.Collection, java.lang.Object, java.util.ArrayList] */
+    /* JADX WARN: Type inference failed for: r3v9, types: [T, java.util.Collection, java.util.ArrayList] */
+    /* JADX WARN: Type inference failed for: r5v47, types: [T, java.util.Collection, java.util.ArrayList] */
+    /* JADX WARN: Type inference failed for: r6v27, types: [T, java.util.Collection, java.util.ArrayList] */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    private final Pair<List<ClipSource>, List<Map<String, String>>> g3(x.UpdateTemplateAction action) {
+        boolean z16;
+        boolean z17;
+        ICutSession iCutSession;
+        boolean z18;
+        boolean z19;
+        boolean z26;
+        Ref.ObjectRef objectRef;
+        ?? emptyList;
+        boolean z27;
+        Unit unit;
+        int collectionSizeOrDefault;
+        int collectionSizeOrDefault2;
+        Map emptyMap;
+        int collectionSizeOrDefault3;
+        int collectionSizeOrDefault4;
+        float f16;
+        ?? r36;
+        Unit unit2;
+        int i3;
+        TemplateConfig movieConfig;
+        long j3;
+        boolean z28;
+        int i16;
+        boolean z29;
+        Object firstOrNull;
+        long j16;
+        int collectionSizeOrDefault5;
+        int collectionSizeOrDefault6;
+        Map<String, String> emptyMap2;
+        MediaType mediaType;
+        boolean z36;
+        ResourceModel resourceModel;
+        long j17;
+        ResourceModel copy;
+        ResourceModel resourceModel2;
+        int collectionSizeOrDefault7;
+        Map<String, String> emptyMap3;
+        boolean isBlank;
+        Object firstOrNull2;
+        long j18;
+        int collectionSizeOrDefault8;
+        int collectionSizeOrDefault9;
+        Map<String, String> emptyMap4;
+        ResourceModel resourceModel3;
+        ResourceModel copy2;
+        ResourceModel resourceModel4;
+        boolean z37;
+        String templatePath = action.getTemplatePath();
+        int i17 = 0;
+        if (V().videos.size() == 1 && com.tencent.videocut.render.extension.e.u(V().videos)) {
+            z16 = true;
+        } else {
+            z16 = false;
+        }
+        if (this.templateMaterial == null && action.getMetaMaterial() != null && !com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.isUserOpCloseSmartClip && V().videos.size() > 1 && com.tencent.videocut.render.extension.e.v(V().videos)) {
+            com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip = true;
+        }
+        if (z16) {
+            MetaMaterial metaMaterial = action.getMetaMaterial();
+            if (metaMaterial != null && com.tencent.mobileqq.wink.editor.template.b.a(metaMaterial)) {
+                z37 = true;
+            } else {
+                z37 = false;
+            }
+            if (z37) {
+                com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip = true;
+                z17 = true;
+                iCutSession = this.cutSession;
+                if (iCutSession == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession = null;
+                }
+                iCutSession.getIClipSourceOperator().h(new j(action));
+                if (!com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip && !com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.isUserOpCloseSmartClip) {
+                    z18 = true;
+                } else {
+                    z18 = false;
+                }
+                ms.a.f("WinkVideoTavCut", "updateTemplate---useTemplate=" + templatePath + ", shouldTriggerSmartClip=" + z18 + " , action:" + action);
+                List<MediaClip> list = V().videos;
+                if (templatePath != null && com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip) {
+                    z19 = true;
+                } else {
+                    z19 = false;
+                }
+                if (this.isZShowTemplate && !k2()) {
+                    z26 = false;
+                } else {
+                    z26 = true;
+                }
+                List<ClipSource> z38 = com.tencent.videocut.render.extension.e.z(list, z19, Boolean.valueOf(z26));
+                objectRef = new Ref.ObjectRef();
+                emptyList = CollectionsKt__CollectionsKt.emptyList();
+                objectRef.element = emptyList;
+                if (!this.needResetDurationProtect && z38.size() == 1) {
+                    List<MediaClip> list2 = V().videos;
+                    firstOrNull2 = CollectionsKt___CollectionsKt.firstOrNull((List<? extends Object>) list2);
+                    MediaClip mediaClip = (MediaClip) firstOrNull2;
+                    if (mediaClip != null && (resourceModel4 = mediaClip.resource) != null) {
+                        z27 = z18;
+                        j18 = resourceModel4.sourceDuration;
+                    } else {
+                        z27 = z18;
+                        j18 = 0;
+                    }
+                    List<MediaClip> list3 = list2;
+                    collectionSizeOrDefault8 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list3, 10);
+                    ArrayList arrayList = new ArrayList(collectionSizeOrDefault8);
+                    for (MediaClip mediaClip2 : list3) {
+                        ResourceModel resourceModel5 = mediaClip2.resource;
+                        if (resourceModel5 != null) {
+                            copy2 = resourceModel5.copy((r35 & 1) != 0 ? resourceModel5.id : null, (r35 & 2) != 0 ? resourceModel5.path : null, (r35 & 4) != 0 ? Long.valueOf(resourceModel5.scaleDuration) : Long.valueOf(j18), (r35 & 8) != 0 ? Long.valueOf(resourceModel5.sourceStart) : null, (r35 & 16) != 0 ? Long.valueOf(resourceModel5.sourceDuration) : null, (r35 & 32) != 0 ? Long.valueOf(resourceModel5.selectStart) : null, (r35 & 64) != 0 ? Long.valueOf(resourceModel5.selectDuration) : Long.valueOf(j18), (r35 & 128) != 0 ? resourceModel5.type : null, (r35 & 256) != 0 ? resourceModel5.size : null, (r35 & 512) != 0 ? Float.valueOf(resourceModel5.volume) : null, (r35 & 1024) != 0 ? resourceModel5.extras : null, (r35 & 2048) != 0 ? resourceModel5.picClipRect : null, (r35 & 4096) != 0 ? resourceModel5.reversePath : null, (r35 & 8192) != 0 ? resourceModel5.normalPath : null, (r35 & 16384) != 0 ? resourceModel5.isReverseMode : null, (r35 & 32768) != 0 ? Float.valueOf(resourceModel5.deblurScore) : null, (r35 & 65536) != 0 ? resourceModel5.unknownFields() : null);
+                            resourceModel3 = copy2;
+                        } else {
+                            resourceModel3 = null;
+                        }
+                        arrayList.add(MediaClip.copy$default(mediaClip2, resourceModel3, null, null, null, null, null, null, 126, null));
+                    }
+                    collectionSizeOrDefault9 = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList, 10);
+                    ?? arrayList2 = new ArrayList(collectionSizeOrDefault9);
+                    Iterator it = arrayList.iterator();
+                    while (it.hasNext()) {
+                        ResourceModel resourceModel6 = ((MediaClip) it.next()).resource;
+                        if (resourceModel6 == null || (emptyMap4 = resourceModel6.extras) == null) {
+                            emptyMap4 = MapsKt__MapsKt.emptyMap();
+                        }
+                        arrayList2.add(emptyMap4);
+                    }
+                    objectRef.element = arrayList2;
+                    z38 = com.tencent.videocut.render.extension.e.B(arrayList, false, null, 3, null);
+                } else {
+                    z27 = z18;
+                }
+                if (templatePath == null) {
+                    TemplateMusicInfoParseResult n3 = com.tencent.mobileqq.wink.editor.smartclip.c.n(templatePath);
+                    if (n3 != null) {
+                        com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a aVar = com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.f321532a;
+                        aVar.h(n3.getMusicInfo());
+                        aVar.g(n3.getFixedClipConfig());
+                        TemplateFixedClipConfig b16 = aVar.b();
+                        if (b16 != null) {
+                            j3 = b16.getMinTotalDuration();
+                        } else {
+                            j3 = 0;
+                        }
+                        if (j3 > 0) {
+                            z28 = true;
+                        } else {
+                            z28 = false;
+                        }
+                        this.needResetDurationProtect = z28;
+                        if (!action.getModifyClipsDuration() && ((z38.size() > 1 || z17) && z27)) {
+                            AutoClipResult c16 = com.tencent.mobileqq.wink.editor.smartclip.c.c(V().videos, n3.getMusicInfo(), aVar.b());
+                            if (!c16.getIsSuccess()) {
+                                isBlank = StringsKt__StringsJVMKt.isBlank(c16.getTipString());
+                                if (!isBlank) {
+                                    QQToast.makeText(BaseApplication.getContext(), c16.getTipString(), 0).show();
+                                }
+                            }
+                            List<MediaClip> c17 = c16.c();
+                            List<MediaClip> list4 = c17;
+                            collectionSizeOrDefault7 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list4, 10);
+                            ?? arrayList3 = new ArrayList(collectionSizeOrDefault7);
+                            Iterator<T> it5 = list4.iterator();
+                            while (it5.hasNext()) {
+                                ResourceModel resourceModel7 = ((MediaClip) it5.next()).resource;
+                                if (resourceModel7 == null || (emptyMap3 = resourceModel7.extras) == null) {
+                                    emptyMap3 = MapsKt__MapsKt.emptyMap();
+                                }
+                                arrayList3.add(emptyMap3);
+                            }
+                            objectRef.element = arrayList3;
+                            z38 = com.tencent.videocut.render.extension.e.B(c17, false, null, 3, null);
+                            i16 = 1;
+                            com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip = true;
+                        } else {
+                            i16 = 1;
+                        }
+                        if (j3 > 0 && z38.size() == i16) {
+                            List<MediaClip> list5 = V().videos;
+                            firstOrNull = CollectionsKt___CollectionsKt.firstOrNull((List<? extends Object>) list5);
+                            MediaClip mediaClip3 = (MediaClip) firstOrNull;
+                            if (mediaClip3 != null && (resourceModel2 = mediaClip3.resource) != null) {
+                                j16 = resourceModel2.sourceDuration;
+                            } else {
+                                j16 = 0;
+                            }
+                            w53.b.f("WinkVideoTavCut", "fit minTotalDuration: single video, configMinTotalDuration=" + j3 + ", clipDuration=" + j16);
+                            if (j16 < j3) {
+                                List<MediaClip> list6 = list5;
+                                collectionSizeOrDefault5 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list6, 10);
+                                ArrayList arrayList4 = new ArrayList(collectionSizeOrDefault5);
+                                for (MediaClip mediaClip4 : list6) {
+                                    ResourceModel resourceModel8 = mediaClip4.resource;
+                                    if (resourceModel8 != null) {
+                                        mediaType = resourceModel8.type;
+                                    } else {
+                                        mediaType = null;
+                                    }
+                                    if (mediaType == MediaType.IMAGE) {
+                                        z36 = true;
+                                    } else {
+                                        z36 = false;
+                                    }
+                                    if (resourceModel8 != null) {
+                                        if (z36) {
+                                            j17 = j3;
+                                        } else {
+                                            j17 = j16;
+                                        }
+                                        copy = resourceModel8.copy((r35 & 1) != 0 ? resourceModel8.id : null, (r35 & 2) != 0 ? resourceModel8.path : null, (r35 & 4) != 0 ? Long.valueOf(resourceModel8.scaleDuration) : Long.valueOf(j3), (r35 & 8) != 0 ? Long.valueOf(resourceModel8.sourceStart) : null, (r35 & 16) != 0 ? Long.valueOf(resourceModel8.sourceDuration) : null, (r35 & 32) != 0 ? Long.valueOf(resourceModel8.selectStart) : null, (r35 & 64) != 0 ? Long.valueOf(resourceModel8.selectDuration) : Long.valueOf(j17), (r35 & 128) != 0 ? resourceModel8.type : null, (r35 & 256) != 0 ? resourceModel8.size : null, (r35 & 512) != 0 ? Float.valueOf(resourceModel8.volume) : null, (r35 & 1024) != 0 ? resourceModel8.extras : null, (r35 & 2048) != 0 ? resourceModel8.picClipRect : null, (r35 & 4096) != 0 ? resourceModel8.reversePath : null, (r35 & 8192) != 0 ? resourceModel8.normalPath : null, (r35 & 16384) != 0 ? resourceModel8.isReverseMode : null, (r35 & 32768) != 0 ? Float.valueOf(resourceModel8.deblurScore) : null, (r35 & 65536) != 0 ? resourceModel8.unknownFields() : null);
+                                        resourceModel = copy;
+                                    } else {
+                                        resourceModel = null;
+                                    }
+                                    arrayList4.add(MediaClip.copy$default(mediaClip4, resourceModel, null, null, null, null, null, null, 126, null));
+                                }
+                                collectionSizeOrDefault6 = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList4, 10);
+                                ?? arrayList5 = new ArrayList(collectionSizeOrDefault6);
+                                Iterator it6 = arrayList4.iterator();
+                                while (it6.hasNext()) {
+                                    ResourceModel resourceModel9 = ((MediaClip) it6.next()).resource;
+                                    if (resourceModel9 == null || (emptyMap2 = resourceModel9.extras) == null) {
+                                        emptyMap2 = MapsKt__MapsKt.emptyMap();
+                                    }
+                                    arrayList5.add(emptyMap2);
+                                }
+                                objectRef.element = arrayList5;
+                                z29 = false;
+                                z38 = com.tencent.videocut.render.extension.e.B(arrayList4, false, null, 3, null);
+                                unit2 = Unit.INSTANCE;
+                                r36 = z29;
+                            }
+                        }
+                        z29 = false;
+                        unit2 = Unit.INSTANCE;
+                        r36 = z29;
+                    } else {
+                        r36 = 0;
+                        unit2 = null;
+                    }
+                    if (unit2 == null) {
+                        com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a aVar2 = com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.f321532a;
+                        aVar2.h(r36);
+                        aVar2.g(r36);
+                        dr.WinkTavCutParams winkTavCutParams = this.params;
+                        if (winkTavCutParams == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("params");
+                            winkTavCutParams = null;
+                        }
+                        if (Intrinsics.areEqual(winkTavCutParams.getIsFromTemplateColl(), Boolean.FALSE)) {
+                            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+                            if (winkTavCutParams2 == null) {
+                                Intrinsics.throwUninitializedPropertyAccessException("params");
+                                winkTavCutParams2 = null;
+                            }
+                            if (winkTavCutParams2.getScene() != WinkTavCutScene.Cover) {
+                                dr.WinkTavCutParams winkTavCutParams3 = this.params;
+                                if (winkTavCutParams3 == null) {
+                                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                                    winkTavCutParams3 = null;
+                                }
+                                if (winkTavCutParams3.getScene() != WinkTavCutScene.ZSHOW) {
+                                    QQToast.makeText(BaseApplication.getContext(), R.string.f241387rq, 0).show();
+                                    List<ClipSource> B = com.tencent.videocut.render.extension.e.B(V().videos, true, null, 2, null);
+                                    com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip = false;
+                                    z38 = B;
+                                }
+                            }
+                        }
+                        Unit unit3 = Unit.INSTANCE;
+                    }
+                    LightAsset c18 = com.tencent.videocut.render.utils.b.f384205a.c(templatePath);
+                    if (c18 != null && (movieConfig = c18.getMovieConfig()) != null) {
+                        i3 = movieConfig.maxClipAssetCount;
+                    } else {
+                        i3 = 0;
+                    }
+                    if (i3 > 0 && z38.size() > i3) {
+                        z38 = z38.subList(0, i3);
+                    }
+                    unit = Unit.INSTANCE;
+                } else {
+                    unit = null;
+                }
+                if (unit == null) {
+                    com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a aVar3 = com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.f321532a;
+                    aVar3.h(null);
+                    aVar3.g(null);
+                    Unit unit4 = Unit.INSTANCE;
+                }
+                if (!action.getIsOriginalVolumeChangedManually()) {
+                    List<ClipSource> list7 = z38;
+                    collectionSizeOrDefault4 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list7, 10);
+                    ArrayList arrayList6 = new ArrayList(collectionSizeOrDefault4);
+                    for (ClipSource clipSource : list7) {
+                        if (templatePath != null) {
+                            f16 = 0.15f;
+                        } else {
+                            f16 = 1.0f;
+                        }
+                        arrayList6.add(com.tencent.videocut.render.extension.e.G(clipSource, f16));
+                    }
+                    z38 = arrayList6;
+                }
+                if (!action.getEnableOriginVolume()) {
+                    List<ClipSource> list8 = z38;
+                    collectionSizeOrDefault3 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list8, 10);
+                    ArrayList arrayList7 = new ArrayList(collectionSizeOrDefault3);
+                    Iterator<T> it7 = list8.iterator();
+                    while (it7.hasNext()) {
+                        arrayList7.add(com.tencent.videocut.render.extension.e.G((ClipSource) it7.next(), 0.0f));
+                    }
+                    z38 = arrayList7;
+                }
+                List<MediaClip> g06 = g0();
+                if (((List) objectRef.element).isEmpty()) {
+                    List<MediaClip> list9 = g06;
+                    collectionSizeOrDefault2 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list9, 10);
+                    ?? arrayList8 = new ArrayList(collectionSizeOrDefault2);
+                    for (MediaClip mediaClip5 : list9) {
+                        emptyMap = MapsKt__MapsKt.emptyMap();
+                        arrayList8.add(emptyMap);
+                    }
+                    objectRef.element = arrayList8;
+                }
+                Iterable iterable = (Iterable) objectRef.element;
+                collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(iterable, 10);
+                ?? arrayList9 = new ArrayList(collectionSizeOrDefault);
+                for (Object obj : iterable) {
+                    int i18 = i17 + 1;
+                    if (i17 < 0) {
+                        CollectionsKt__CollectionsKt.throwIndexOverflow();
+                    }
+                    Map map = (Map) obj;
+                    MediaClip mediaClip6 = g06.get(i17);
+                    if (mediaClip6.resource != null) {
+                        map = MapsKt__MapsKt.toMutableMap(map);
+                        map.put("MEDIA_CLIP_USE_TYPE", com.tencent.videocut.render.extension.e.r(mediaClip6).getType());
+                        String p16 = com.tencent.videocut.render.extension.e.p(mediaClip6);
+                        if (p16 != null) {
+                        }
+                        String j19 = com.tencent.videocut.render.extension.e.j(mediaClip6);
+                        if (j19 != null) {
+                            map.put("MEDIA_CLIP_MISSION_ID", j19);
+                            Unit unit5 = Unit.INSTANCE;
+                        }
+                    }
+                    arrayList9.add(map);
+                    i17 = i18;
+                }
+                objectRef.element = arrayList9;
+                return TuplesKt.to(z38, arrayList9);
+            }
+        }
+        z17 = false;
+        iCutSession = this.cutSession;
+        if (iCutSession == null) {
+        }
+        iCutSession.getIClipSourceOperator().h(new j(action));
+        if (!com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip) {
+        }
+        z18 = false;
+        ms.a.f("WinkVideoTavCut", "updateTemplate---useTemplate=" + templatePath + ", shouldTriggerSmartClip=" + z18 + " , action:" + action);
+        List<MediaClip> list10 = V().videos;
+        if (templatePath != null) {
+        }
+        z19 = false;
+        if (this.isZShowTemplate) {
+        }
+        z26 = true;
+        List<ClipSource> z382 = com.tencent.videocut.render.extension.e.z(list10, z19, Boolean.valueOf(z26));
+        objectRef = new Ref.ObjectRef();
+        emptyList = CollectionsKt__CollectionsKt.emptyList();
+        objectRef.element = emptyList;
+        if (!this.needResetDurationProtect) {
+        }
+        z27 = z18;
+        if (templatePath == null) {
+        }
+        if (unit == null) {
+        }
+        if (!action.getIsOriginalVolumeChangedManually()) {
+        }
+        if (!action.getEnableOriginVolume()) {
+        }
+        List<MediaClip> g062 = g0();
+        if (((List) objectRef.element).isEmpty()) {
+        }
+        Iterable iterable2 = (Iterable) objectRef.element;
+        collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(iterable2, 10);
+        ?? arrayList92 = new ArrayList(collectionSizeOrDefault);
+        while (r2.hasNext()) {
+        }
+        objectRef.element = arrayList92;
+        return TuplesKt.to(z382, arrayList92);
+    }
+
+    /* JADX WARN: Code restructure failed: missing block: B:15:0x003b, code lost:
+    
+        if (r67 > r1.getMaxPlayerTimeLimit()) goto L76;
+     */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public final void h3(long durationUs) {
+        long j3;
+        int mapCapacity;
+        final WinkEditData winkEditData;
+        MediaModel copy;
+        LinkedHashMap linkedHashMap;
+        WinkEditData winkEditData2;
+        Map<String, WinkStickerModel> linkedHashMap2;
+        MediaModel copy2;
+        int mapCapacity2;
+        AudioModel copy3;
+        CMTimeRange playTimeRange;
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null && (playTimeRange = iPlayer.getPlayTimeRange()) != null) {
+            j3 = playTimeRange.getDurationUs();
+        } else {
+            j3 = 0;
+        }
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (j3 <= winkTavCutParams.getMaxPlayerTimeLimit()) {
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams2 = null;
+            }
+        }
+        dr.WinkTavCutParams winkTavCutParams3 = this.params;
+        if (winkTavCutParams3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams3 = null;
+        }
+        setPlayTimeRange(0L, winkTavCutParams3.getMaxPlayerTimeLimit());
+        if (K1().getDurationUs() == durationUs) {
+            return;
+        }
+        K1().setDurationUs(durationUs);
+        WinkEditData K1 = K1();
+        Map<String, AudioModel> map = K1.getMediaModel().audios;
+        mapCapacity = MapsKt__MapsJVMKt.mapCapacity(map.size());
+        LinkedHashMap linkedHashMap3 = new LinkedHashMap(mapCapacity);
+        Iterator<T> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            Object key = entry.getKey();
+            if (((AudioModel) entry.getValue()).type == AudioModel.Type.TTS) {
+                copy3 = r16.copy((r37 & 1) != 0 ? r16.id : null, (r37 & 2) != 0 ? r16.path : null, (r37 & 4) != 0 ? Long.valueOf(r16.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(r16.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(r16.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(r16.volume) : null, (r37 & 64) != 0 ? Float.valueOf(r16.speed) : null, (r37 & 128) != 0 ? r16.volumeEffects : null, (r37 & 256) != 0 ? r16.name : null, (r37 & 512) != 0 ? r16.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(r16.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(r16.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(r16.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(r16.fadeOutDuration) : null, (r37 & 16384) != 0 ? r16.lyricInfo : null, (r37 & 32768) != 0 ? r16.type : null, (r37 & 65536) != 0 ? r16.waveSampleData : null, (r37 & 131072) != 0 ? r16.event : null, (r37 & 262144) != 0 ? ((AudioModel) entry.getValue()).unknownFields() : null);
+            } else {
+                copy3 = com.tencent.videocut.render.extension.a.j((AudioModel) entry.getValue(), g0(), durationUs);
+            }
+            linkedHashMap3.put(key, copy3);
+        }
+        if (this.isFromQzoneText) {
+            if (K1.getStickerModelMap() != null) {
+                Map<String, WinkStickerModel> stickerModelMap = K1.getStickerModelMap();
+                Intrinsics.checkNotNull(stickerModelMap);
+                mapCapacity2 = MapsKt__MapsJVMKt.mapCapacity(stickerModelMap.size());
+                LinkedHashMap linkedHashMap4 = new LinkedHashMap(mapCapacity2);
+                Iterator<T> it5 = stickerModelMap.entrySet().iterator();
+                while (it5.hasNext()) {
+                    Map.Entry entry2 = (Map.Entry) it5.next();
+                    LinkedHashMap linkedHashMap5 = linkedHashMap4;
+                    linkedHashMap5.put(entry2.getKey(), WinkStickerModel.copyAndUpdate$default((WinkStickerModel) entry2.getValue(), null, null, 0L, durationUs, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, 0, 0.0f, 0.0f, null, null, 0, null, null, null, null, 0, 0, 0L, null, null, null, null, 0.0f, null, null, 0.0f, 0.0f, null, null, null, null, null, null, null, null, null, null, false, null, null, false, 0.0f, 0.0f, null, false, -9, 1048575, null));
+                    linkedHashMap4 = linkedHashMap5;
+                    linkedHashMap3 = linkedHashMap3;
+                    K1 = K1;
+                }
+                linkedHashMap = linkedHashMap3;
+                winkEditData2 = K1;
+                linkedHashMap2 = MapsKt__MapsKt.toMutableMap(linkedHashMap4);
+            } else {
+                linkedHashMap = linkedHashMap3;
+                winkEditData2 = K1;
+                linkedHashMap2 = new LinkedHashMap<>();
+            }
+            winkEditData = winkEditData2;
+            winkEditData.setStickerModelMap(linkedHashMap2);
+            MediaModel mediaModel = winkEditData.getMediaModel();
+            Map<String, WinkStickerModel> stickerModelMap2 = winkEditData.getStickerModelMap();
+            Intrinsics.checkNotNull(stickerModelMap2);
+            copy2 = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : linkedHashMap, (r39 & 256) != 0 ? mediaModel.stickers : stickerModelMap2, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+            winkEditData.setMediaModel(copy2);
+        } else {
+            winkEditData = K1;
+            copy = r16.copy((r39 & 1) != 0 ? r16.id : null, (r39 & 2) != 0 ? r16.name : null, (r39 & 4) != 0 ? r16.version : null, (r39 & 8) != 0 ? r16.createTime : null, (r39 & 16) != 0 ? r16.updateTime : null, (r39 & 32) != 0 ? r16.duration : null, (r39 & 64) != 0 ? r16.videos : null, (r39 & 128) != 0 ? r16.audios : linkedHashMap3, (r39 & 256) != 0 ? r16.stickers : null, (r39 & 512) != 0 ? r16.backgroundModel : null, (r39 & 1024) != 0 ? r16.filterModels : null, (r39 & 2048) != 0 ? r16.specialEffects : null, (r39 & 4096) != 0 ? r16.transitions : null, (r39 & 8192) != 0 ? r16.templateModel : null, (r39 & 16384) != 0 ? r16.coverInfo : null, (r39 & 32768) != 0 ? r16.exportSetting : null, (r39 & 65536) != 0 ? r16.openHDR : null, (r39 & 131072) != 0 ? r16.hdrModels : null, (r39 & 262144) != 0 ? r16.smoothModels : null, (r39 & 524288) != 0 ? r16.openSuperHDR : null, (r39 & 1048576) != 0 ? winkEditData.getMediaModel().unknownFields() : null);
+            winkEditData.setMediaModel(copy);
+        }
+        if (this.isLightEntityReloading) {
+            ThreadManagerV2.getUIHandlerV2().post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.dz
+                @Override // java.lang.Runnable
+                public final void run() {
+                    WinkVideoTavCut.i3(WinkVideoTavCut.this, winkEditData);
+                }
+            });
+            return;
+        }
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(winkEditData.getMediaModel());
+    }
+
+    public static final void i3(WinkVideoTavCut this$0, WinkEditData this_with) {
+        Intrinsics.checkNotNullParameter(this$0, "this$0");
+        Intrinsics.checkNotNullParameter(this_with, "$this_with");
+        ComposeRenderLayer composeRenderLayer = this$0.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(this_with.getMediaModel());
+    }
+
+    private final List<MediaModel> k1() {
+        if (c2()) {
+            ms.a.f("WinkVideoTavCut", "use horizontal video origin size.");
+            ArrayList arrayList = new ArrayList();
+            for (MediaModel mediaModel : m1()) {
+                SizeF i3 = com.tencent.videocut.render.g.i(mediaModel.videos);
+                if (i3 == null) {
+                    WinkEditStretchedData stretchData = K1().getStretchData();
+                    Intrinsics.checkNotNull(stretchData);
+                    float originWidth = stretchData.getOriginWidth();
+                    WinkEditStretchedData stretchData2 = K1().getStretchData();
+                    Intrinsics.checkNotNull(stretchData2);
+                    i3 = new SizeF(originWidth, stretchData2.getOriginHeight(), null, 4, null);
+                }
+                SizeF d16 = com.tencent.mobileqq.wink.editor.util.m.f322645a.d(mediaModel.videos, i3.width, i3.height);
+                g.Companion companion = com.tencent.mobileqq.wink.editor.sticker.g.INSTANCE;
+                float f16 = this.originScale;
+                arrayList.add(companion.g(mediaModel, f16, f16, this.originTopY, d16.width, d16.height, com.tencent.mobileqq.wink.editor.draft.c.B(K1()), J1()));
+            }
+            return arrayList;
+        }
+        ms.a.f("WinkVideoTavCut", "use the current render size.");
+        return m1();
+    }
+
+    public final boolean k2() {
+        if (this.isMovieControllDurationInTempColl) {
+            dr.WinkTavCutParams winkTavCutParams = this.params;
+            if (winkTavCutParams == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams = null;
+            }
+            if (Intrinsics.areEqual(winkTavCutParams.getIsFromTemplateColl(), Boolean.TRUE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private final List<MediaModel> l1() {
+        SizeF sizeF;
+        List<MediaModel> m16 = m1();
+        if (TextUtils.isEmpty(getTemplatePath())) {
+            ArrayList arrayList = new ArrayList();
+            for (MediaModel mediaModel : m16) {
+                BackgroundModel backgroundModel = mediaModel.backgroundModel;
+                if (backgroundModel != null) {
+                    sizeF = backgroundModel.renderSize;
+                } else {
+                    sizeF = null;
+                }
+                if (sizeF != null) {
+                    SizeF c16 = com.tencent.mobileqq.wink.editor.util.m.f322645a.c(mediaModel.videos);
+                    Pair pair = new Pair(Float.valueOf(c16.width), Float.valueOf(c16.height));
+                    float floatValue = ((Number) pair.component1()).floatValue();
+                    float floatValue2 = ((Number) pair.component2()).floatValue();
+                    RenderSizeAndOriginSize U0 = U0(this, floatValue, floatValue2, 0, 0, 12, null);
+                    int renderWidth = U0.getRenderWidth();
+                    U0.getRenderHeight();
+                    float originTopY = U0.getOriginTopY();
+                    float originBottomY = U0.getOriginBottomY();
+                    float originScale = U0.getOriginScale();
+                    boolean isStretched = U0.getIsStretched();
+                    if (!isStretched) {
+                        arrayList.add(mediaModel);
+                    } else {
+                        g.Companion companion = com.tencent.mobileqq.wink.editor.sticker.g.INSTANCE;
+                        if (companion.e(m(), originTopY, originBottomY)) {
+                            arrayList.add(mediaModel);
+                        } else {
+                            float f16 = renderWidth;
+                            arrayList.add(companion.g(mediaModel, originScale, originScale, originTopY, f16, (floatValue2 * f16) / floatValue, isStretched, J1()));
+                        }
+                    }
+                } else {
+                    ms.a.c("WinkVideoTavCut", "invalid media models, have not valid size");
+                    arrayList.add(mediaModel);
+                }
+            }
+            return arrayList;
+        }
+        return m16;
+    }
+
+    private final boolean m2() {
+        if (this.params != null) {
+            an.Companion companion = com.tencent.mobileqq.wink.picker.core.part.an.INSTANCE;
+            if (companion.d() != null) {
+                dr.WinkTavCutParams winkTavCutParams = this.params;
+                if (winkTavCutParams == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams = null;
+                }
+                if (winkTavCutParams.getScene() == WinkTavCutScene.PICK_PRELOAD && companion.a() && companion.c() != null && !this.isCropScene) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private final org.light.lightAssetKit.enums.BackgroundFillMode n1(String str) {
+        Entity rootEntity;
+        List<Entity> entitiesWithComponent;
+        Object orNull;
+        MultiMedia multiMedia;
+        LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(str);
+        if (d16 != null && (rootEntity = d16.getRootEntity()) != null && (entitiesWithComponent = rootEntity.getEntitiesWithComponent(MultiMedia.class)) != null) {
+            orNull = CollectionsKt___CollectionsKt.getOrNull(entitiesWithComponent, 0);
+            Entity entity = (Entity) orNull;
+            if (entity != null && (multiMedia = (MultiMedia) entity.getComponent(MultiMedia.class)) != null) {
+                return multiMedia.getBackgroundFillMode();
+            }
+        }
+        return org.light.lightAssetKit.enums.BackgroundFillMode.SolidColorFill;
+    }
+
+    public static /* synthetic */ boolean n3(WinkVideoTavCut winkVideoTavCut, List list, boolean z16, long j3, boolean z17, int i3, Object obj) {
+        if ((i3 & 2) != 0) {
+            z16 = true;
+        }
+        boolean z18 = z16;
+        if ((i3 & 4) != 0) {
+            j3 = -1;
+        }
+        long j16 = j3;
+        if ((i3 & 8) != 0) {
+            z17 = false;
+        }
+        return winkVideoTavCut.m3(list, z18, j16, z17);
+    }
+
+    private final int o1(String templatePath) {
+        Entity rootEntity;
+        List<Entity> entitiesWithComponent;
+        Object orNull;
+        MultiMedia multiMedia;
+        LightAssetDataContext d16 = com.tencent.videocut.render.utils.b.f384205a.d(templatePath);
+        if (d16 != null && (rootEntity = d16.getRootEntity()) != null && (entitiesWithComponent = rootEntity.getEntitiesWithComponent(MultiMedia.class)) != null) {
+            orNull = CollectionsKt___CollectionsKt.getOrNull(entitiesWithComponent, 0);
+            Entity entity = (Entity) orNull;
+            if (entity != null && (multiMedia = (MultiMedia) entity.getComponent(MultiMedia.class)) != null) {
+                return multiMedia.getImageEffect();
+            }
+        }
+        return 0;
+    }
+
+    private final void o2(dr.WinkTavCutParams params) {
+        R2(params.getTemplatePath());
+        this.isFromQzoneText = params.getIsFromQzoneText();
+        this.textQzoneText = params.getTextQzoneText();
+        this.isBackgroundTemplateInited = false;
+        if (params.c() != null) {
+            Iterator<T> it = n().iterator();
+            while (it.hasNext()) {
+                ((WinkEditData) it.next()).setAssetData(params.c());
+            }
+        }
+    }
+
+    private final void p2(FrameLayout mPlayerLayout) {
+        w53.b.a("WinkVideoTavCut", "preload player preloadPlayer");
+        if (mPlayerLayout != null) {
+            mPlayerLayout.removeAllViews();
+        }
+        TextureView textureView = new TextureView(BaseApplication.getContext());
+        textureView.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+        if (mPlayerLayout != null) {
+            mPlayerLayout.setVisibility(0);
+        }
+        if (mPlayerLayout != null) {
+            mPlayerLayout.addView(textureView);
+        }
+        textureView.setOpaque(false);
+        textureView.setSurfaceTextureListener(new e(textureView, this));
+    }
+
+    private final List<ClipSource> q2(boolean isZShowTemplate) {
+        boolean z16;
+        List<MediaClip> list = V().videos;
+        if (!isZShowTemplate && !k2()) {
+            z16 = false;
+        } else {
+            z16 = true;
+        }
+        return com.tencent.videocut.render.extension.e.B(list, false, Boolean.valueOf(z16), 1, null);
+    }
+
+    private final LAKRenderModel r2(boolean needModifyClipsDuration, List<ClipSource> clipSources) {
+        LAKRenderModel copy;
+        LAKRenderModel lAKRenderModel = null;
+        if (needModifyClipsDuration) {
+            LAKRenderModel v16 = v1();
+            if (v16 == null) {
+                IWinkReport iWinkReport = (IWinkReport) QRoute.api(IWinkReport.class);
+                String templatePath = getTemplatePath();
+                String templatePath2 = getTemplatePath();
+                if (templatePath2 == null) {
+                    templatePath2 = "";
+                }
+                iWinkReport.reportBugly("getRenderModelByIsNeedTimeModification fail:templatePath: " + templatePath + "  template exists: " + new File(templatePath2).exists(), null);
+            }
+            lAKRenderModel = v16;
+        }
+        if (lAKRenderModel == null) {
+            copy = r1.copy((r37 & 1) != 0 ? r1.renderScene : null, (r37 & 2) != 0 ? r1.root : null, (r37 & 4) != 0 ? r1.jsonData : null, (r37 & 8) != 0 ? r1.inputSources : null, (r37 & 16) != 0 ? r1.painting : null, (r37 & 32) != 0 ? r1.clipsAssets : null, (r37 & 64) != 0 ? r1.modifyClipsDuration : false, (r37 & 128) != 0 ? r1.seekTolerance : 0, (r37 & 256) != 0 ? r1.properties : null, (r37 & 512) != 0 ? r1.audioAssets : null, (r37 & 1024) != 0 ? r1.timeLines : null, (r37 & 2048) != 0 ? r1.maxDuration : 0L, (r37 & 4096) != 0 ? r1.componentLevel : 0, (r37 & 8192) != 0 ? r1.voiceChangerConfig : null, (r37 & 16384) != 0 ? r1.customRenderConfig : null, (r37 & 32768) != 0 ? r1.exportMode : false, (r37 & 65536) != 0 ? r1.stickerValue : null, (r37 & 131072) != 0 ? rd4.c.f431135f.y(clipSources).watermarkConfig : null);
+            return copy;
+        }
+        return lAKRenderModel;
+    }
+
+    private final void r3(MediaModel mediaModel) {
+        ms.a.c("WinkVideoTavCut", "updatePlayerWithSurface");
+        dr.WinkTavCutParams winkTavCutParams = null;
+        ComposeRenderLayer composeRenderLayer = null;
+        if (this.currentPlayer != null) {
+            ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+            if (composeRenderLayer2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            } else {
+                composeRenderLayer = composeRenderLayer2;
+            }
+            composeRenderLayer.l(mediaModel);
+            IPlayer iPlayer = this.currentPlayer;
+            Intrinsics.checkNotNull(iPlayer);
+            iPlayer.seek(0L);
+            IPlayer iPlayer2 = this.currentPlayer;
+            Intrinsics.checkNotNull(iPlayer2);
+            iPlayer2.play();
+            return;
+        }
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        this.currentPlayer = iCutSession.bindCutPlayer(rd4.c.f431135f.g(null));
+        dr.WinkTavCutParams winkTavCutParams2 = this.params;
+        if (winkTavCutParams2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams2 = null;
+        }
+        int width = winkTavCutParams2.getWidth();
+        dr.WinkTavCutParams winkTavCutParams3 = this.params;
+        if (winkTavCutParams3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams3 = null;
+        }
+        if (winkTavCutParams3.getSurfaceWidth() > 0) {
+            dr.WinkTavCutParams winkTavCutParams4 = this.params;
+            if (winkTavCutParams4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams4 = null;
+            }
+            width = winkTavCutParams4.getSurfaceWidth();
+        }
+        dr.WinkTavCutParams winkTavCutParams5 = this.params;
+        if (winkTavCutParams5 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams5 = null;
+        }
+        int height = winkTavCutParams5.getHeight();
+        dr.WinkTavCutParams winkTavCutParams6 = this.params;
+        if (winkTavCutParams6 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams6 = null;
+        }
+        if (winkTavCutParams6.getSurfaceHeight() > 0) {
+            dr.WinkTavCutParams winkTavCutParams7 = this.params;
+            if (winkTavCutParams7 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams7 = null;
+            }
+            height = winkTavCutParams7.getSurfaceHeight();
+        }
+        IPlayer iPlayer3 = this.currentPlayer;
+        Intrinsics.checkNotNull(iPlayer3);
+        dr.WinkTavCutParams winkTavCutParams8 = this.params;
+        if (winkTavCutParams8 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams8 = null;
+        }
+        Surface playerSurface = winkTavCutParams8.getPlayerSurface();
+        Intrinsics.checkNotNull(playerSurface);
+        iPlayer3.setUpSurface(playerSurface, width, height);
+        IPlayer iPlayer4 = this.currentPlayer;
+        Intrinsics.checkNotNull(iPlayer4);
+        iPlayer4.setLoopPlay(false);
+        IPlayer iPlayer5 = this.currentPlayer;
+        Intrinsics.checkNotNull(iPlayer5);
+        dr.WinkTavCutParams winkTavCutParams9 = this.params;
+        if (winkTavCutParams9 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+        } else {
+            winkTavCutParams = winkTavCutParams9;
+        }
+        iPlayer5.setAutoPlay(winkTavCutParams.getAutoPlay());
+    }
+
+    public final void s2(Map<Integer, ? extends Entity> map) {
+        Unit unit;
+        Object first;
+        boolean z16;
+        Object last;
+        boolean z17;
+        Object first2;
+        Long l3;
+        Object last2;
+        Long l16;
+        long j3;
+        Object obj;
+        boolean z18;
+        boolean z19;
+        List<Entity> f16 = f1(getTemplatePath(), AudioSourceType.BGM);
+        if (map != null) {
+            ArrayList arrayList = new ArrayList();
+            Iterator<T> it = f16.iterator();
+            while (it.hasNext()) {
+                Entity entity = map.get(Integer.valueOf(((Entity) it.next()).getId()));
+                if (entity != null) {
+                    arrayList.add(entity);
+                }
+            }
+            this.templateMusicEntities = arrayList;
+            unit = Unit.INSTANCE;
+        } else {
+            unit = null;
+        }
+        if (unit == null) {
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            List<Entity> queryEntityByComponent = iCutSession.queryEntityByComponent(Reflection.getOrCreateKotlinClass(AudioSource.class));
+            ArrayList arrayList2 = new ArrayList();
+            for (Object obj2 : queryEntityByComponent) {
+                Entity entity2 = (Entity) obj2;
+                Iterator<T> it5 = f16.iterator();
+                while (true) {
+                    if (it5.hasNext()) {
+                        obj = it5.next();
+                        if (((Entity) obj).getId() == entity2.getId()) {
+                            z19 = true;
+                        } else {
+                            z19 = false;
+                        }
+                        if (z19) {
+                            break;
+                        }
+                    } else {
+                        obj = null;
+                        break;
+                    }
+                }
+                if (obj != null) {
+                    z18 = true;
+                } else {
+                    z18 = false;
+                }
+                if (z18) {
+                    arrayList2.add(obj2);
+                }
+            }
+            this.templateMusicEntities = arrayList2;
+        }
+        for (Entity entity3 : this.templateMusicEntities) {
+            List<MediaClip> g06 = g0();
+            first = CollectionsKt___CollectionsKt.first((List<? extends Object>) g06);
+            if (com.tencent.videocut.render.extension.e.r((MediaClip) first) == MediaClipUseType.OPENING) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            last = CollectionsKt___CollectionsKt.last((List<? extends Object>) g06);
+            if (com.tencent.videocut.render.extension.e.r((MediaClip) last) == MediaClipUseType.ENDING) {
+                z17 = true;
+            } else {
+                z17 = false;
+            }
+            first2 = CollectionsKt___CollectionsKt.first((List<? extends Object>) g06);
+            ResourceModel resourceModel = ((MediaClip) first2).resource;
+            if (resourceModel != null) {
+                l3 = Long.valueOf(resourceModel.scaleDuration);
+            } else {
+                l3 = null;
+            }
+            last2 = CollectionsKt___CollectionsKt.last((List<? extends Object>) g06);
+            ResourceModel resourceModel2 = ((MediaClip) last2).resource;
+            if (resourceModel2 != null) {
+                l16 = Long.valueOf(resourceModel2.scaleDuration);
+            } else {
+                l16 = null;
+            }
+            if (z16 && l3 != null) {
+                j3 = l3.longValue();
+            } else {
+                j3 = 0;
+            }
+            if (z17 && l16 != null) {
+                getDurationUs();
+                l16.longValue();
+            } else {
+                getDurationUs();
+            }
+            TimeOffset timeOffset = (TimeOffset) entity3.getComponent(TimeOffset.class);
+            if (timeOffset != null) {
+                timeOffset.setStartOffset(j3);
+            } else {
+                TimeOffset timeOffset2 = new TimeOffset();
+                timeOffset2.setStartOffset(j3);
+                timeOffset2.setLoopCount(-1);
+                entity3.addComponent(timeOffset2);
+            }
+        }
+        if (!this.switchTemplateMusicSuccess) {
+            W2(this.enableTemplateMusic);
+        }
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    static /* synthetic */ void t2(WinkVideoTavCut winkVideoTavCut, Map map, int i3, Object obj) {
+        if ((i3 & 1) != 0) {
+            map = null;
+        }
+        winkVideoTavCut.s2(map);
+    }
+
+    public static /* synthetic */ void t3(WinkVideoTavCut winkVideoTavCut, List list, boolean z16, boolean z17, int i3, Object obj) {
+        if ((i3 & 2) != 0) {
+            z16 = false;
+        }
+        if ((i3 & 4) != 0) {
+            z17 = false;
+        }
+        winkVideoTavCut.s3(list, z16, z17);
+    }
+
+    /* JADX WARN: Type inference failed for: r0v1, types: [java.util.List, T] */
+    /* JADX WARN: Type inference failed for: r0v4, types: [T, java.util.Collection, java.util.ArrayList] */
+    /* JADX WARN: Type inference failed for: r5v2, types: [T, java.util.Collection, java.util.ArrayList] */
+    public final void u2(Map<Integer, ? extends Entity> entityMap) {
+        Object obj;
+        boolean z16;
+        boolean z17;
+        String templatePath = getTemplatePath();
+        if (templatePath != null) {
+            Ref.ObjectRef objectRef = new Ref.ObjectRef();
+            ?? f16 = f1(templatePath, AudioSourceType.TTS);
+            objectRef.element = f16;
+            Entity entity = null;
+            if (entityMap != null) {
+                ?? arrayList = new ArrayList();
+                Iterator it = ((Iterable) f16).iterator();
+                while (it.hasNext()) {
+                    Entity entity2 = entityMap.get(Integer.valueOf(((Entity) it.next()).getId()));
+                    if (entity2 != null) {
+                        arrayList.add(entity2);
+                    }
+                }
+                objectRef.element = arrayList;
+            } else {
+                ICutSession iCutSession = this.cutSession;
+                if (iCutSession == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession = null;
+                }
+                List<Entity> queryEntityByComponent = iCutSession.queryEntityByComponent(Reflection.getOrCreateKotlinClass(AudioSource.class));
+                ?? arrayList2 = new ArrayList();
+                for (Object obj2 : queryEntityByComponent) {
+                    Entity entity3 = (Entity) obj2;
+                    Iterator it5 = ((Iterable) objectRef.element).iterator();
+                    while (true) {
+                        if (it5.hasNext()) {
+                            obj = it5.next();
+                            if (((Entity) obj).getId() == entity3.getId()) {
+                                z17 = true;
+                            } else {
+                                z17 = false;
+                            }
+                            if (z17) {
+                                break;
+                            }
+                        } else {
+                            obj = null;
+                            break;
+                        }
+                    }
+                    if (obj != null) {
+                        z16 = true;
+                    } else {
+                        z16 = false;
+                    }
+                    if (z16) {
+                        arrayList2.add(obj2);
+                    }
+                }
+                objectRef.element = arrayList2;
+            }
+            if (!((Collection) objectRef.element).isEmpty()) {
+                entity = (Entity) ((List) objectRef.element).get(0);
+            }
+            w53.b.f("WinkVideoTavCut", "path:" + getTemplatePath() + ", entity:" + entity + ", templateEntity: " + this.templateTTSEntity);
+            if (entity != null) {
+                this.templateTTSEntity = entity;
+            }
+        }
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    private final Map<String, StickerModel> u3(Map<String, ? extends StickerModel> r702, SizeF originRenderSizeF, SizeF newRenderSizeF) {
+        if (newRenderSizeF != null && (!r702.isEmpty()) && originRenderSizeF != null) {
+            SizeF o16 = com.tencent.mobileqq.wink.editor.util.m.o();
+            com.tencent.mobileqq.wink.editor.util.m mVar = com.tencent.mobileqq.wink.editor.util.m.f322645a;
+            SizeF p16 = mVar.p(originRenderSizeF, o16);
+            SizeF p17 = mVar.p(newRenderSizeF, o16);
+            Matrix d16 = com.tencent.mobileqq.wink.editor.sticker.n.d(p17, p16);
+            Matrix matrix = new Matrix();
+            matrix.postConcat(d16);
+            float d17 = com.tencent.mobileqq.wink.editor.crop.a.d(matrix);
+            float e16 = com.tencent.mobileqq.wink.editor.crop.a.e(matrix);
+            if (!Float.isNaN(d17) && !Float.isNaN(e16) && !Float.isInfinite(d17) && !Float.isInfinite(e16)) {
+                w53.b.f("WinkVideoTavCut", "[update] storedScreenSizeF = " + o16 + ", transX = " + (com.tencent.mobileqq.wink.editor.crop.a.f(matrix) / newRenderSizeF.width) + ", transY = " + (com.tencent.mobileqq.wink.editor.crop.a.g(matrix) / newRenderSizeF.height) + ", scaleX = " + d17 + ", scaleY = " + e16);
+                LinkedHashMap linkedHashMap = new LinkedHashMap();
+                for (String str : r702.keySet()) {
+                    StickerModel stickerModel = (StickerModel) r702.get(str);
+                    if (stickerModel instanceof WinkStickerModel) {
+                        WinkStickerModel winkStickerModel = (WinkStickerModel) stickerModel;
+                        linkedHashMap.put(str, WinkStickerModel.copyAndUpdate$default(winkStickerModel, null, null, 0L, 0L, 0, winkStickerModel.scaleX, winkStickerModel.scaleY, 0.0f, winkStickerModel.centerX / d17, winkStickerModel.centerY / e16, false, 0, 0, 0.0f, 0.0f, null, null, 0, null, null, null, null, 0, 0, 0L, null, null, null, null, 0.0f, null, null, 0.0f, 0.0f, com.tencent.mobileqq.wink.editor.sticker.l.o(p17, o16), null, null, null, null, null, null, null, null, null, false, null, null, false, 1.0f, 0.0f, null, false, -865, 851963, null));
+                    }
+                }
+                K1().setStickerModelMap(linkedHashMap);
+                return linkedHashMap;
+            }
+        }
+        return r702;
+    }
+
+    /* JADX WARN: Code restructure failed: missing block: B:25:0x0079, code lost:
+    
+        r8 = r9.copy((r30 & 1) != 0 ? r9.sourceId : null, (r30 & 2) != 0 ? r9.path : null, (r30 & 4) != 0 ? r9.type : null, (r30 & 8) != 0 ? r9.duration : 0, (r30 & 16) != 0 ? r9.speed : null, (r30 & 32) != 0 ? r9.volume : null, (r30 & 64) != 0 ? r9.startOffset : null, (r30 & 128) != 0 ? r9.matrix : null, (r30 & 256) != 0 ? r9.photoEffectPath : null, (r30 & 512) != 0 ? r9.transform : null, (r30 & 1024) != 0 ? r9.clipRect : r23, (r30 & 2048) != 0 ? r9.byteArray : null, (r30 & 4096) != 0 ? r9.autoLoop : null);
+     */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    private final LAKRenderModel v1() {
+        WinkVideoTavCut winkVideoTavCut;
+        boolean z16;
+        boolean z17;
+        int collectionSizeOrDefault;
+        int collectionSizeOrDefault2;
+        MediaModel copy;
+        MediaType mediaType;
+        Object orNull;
+        ResourceModel resourceModel;
+        ResourceModel copy2;
+        Object orNull2;
+        ClipSource copy3;
+        List<MediaClip> list = V().videos;
+        int i3 = 0;
+        if (getTemplatePath() == null && com.tencent.mobileqq.wink.editor.smartclip.viewmodel.a.manualTurnOnSmartClip) {
+            winkVideoTavCut = this;
+            z16 = true;
+        } else {
+            winkVideoTavCut = this;
+            z16 = false;
+        }
+        if (!winkVideoTavCut.isZShowTemplate && !k2()) {
+            z17 = false;
+        } else {
+            z17 = true;
+        }
+        List<ClipSource> z18 = com.tencent.videocut.render.extension.e.z(list, z16, Boolean.valueOf(z17));
+        LAKRenderModel b16 = com.tencent.videocut.render.utils.b.f384205a.b(new b.a(getTemplatePath(), z18, true));
+        if (b16 == null) {
+            return null;
+        }
+        List<ClipSource> clipsAssets = b16.getClipsAssets();
+        collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(clipsAssets, 10);
+        ArrayList arrayList = new ArrayList(collectionSizeOrDefault);
+        int i16 = 0;
+        for (Object obj : clipsAssets) {
+            int i17 = i16 + 1;
+            if (i16 < 0) {
+                CollectionsKt__CollectionsKt.throwIndexOverflow();
+            }
+            ClipSource clipSource = (ClipSource) obj;
+            orNull2 = CollectionsKt___CollectionsKt.getOrNull(z18, i16);
+            ClipSource clipSource2 = (ClipSource) orNull2;
+            if (clipSource2 != null && (r23 = clipSource2.getClipRect()) != null && copy3 != null) {
+                clipSource = copy3;
+            }
+            arrayList.add(clipSource);
+            i16 = i17;
+        }
+        b16.setClipsAssets(arrayList);
+        WinkEditData K1 = K1();
+        MediaModel mediaModel = K1.getMediaModel();
+        List<MediaClip> list2 = K1.getMediaModel().videos;
+        collectionSizeOrDefault2 = CollectionsKt__IterablesKt.collectionSizeOrDefault(list2, 10);
+        ArrayList arrayList2 = new ArrayList(collectionSizeOrDefault2);
+        for (Object obj2 : list2) {
+            int i18 = i3 + 1;
+            if (i3 < 0) {
+                CollectionsKt__CollectionsKt.throwIndexOverflow();
+            }
+            MediaClip mediaClip = (MediaClip) obj2;
+            ResourceModel resourceModel2 = mediaClip.resource;
+            if (resourceModel2 != null) {
+                mediaType = resourceModel2.type;
+            } else {
+                mediaType = null;
+            }
+            if (mediaType != MediaType.VIDEO) {
+                orNull = CollectionsKt___CollectionsKt.getOrNull(b16.getClipsAssets(), i3);
+                ClipSource clipSource3 = (ClipSource) orNull;
+                if (clipSource3 != null) {
+                    ResourceModel resourceModel3 = mediaClip.resource;
+                    if (resourceModel3 != null) {
+                        copy2 = resourceModel3.copy((r35 & 1) != 0 ? resourceModel3.id : null, (r35 & 2) != 0 ? resourceModel3.path : null, (r35 & 4) != 0 ? Long.valueOf(resourceModel3.scaleDuration) : Long.valueOf(clipSource3.getDuration()), (r35 & 8) != 0 ? Long.valueOf(resourceModel3.sourceStart) : null, (r35 & 16) != 0 ? Long.valueOf(resourceModel3.sourceDuration) : Long.valueOf(clipSource3.getDuration()), (r35 & 32) != 0 ? Long.valueOf(resourceModel3.selectStart) : null, (r35 & 64) != 0 ? Long.valueOf(resourceModel3.selectDuration) : Long.valueOf(clipSource3.getDuration()), (r35 & 128) != 0 ? resourceModel3.type : null, (r35 & 256) != 0 ? resourceModel3.size : null, (r35 & 512) != 0 ? Float.valueOf(resourceModel3.volume) : null, (r35 & 1024) != 0 ? resourceModel3.extras : null, (r35 & 2048) != 0 ? resourceModel3.picClipRect : null, (r35 & 4096) != 0 ? resourceModel3.reversePath : null, (r35 & 8192) != 0 ? resourceModel3.normalPath : null, (r35 & 16384) != 0 ? resourceModel3.isReverseMode : null, (r35 & 32768) != 0 ? Float.valueOf(resourceModel3.deblurScore) : null, (r35 & 65536) != 0 ? resourceModel3.unknownFields() : null);
+                        resourceModel = copy2;
+                    } else {
+                        resourceModel = null;
+                    }
+                    mediaClip = MediaClip.copy$default(mediaClip, resourceModel, null, null, null, null, null, null, 126, null);
+                }
+            }
+            arrayList2.add(mediaClip);
+            i3 = i18;
+        }
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : arrayList2, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        return b16;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    static /* synthetic */ void v2(WinkVideoTavCut winkVideoTavCut, Map map, int i3, Object obj) {
+        if ((i3 & 1) != 0) {
+            map = null;
+        }
+        winkVideoTavCut.u2(map);
+    }
+
+    /* JADX WARN: Removed duplicated region for block: B:68:0x0180 A[SYNTHETIC] */
+    /* JADX WARN: Removed duplicated region for block: B:72:0x0139 A[SYNTHETIC] */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    private final void w2(boolean applyNewTemplate, boolean enableImageTemplateEdit, boolean isClearStickers, long currentTimeUs, boolean needRecoveryTemplateFromDraft) {
+        boolean z16;
+        int collectionSizeOrDefault;
+        int collectionSizeOrDefault2;
+        int mapCapacity;
+        int coerceAtLeast;
+        Map mutableMap;
+        MediaModel copy;
+        boolean z17;
+        Collection<WinkStickerModel> values;
+        int collectionSizeOrDefault3;
+        int collectionSizeOrDefault4;
+        int mapCapacity2;
+        int coerceAtLeast2;
+        Map<String, WinkStickerModel> mutableMap2;
+        Map<String, WinkStickerModel> m3;
+        boolean isBlank;
+        ms.a.f("WinkVideoTavCut", "refreshTemplateTextSticker applyNewTemplate: " + applyNewTemplate);
+        String templatePath = getTemplatePath();
+        if (templatePath != null) {
+            isBlank = StringsKt__StringsJVMKt.isBlank(templatePath);
+            if (!isBlank) {
+                z16 = false;
+                if (z16 && !this.isFromQzoneText) {
+                    ArrayList arrayList = new ArrayList();
+                    Companion companion = INSTANCE;
+                    arrayList.addAll(companion.h(templatePath));
+                    if (enableImageTemplateEdit) {
+                        arrayList.addAll(companion.g(templatePath));
+                    }
+                    if (isClearStickers && arrayList.isEmpty()) {
+                        return;
+                    }
+                    List<WinkStickerModel> d16 = com.tencent.videocut.render.utils.c.f384212a.d(arrayList, templatePath, this.renderWidth, this.renderHeight);
+                    ArrayList arrayList2 = new ArrayList();
+                    if (!isClearStickers && (m3 = m()) != null) {
+                        ArrayList arrayList3 = new ArrayList(m3.size());
+                        for (Map.Entry<String, WinkStickerModel> entry : m3.entrySet()) {
+                            if (entry.getValue().type == StickerModel.Type.TEXT) {
+                                arrayList2.add(entry.getValue());
+                            }
+                            arrayList3.add(Unit.INSTANCE);
+                        }
+                    }
+                    List<WinkStickerModel> list = d16;
+                    collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(list, 10);
+                    ArrayList arrayList4 = new ArrayList(collectionSizeOrDefault);
+                    Iterator<T> it = list.iterator();
+                    while (it.hasNext()) {
+                        arrayList4.add(Boolean.valueOf(arrayList2.add((WinkStickerModel) it.next())));
+                    }
+                    if (applyNewTemplate) {
+                        if (!this.isFromFirstTemplate && !isClearStickers) {
+                            B(new LinkedHashMap());
+                        }
+                        collectionSizeOrDefault4 = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList2, 10);
+                        mapCapacity2 = MapsKt__MapsJVMKt.mapCapacity(collectionSizeOrDefault4);
+                        coerceAtLeast2 = RangesKt___RangesKt.coerceAtLeast(mapCapacity2, 16);
+                        LinkedHashMap linkedHashMap = new LinkedHashMap(coerceAtLeast2);
+                        for (Object obj : arrayList2) {
+                            linkedHashMap.put(((WinkStickerModel) obj).id, obj);
+                        }
+                        mutableMap2 = MapsKt__MapsKt.toMutableMap(linkedHashMap);
+                        x3(mutableMap2, currentTimeUs);
+                    } else {
+                        if (needRecoveryTemplateFromDraft) {
+                            w53.b.f("WinkVideoTavCut", "removeTemplateSticker fromDraft: " + needRecoveryTemplateFromDraft);
+                            ArrayList arrayList5 = new ArrayList();
+                            for (Object obj2 : arrayList2) {
+                                WinkStickerModel winkStickerModel = (WinkStickerModel) obj2;
+                                Map<String, WinkStickerModel> m16 = m();
+                                if (m16 != null && (values = m16.values()) != null) {
+                                    Collection<WinkStickerModel> collection = values;
+                                    collectionSizeOrDefault3 = CollectionsKt__IterablesKt.collectionSizeOrDefault(collection, 10);
+                                    ArrayList arrayList6 = new ArrayList(collectionSizeOrDefault3);
+                                    Iterator<T> it5 = collection.iterator();
+                                    while (it5.hasNext()) {
+                                        arrayList6.add(((WinkStickerModel) it5.next()).id);
+                                    }
+                                    if (!arrayList6.contains(winkStickerModel.id)) {
+                                        z17 = true;
+                                        if (!z17) {
+                                            arrayList5.add(obj2);
+                                        }
+                                    }
+                                }
+                                z17 = false;
+                                if (!z17) {
+                                }
+                            }
+                            B2(arrayList5);
+                        }
+                        WinkEditData K1 = K1();
+                        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+                        if (composeRenderLayer == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                            composeRenderLayer = null;
+                        }
+                        MediaModel mediaModel = K1.getMediaModel();
+                        collectionSizeOrDefault2 = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList2, 10);
+                        mapCapacity = MapsKt__MapsJVMKt.mapCapacity(collectionSizeOrDefault2);
+                        coerceAtLeast = RangesKt___RangesKt.coerceAtLeast(mapCapacity, 16);
+                        LinkedHashMap linkedHashMap2 = new LinkedHashMap(coerceAtLeast);
+                        for (Object obj3 : arrayList2) {
+                            linkedHashMap2.put(((WinkStickerModel) obj3).id, obj3);
+                        }
+                        mutableMap = MapsKt__MapsKt.toMutableMap(linkedHashMap2);
+                        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : mutableMap, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+                        ComposeRenderLayer.u(composeRenderLayer, copy, false, currentTimeUs, false, 10, null);
+                    }
+                    R(0);
+                    return;
+                }
+            }
+        }
+        z16 = true;
+        if (z16) {
+        }
+    }
+
+    private final void x2(String templatePath) {
+        if (templatePath != null && !com.tencent.mobileqq.wink.utils.ah.f326668a.f(templatePath)) {
+            QQToast.makeText(BaseApplication.getContext(), BaseApplication.getContext().getString(R.string.f241317rj), 0).show();
+        }
+    }
+
+    private final void y2() {
+        this.playerListener = new f();
+    }
+
+    private final void z2() {
+        Collection<WinkStickerModel> values;
+        String str;
+        boolean z16;
+        Map<String, WinkStickerModel> m3 = m();
+        if (m3 != null && (values = m3.values()) != null) {
+            for (WinkStickerModel winkStickerModel : values) {
+                MetaMaterial material = winkStickerModel.getMaterial();
+                ICutSession iCutSession = null;
+                if (material != null) {
+                    str = com.tencent.mobileqq.wink.editor.sticker.m.p(material);
+                } else {
+                    str = null;
+                }
+                if (str != null && com.tencent.mobileqq.wink.editor.sticker.m.t(material) != null && com.tencent.mobileqq.wink.editor.sticker.m.r(material) != null) {
+                    String r16 = com.tencent.mobileqq.wink.editor.sticker.m.r(material);
+                    Intrinsics.checkNotNull(r16);
+                    if (r16.length() > 0) {
+                        z16 = true;
+                    } else {
+                        z16 = false;
+                    }
+                    if (z16) {
+                        ICutSession iCutSession2 = this.cutSession;
+                        if (iCutSession2 == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                        } else {
+                            iCutSession = iCutSession2;
+                        }
+                        String p16 = com.tencent.mobileqq.wink.editor.sticker.m.p(winkStickerModel.getMaterial());
+                        String t16 = com.tencent.mobileqq.wink.editor.sticker.m.t(winkStickerModel.getMaterial());
+                        String r17 = com.tencent.mobileqq.wink.editor.sticker.m.r(material);
+                        Intrinsics.checkNotNull(r17);
+                        iCutSession.registerFont(p16, t16, r17);
+                    }
+                }
+            }
+        }
+    }
+
+    public static final void z3(int i3, WinkVideoTavCut this$0, SizeF renderSize, FrameLayout wrapper) {
+        Map<String, WinkStickerModel> mutableMap;
+        Intrinsics.checkNotNullParameter(this$0, "this$0");
+        Intrinsics.checkNotNullParameter(renderSize, "$renderSize");
+        Intrinsics.checkNotNullParameter(wrapper, "$wrapper");
+        if (i3 == 0) {
+            dr.WinkTavCutParams winkTavCutParams = null;
+            if (this$0.useVerticalPlayer) {
+                dr.WinkTavCutParams winkTavCutParams2 = this$0.params;
+                if (winkTavCutParams2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams2 = null;
+                }
+                this$0.renderWidth = winkTavCutParams2.getWidth();
+                dr.WinkTavCutParams winkTavCutParams3 = this$0.params;
+                if (winkTavCutParams3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                } else {
+                    winkTavCutParams = winkTavCutParams3;
+                }
+                this$0.renderHeight = (int) ((winkTavCutParams.getWidth() * renderSize.height) / renderSize.width);
+            } else {
+                dr.WinkTavCutParams winkTavCutParams4 = this$0.params;
+                if (winkTavCutParams4 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                } else {
+                    winkTavCutParams = winkTavCutParams4;
+                }
+                int height = winkTavCutParams.getHeight();
+                this$0.renderHeight = height;
+                this$0.renderWidth = (int) ((renderSize.width * height) / renderSize.height);
+            }
+        } else if (this$0.useVerticalPlayer) {
+            int width = wrapper.getWidth();
+            this$0.renderWidth = width;
+            this$0.renderHeight = (int) ((renderSize.height / renderSize.width) * width);
+        } else {
+            int height2 = wrapper.getHeight();
+            this$0.renderHeight = height2;
+            this$0.renderWidth = (int) ((renderSize.width / renderSize.height) * height2);
+        }
+        Map<String, WinkStickerModel> m3 = this$0.m();
+        if (m3 != null) {
+            for (Map.Entry<String, WinkStickerModel> entry : m3.entrySet()) {
+                PointF n3 = com.tencent.mobileqq.wink.editor.sticker.l.n(this$0.getRenderSize(), new Size(Integer.valueOf(wrapper.getWidth()), Integer.valueOf(wrapper.getHeight()), null, 4, null));
+                entry.getValue().getOriginPointInView().f320587x = n3.f320587x;
+                entry.getValue().getOriginPointInView().f320588y = n3.f320588y;
+                entry.getValue().updatePositionInView(this$0.renderWidth, this$0.renderHeight, entry.getValue().scaleX, entry.getValue().scaleY, entry.getValue().centerX, entry.getValue().centerY);
+            }
+        }
+        Map<String, WinkStickerModel> m16 = this$0.m();
+        if (m16 != null) {
+            mutableMap = MapsKt__MapsKt.toMutableMap(m16);
+            this$0.B(mutableMap);
+        }
+        if (i3 != 0) {
+            SimpleEventBus.getInstance().dispatchEvent(new StickerEditEvent(3, 100));
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<MosaicData> A() {
+        List<MosaicData> emptyList;
+        emptyList = CollectionsKt__CollectionsKt.emptyList();
+        return emptyList;
+    }
+
+    @NotNull
+    public String A1() {
+        return dr.b.e(this);
+    }
+
+    public final void A3(@NotNull x.UpdateTemplateClipsAction action) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(action, "action");
+        ICutSession iCutSession = this.cutSession;
+        ComposeRenderLayer composeRenderLayer = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.getIClipSourceOperator().h(new k(action));
+        WinkEditData K1 = K1();
+        copy = r4.copy((r39 & 1) != 0 ? r4.id : null, (r39 & 2) != 0 ? r4.name : null, (r39 & 4) != 0 ? r4.version : null, (r39 & 8) != 0 ? r4.createTime : null, (r39 & 16) != 0 ? r4.updateTime : null, (r39 & 32) != 0 ? r4.duration : null, (r39 & 64) != 0 ? r4.videos : action.a(), (r39 & 128) != 0 ? r4.audios : null, (r39 & 256) != 0 ? r4.stickers : null, (r39 & 512) != 0 ? r4.backgroundModel : null, (r39 & 1024) != 0 ? r4.filterModels : null, (r39 & 2048) != 0 ? r4.specialEffects : null, (r39 & 4096) != 0 ? r4.transitions : null, (r39 & 8192) != 0 ? r4.templateModel : null, (r39 & 16384) != 0 ? r4.coverInfo : null, (r39 & 32768) != 0 ? r4.exportSetting : null, (r39 & 65536) != 0 ? r4.openHDR : null, (r39 & 131072) != 0 ? r4.hdrModels : null, (r39 & 262144) != 0 ? r4.smoothModels : null, (r39 & 524288) != 0 ? r4.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+        } else {
+            composeRenderLayer = composeRenderLayer2;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void B(@NotNull Map<String, WinkStickerModel> stickerModelMap) {
+        MediaModel copy;
+        ComposeRenderLayer composeRenderLayer;
+        TTSAudioInfo ttsAudioInfo;
+        TTSAudioItem[] audioItems;
+        boolean z16;
+        TTSAudioItem tTSAudioItem;
+        String str;
+        ComposeRenderLayer composeRenderLayer2;
+        long j3;
+        Intrinsics.checkNotNullParameter(stickerModelMap, "stickerModelMap");
+        WinkEditData K1 = K1();
+        K1.setStickerModelMap(stickerModelMap);
+        MediaModel mediaModel = K1.getMediaModel();
+        Map<String, WinkStickerModel> stickerModelMap2 = K1.getStickerModelMap();
+        Intrinsics.checkNotNull(stickerModelMap2);
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : stickerModelMap2, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (winkTavCutParams.getScene() == WinkTavCutScene.Cover) {
+            ComposeRenderLayer composeRenderLayer3 = this.renderLayerHelper;
+            if (composeRenderLayer3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer2 = null;
+            } else {
+                composeRenderLayer2 = composeRenderLayer3;
+            }
+            MediaModel mediaModel2 = K1.getMediaModel();
+            IPlayer iPlayer = this.currentPlayer;
+            if (iPlayer != null) {
+                j3 = iPlayer.getCurrentPlayUs();
+            } else {
+                j3 = -1;
+            }
+            ComposeRenderLayer.u(composeRenderLayer2, mediaModel2, false, j3, false, 10, null);
+            return;
+        }
+        for (Map.Entry<String, WinkStickerModel> entry : stickerModelMap.entrySet()) {
+            String key = entry.getKey();
+            WinkStickerModel value = entry.getValue();
+            if (value.getTtsAudioInfo() != null && (ttsAudioInfo = value.getTtsAudioInfo()) != null && (audioItems = ttsAudioInfo.getAudioItems()) != null) {
+                Intrinsics.checkNotNullExpressionValue(audioItems, "audioItems");
+                if (audioItems.length == 0) {
+                    z16 = true;
+                } else {
+                    z16 = false;
+                }
+                if ((!z16) && (tTSAudioItem = audioItems[0]) != null) {
+                    tTSAudioItem.setStartTime(value.startTime);
+                    String localPath = audioItems[0].getLocalPath();
+                    AudioInfo audioInfo = audioItems[0].getAudioInfo();
+                    if (audioInfo != null) {
+                        str = audioInfo.MD5;
+                    } else {
+                        str = null;
+                    }
+                    Q0(localPath, str, audioItems[0].getDuration(), key, audioItems[0].getVolume(), audioItems[0].getStartTime());
+                }
+            }
+        }
+        ComposeRenderLayer composeRenderLayer4 = this.renderLayerHelper;
+        if (composeRenderLayer4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        } else {
+            composeRenderLayer = composeRenderLayer4;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    @Nullable
+    /* renamed from: B1, reason: from getter */
+    public final MetaMaterial getTemplateMaterial() {
+        return this.templateMaterial;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void C(@NotNull Size size) {
+        int i3;
+        Intrinsics.checkNotNullParameter(size, "size");
+        Integer num = size.width;
+        int i16 = 0;
+        if (num != null) {
+            i3 = num.intValue();
+        } else {
+            i3 = 0;
+        }
+        this.renderWidth = i3;
+        Integer num2 = size.height;
+        if (num2 != null) {
+            i16 = num2.intValue();
+        }
+        this.renderHeight = i16;
+    }
+
+    @NotNull
+    public final List<Entity> C1() {
+        return this.templateMusicEntities;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void D(boolean isForce) {
+        if (!isForce && this.isLabelDetected) {
+            return;
+        }
+        this.labelDetectDuration = System.currentTimeMillis();
+        w53.b.f("WinkVideoTavCut", "generateMediaLabels, startGenerate");
+        ThreadManagerV2.excute(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.dv
+            @Override // java.lang.Runnable
+            public final void run() {
+                WinkVideoTavCut.e1(WinkVideoTavCut.this);
+            }
+        }, 16, null, false);
+    }
+
+    @Nullable
+    /* renamed from: D1, reason: from getter */
+    public final Entity getTemplateTTSEntity() {
+        return this.templateTTSEntity;
+    }
+
+    public final void D2() {
+        Map emptyMap;
+        MediaModel copy;
+        WinkEditData K1 = K1();
+        MediaModel mediaModel = K1.getMediaModel();
+        emptyMap = MapsKt__MapsKt.emptyMap();
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : emptyMap, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    public void D3(@Nullable String str) {
+        dr.b.p(this, str);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    /* renamed from: E, reason: from getter */
+    public GYVideoClassifyResult getGyResult() {
+        return this.gyResult;
+    }
+
+    @NotNull
+    public final List<WinkStickerModel> E1() {
+        List<WinkStickerModel> emptyList;
+        Collection<WinkStickerModel> values;
+        Map<String, WinkStickerModel> stickerModelMap = K1().getStickerModelMap();
+        if (stickerModelMap == null || (values = stickerModelMap.values()) == null) {
+            emptyList = CollectionsKt__CollectionsKt.emptyList();
+            return emptyList;
+        }
+        ArrayList arrayList = new ArrayList();
+        for (Object obj : values) {
+            if (((WinkStickerModel) obj).isTemplateTextSticker()) {
+                arrayList.add(obj);
+            }
+        }
+        return arrayList;
+    }
+
+    public final void E2() {
+        IPlayer.PlayerStatus playerStatus;
+        IPlayer currentPlayer = getCurrentPlayer();
+        if (currentPlayer != null) {
+            if (currentPlayer.isPlaying()) {
+                playerStatus = IPlayer.PlayerStatus.PLAYING;
+            } else {
+                playerStatus = IPlayer.PlayerStatus.PAUSED;
+            }
+            this.stickerOperationPlayerStatus = playerStatus;
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void F(@NotNull ISessionListener listener) {
+        Intrinsics.checkNotNullParameter(listener, "listener");
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.addSessionListener(listener);
+    }
+
+    @NotNull
+    public final List<Timeline> F1() {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        LAKRenderModel allInputSourceRenderModel = iCutSession.getAllInputSourceRenderModel();
+        Intrinsics.checkNotNull(allInputSourceRenderModel);
+        return allInputSourceRenderModel.getTimeLines();
+    }
+
+    public void F2(@NotNull String path, @NotNull HashMap<String, String> map) {
+        Intrinsics.checkNotNullParameter(path, "path");
+        Intrinsics.checkNotNullParameter(map, "map");
+        ms.a.a("WinkVideoTavCut", "setAssetData : " + path + ", " + map + " ");
+        HashMap<String, String> assetData = K1().getAssetData();
+        if (assetData != null) {
+            assetData.putAll(map);
+        }
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.setAssetData(path, map);
+        ICutSession iCutSession3 = this.cutSession;
+        if (iCutSession3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession2 = iCutSession3;
+        }
+        iCutSession2.flushWithoutDelay();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean G() {
+        return dr.b.h(this);
+    }
+
+    @Nullable
+    /* renamed from: G1, reason: from getter */
+    public final IStickerUpdateCallback getTraceStickerUpdateCallback() {
+        return this.traceStickerUpdateCallback;
+    }
+
+    public final void G2(@NotNull HashMap<String, String> map) {
+        String c16;
+        Intrinsics.checkNotNullParameter(map, "map");
+        if (getTemplatePath() == null) {
+            c16 = com.tencent.mobileqq.wink.utils.r.c(r73.a.f430927a.b());
+        } else {
+            c16 = com.tencent.mobileqq.wink.utils.r.c(getTemplatePath());
+        }
+        if (c16 != null) {
+            F2(c16, map);
+        } else {
+            ms.a.c("WinkVideoTavCut", "no template but set asset data");
+        }
+    }
+
+    public final void G3(float f16, @Nullable AudioSourceType audioSourceType) {
+        ICutSession iCutSession = null;
+        if (audioSourceType != null) {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession2 = null;
+            }
+            iCutSession2.updateVolume(f16, audioSourceType);
+        } else {
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession3 = null;
+            }
+            iCutSession3.updateVolume(f16, AudioSourceType.BGM);
+            ICutSession iCutSession4 = this.cutSession;
+            if (iCutSession4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession4 = null;
+            }
+            iCutSession4.updateVolume(f16, AudioSourceType.Effect);
+        }
+        ICutSession iCutSession5 = this.cutSession;
+        if (iCutSession5 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession = iCutSession5;
+        }
+        iCutSession.flushWithoutDelay();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    /* renamed from: H, reason: from getter */
+    public String getTemplatePath() {
+        return this.templatePath;
+    }
+
+    public final void H2(@Nullable WinkStickerModel winkStickerModel) {
+        this.backgroundTextWinkModel = winkStickerModel;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    public List<ClipSource> I() {
+        return this.gyResultList;
+    }
+
+    @NotNull
+    public final List<WinkStickerModel> I1() {
+        List<WinkStickerModel> emptyList;
+        Collection<WinkStickerModel> values;
+        boolean z16;
+        Map<String, WinkStickerModel> stickerModelMap = K1().getStickerModelMap();
+        if (stickerModelMap == null || (values = stickerModelMap.values()) == null) {
+            emptyList = CollectionsKt__CollectionsKt.emptyList();
+            return emptyList;
+        }
+        ArrayList arrayList = new ArrayList();
+        for (Object obj : values) {
+            WinkStickerModel winkStickerModel = (WinkStickerModel) obj;
+            if (winkStickerModel.isTemplateTextSticker() && winkStickerModel.startTime <= getDurationUs() && winkStickerModel.startTime + winkStickerModel.duration > 0) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (z16) {
+                arrayList.add(obj);
+            }
+        }
+        return arrayList;
+    }
+
+    public void I2(boolean enable) {
+        ms.a.f("WinkVideoTavCut", "setEnableSync: " + enable);
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.setEnableSync(enable);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<MediaModel> J() {
+        if (!com.tencent.mobileqq.wink.editor.draft.c.w(K1())) {
+            return k1();
+        }
+        return l1();
+    }
+
+    public float J1() {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        dr.WinkTavCutParams winkTavCutParams2 = null;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        float height = winkTavCutParams.getHeight();
+        dr.WinkTavCutParams winkTavCutParams3 = this.params;
+        if (winkTavCutParams3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+        } else {
+            winkTavCutParams2 = winkTavCutParams3;
+        }
+        return height / winkTavCutParams2.getWidth();
+    }
+
+    public final void J2(boolean r16) {
+        this.isFromFirstTemplate = r16;
+    }
+
+    public final void J3() {
+        Set<String> keySet;
+        ArrayList<GYTrackStickerInfo> a16;
+        Map<String, WinkStickerModelExtra> stickerExtraMap = K1().getStickerExtraMap();
+        if (stickerExtraMap != null && (keySet = stickerExtraMap.keySet()) != null) {
+            Iterator<T> it = keySet.iterator();
+            while (it.hasNext()) {
+                WinkStickerModelExtra winkStickerModelExtra = stickerExtraMap.get((String) it.next());
+                Intrinsics.checkNotNull(winkStickerModelExtra);
+                ArrayList<TrackStickerInfo> stickerTrackerResult = winkStickerModelExtra.getStickerTrackerResult();
+                if (winkStickerModelExtra.getEntityName() != null && stickerTrackerResult != null && (a16 = ds.a(stickerTrackerResult)) != null) {
+                    String entityName = winkStickerModelExtra.getEntityName();
+                    Intrinsics.checkNotNull(entityName);
+                    K3(a16, entityName, this.traceStickerUpdateCallback);
+                }
+            }
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void K(@NotNull x.UpdateTemplateAction action, boolean isClearStickers, boolean needChaneStrickerDirectly, @Nullable String stickerText) {
+        MediaModel copy;
+        ComposeRenderLayer composeRenderLayer;
+        Intrinsics.checkNotNullParameter(action, "action");
+        w53.b.a("WinkVideoTavCut", "updateTemplate in videoTavCut action:" + action);
+        Pair<List<ClipSource>, List<Map<String, String>>> g36 = g3(action);
+        List<ClipSource> component1 = g36.component1();
+        List<Map<String, String>> component2 = g36.component2();
+        R2(action.getTemplatePath());
+        this.templateMaterial = action.getMetaMaterial();
+        LAKRenderModel E3 = E3(action.getModifyClipsDuration(), action.getColor(), action.getFillMode(), component1);
+        X0(E3);
+        if (needChaneStrickerDirectly && !TextUtils.isEmpty(stickerText)) {
+            E3.setStickerValue(stickerText);
+        } else {
+            E3.setStickerValue(null);
+        }
+        if (action.getHidePlayerUntilTemplateFinish()) {
+            L1(true);
+        }
+        B3(E3, component2, action.getColor(), action.getFillMode());
+        String templatePath = getTemplatePath();
+        MetaMaterial metaMaterial = this.templateMaterial;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        C3(templatePath, metaMaterial, E3, winkTavCutParams.c(), true, action.getEnableTemplateImageStickerEdit(), isClearStickers, action.getCurrentTimeUs(), false);
+        if (!isClearStickers) {
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            iCutSession.flushWithoutDelay(true, action.getCurrentTimeUs());
+        } else {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession2 = null;
+            }
+            iCutSession2.flushWithoutDelay();
+        }
+        WinkEditData K1 = K1();
+        copy = r15.copy((r39 & 1) != 0 ? r15.id : null, (r39 & 2) != 0 ? r15.name : null, (r39 & 4) != 0 ? r15.version : null, (r39 & 8) != 0 ? r15.createTime : null, (r39 & 16) != 0 ? r15.updateTime : null, (r39 & 32) != 0 ? r15.duration : null, (r39 & 64) != 0 ? r15.videos : null, (r39 & 128) != 0 ? r15.audios : null, (r39 & 256) != 0 ? r15.stickers : null, (r39 & 512) != 0 ? r15.backgroundModel : null, (r39 & 1024) != 0 ? r15.filterModels : null, (r39 & 2048) != 0 ? r15.specialEffects : null, (r39 & 4096) != 0 ? r15.transitions : null, (r39 & 8192) != 0 ? r15.templateModel : null, (r39 & 16384) != 0 ? r15.coverInfo : null, (r39 & 32768) != 0 ? r15.exportSetting : null, (r39 & 65536) != 0 ? r15.openHDR : Boolean.valueOf(p()), (r39 & 131072) != 0 ? r15.hdrModels : null, (r39 & 262144) != 0 ? r15.smoothModels : null, (r39 & 524288) != 0 ? r15.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        } else {
+            composeRenderLayer = composeRenderLayer2;
+        }
+        ComposeRenderLayer.p(composeRenderLayer, K1.getMediaModel(), ComposeRenderLayer.FlushMode.FLUSH, 0L, 4, null);
+        cu.F(true);
+    }
+
+    @NotNull
+    public final WinkEditData K1() {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return winkTavCutParams.u().get(0);
+    }
+
+    public final void K2(int i3) {
+        this.from = i3;
+    }
+
+    public final void K3(@NotNull ArrayList<GYTrackStickerInfo> stickerTrackerResult, @NotNull String entityName, @Nullable IStickerUpdateCallback callback) {
+        Intrinsics.checkNotNullParameter(stickerTrackerResult, "stickerTrackerResult");
+        Intrinsics.checkNotNullParameter(entityName, "entityName");
+        Entity i16 = i1(entityName);
+        if (com.tencent.videocut.render.extension.d.f(i16) && (i16 = com.tencent.videocut.render.utils.c.f384212a.e(i16)) == null) {
+            w53.b.c("WinkVideoTavCut", "updateTrackedStickerPosition: no main pag entity!");
+            i16 = new Entity();
+        }
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.updateTrackedStickerPosition(stickerTrackerResult, entityName, i16, callback);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void L(@NotNull Function0<Unit> action) {
+        Intrinsics.checkNotNullParameter(action, "action");
+        F(new i(action));
+    }
+
+    public final void L1(final boolean isVisible) {
+        ThreadManager.getUIHandler().post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.ea
+            @Override // java.lang.Runnable
+            public final void run() {
+                WinkVideoTavCut.M1(isVisible, this);
+            }
+        });
+    }
+
+    public final void L2(boolean z16) {
+        this.isInit = z16;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public Size M() {
+        int i3;
+        Integer num;
+        if (com.tencent.mobileqq.wink.editor.draft.c.B(K1()) && !G()) {
+            WinkEditStretchedData stretchData = K1().getStretchData();
+            int i16 = 0;
+            if (stretchData != null) {
+                i3 = (int) stretchData.getOriginWidth();
+            } else {
+                i3 = 0;
+            }
+            Integer valueOf = Integer.valueOf(i3);
+            WinkEditStretchedData stretchData2 = K1().getStretchData();
+            if (stretchData2 != null) {
+                i16 = (int) stretchData2.getOriginHeight();
+            }
+            Size size = new Size(valueOf, Integer.valueOf(i16), null, 4, null);
+            Integer num2 = size.width;
+            if ((num2 == null || num2.intValue() != 0) && ((num = size.height) == null || num.intValue() != 0)) {
+                Integer valueOf2 = Integer.valueOf(this.renderWidth);
+                int i17 = this.renderWidth;
+                Intrinsics.checkNotNull(size.height);
+                float intValue = i17 * r4.intValue() * 1.0f;
+                Intrinsics.checkNotNull(size.width);
+                return new Size(valueOf2, Integer.valueOf((int) (intValue / r0.intValue())), null, 4, null);
+            }
+            return size;
+        }
+        return getRenderSize();
+    }
+
+    public final void M2(boolean needUpdate) {
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.i(needUpdate);
+    }
+
+    public final boolean M3() {
+        Context context;
+        dr.WinkTavCutParams winkTavCutParams = null;
+        if (RFWApplication.getApplication() != null) {
+            context = RFWApplication.getApplication().getApplicationContext();
+        } else {
+            context = null;
+        }
+        if (context != null && f2() && e2() && QzoneConfig.getWinkTransitionSwitch()) {
+            dr.WinkTavCutParams winkTavCutParams2 = this.params;
+            if (winkTavCutParams2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams = winkTavCutParams2;
+            }
+            if (Intrinsics.areEqual(winkTavCutParams.getIsFromTemplateColl(), Boolean.FALSE)) {
+                TransitionModel d16 = TransitionModelExKt.d(context);
+                final WinkEditData K1 = K1();
+                final Map<String, TransitionModel> a16 = TransitionModelExKt.a(K1.getMediaModel().videos, true, d16);
+                K1.setMediaModel(com.tencent.mobileqq.wink.editor.model.a.e(K1.getMediaModel(), a16));
+                TransitionResourceManager.c().h(context, a16.values(), new Runnable() { // from class: com.tencent.mobileqq.wink.editor.dy
+                    @Override // java.lang.Runnable
+                    public final void run() {
+                        WinkVideoTavCut.N3(WinkEditData.this, a16, this);
+                    }
+                });
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void N(@NotNull List<SpecialEffectModel> r312, long targetTime) {
+        int collectionSizeOrDefault;
+        int mapCapacity;
+        int coerceAtLeast;
+        MediaModel copy;
+        boolean z16;
+        Intrinsics.checkNotNullParameter(r312, "models");
+        WinkEditData K1 = K1();
+        if (K1.getEffectModelMap() == null) {
+            K1.setEffectModelMap(new LinkedHashMap());
+        } else {
+            Map<String, SpecialEffectModel> effectModelMap = K1.getEffectModelMap();
+            if (effectModelMap != null) {
+                effectModelMap.clear();
+            }
+        }
+        for (SpecialEffectModel specialEffectModel : r312) {
+            if (specialEffectModel.id != null) {
+                Map<String, SpecialEffectModel> effectModelMap2 = K1.getEffectModelMap();
+                Intrinsics.checkNotNull(effectModelMap2);
+                effectModelMap2.put(specialEffectModel.id, specialEffectModel);
+            }
+        }
+        MediaModel mediaModel = K1.getMediaModel();
+        ArrayList arrayList = new ArrayList();
+        for (Object obj : r312) {
+            if (((SpecialEffectModel) obj).id != null) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (z16) {
+                arrayList.add(obj);
+            }
+        }
+        collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList, 10);
+        mapCapacity = MapsKt__MapsJVMKt.mapCapacity(collectionSizeOrDefault);
+        coerceAtLeast = RangesKt___RangesKt.coerceAtLeast(mapCapacity, 16);
+        LinkedHashMap linkedHashMap = new LinkedHashMap(coerceAtLeast);
+        for (Object obj2 : arrayList) {
+            linkedHashMap.put(SpecialEffectModelKt.getSimpleHashString((SpecialEffectModel) obj2), obj2);
+        }
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : linkedHashMap, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.m(K1.getMediaModel(), targetTime);
+    }
+
+    public final void N1(@NotNull BasePartFragment hostFragment, @NotNull dr.WinkTavCutParams params, boolean isSinglePlayer, long initTime, @NotNull HashMap<String, Object> r17, @Nullable OnClipAssetListener onClipAssetListener) {
+        Intent intent;
+        Serializable serializable;
+        MediaPickerScene mediaPickerScene;
+        Intent intent2;
+        Intrinsics.checkNotNullParameter(hostFragment, "hostFragment");
+        Intrinsics.checkNotNullParameter(params, "params");
+        Intrinsics.checkNotNullParameter(r17, "extraMap");
+        Serializable serializable2 = null;
+        if (s73.c.a(r17) == null) {
+            FragmentActivity activity = hostFragment.getActivity();
+            if (activity != null && (intent2 = activity.getIntent()) != null) {
+                serializable = intent2.getSerializableExtra(QQWinkConstants.MEDIA_PICKER_SCENE);
+            } else {
+                serializable = null;
+            }
+            if (serializable instanceof MediaPickerScene) {
+                mediaPickerScene = (MediaPickerScene) serializable;
+            } else {
+                mediaPickerScene = null;
+            }
+            s73.c.f(r17, mediaPickerScene);
+        }
+        if (s73.c.d(r17) == null) {
+            FragmentActivity activity2 = hostFragment.getActivity();
+            if (activity2 != null && (intent = activity2.getIntent()) != null) {
+                serializable2 = intent.getSerializableExtra(QQWinkConstants.PICK_TEMPLATE_MEDIA_MODEL);
+            }
+            s73.c.i(r17, (MetaMaterial) serializable2);
+        }
+        U1(this, null, params, r17, isSinglePlayer, initTime, null, null, 96, null);
+    }
+
+    public final void N2(boolean z16) {
+        this.notChangeSize = z16;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean O() {
+        return !Intrinsics.areEqual(this.lastMediaModels, m1());
+    }
+
+    public final void O1(@Nullable WinkPlayerContainerView containerView, @NotNull dr.WinkTavCutParams params, @NotNull HashMap<String, Object> r132, @Nullable OnLoadAssetListener loadAssetListener, @Nullable OnClipAssetListener onClipAssetListener) {
+        Intrinsics.checkNotNullParameter(params, "params");
+        Intrinsics.checkNotNullParameter(r132, "extraMap");
+        T1(containerView, params, r132, false, 0L, loadAssetListener, onClipAssetListener);
+    }
+
+    public final void O2(int bgColor) {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.setBgColor(bgColor);
+    }
+
+    public void O3(float r65) {
+        WinkEditData K1 = K1();
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+        int i3 = 0;
+        for (Object obj : K1.getMediaModel().videos) {
+            int i16 = i3 + 1;
+            if (i3 < 0) {
+                CollectionsKt__CollectionsKt.throwIndexOverflow();
+            }
+            linkedHashMap.put(Integer.valueOf(i3), Float.valueOf(r65));
+            i3 = i16;
+        }
+        v(linkedHashMap);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void P(int width, int height) {
+        ms.a.f("WinkVideoTavCut", "updateRenderSize: " + width + "  | " + height);
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.updateRenderSize(new org.light.lightAssetKit.components.Size(width, height));
+        ICutSession iCutSession3 = this.cutSession;
+        if (iCutSession3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession2 = iCutSession3;
+        }
+        iCutSession2.flushWithoutDelay();
+    }
+
+    @Nullable
+    public InputSource P0(@NotNull String sourceKey) {
+        Intrinsics.checkNotNullParameter(sourceKey, "sourceKey");
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        return iCutSession.accessInputSource(sourceKey);
+    }
+
+    public final void P2(@Nullable TextureView.SurfaceTextureListener surfaceTextureListener) {
+        this.playerSurfaceTextureListener = surfaceTextureListener;
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.setSurfaceTextureListener(surfaceTextureListener);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void Q(@NotNull ISessionListener listener) {
+        Intrinsics.checkNotNullParameter(listener, "listener");
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.removeSessionListener(listener);
+    }
+
+    public final void Q0(@Nullable String path, @Nullable String md5, long durationUs, @NotNull String stickerId, float r442, long timeInTimeline) {
+        AudioModel copy;
+        MediaModel copy2;
+        AudioModel copy3;
+        Intrinsics.checkNotNullParameter(stickerId, "stickerId");
+        long durationUs2 = getDurationUs();
+        if (this.isFromQzoneText) {
+            if (getDurationUs() < durationUs) {
+                if (durationUs > 10000000) {
+                    p3(durationUs);
+                    durationUs2 = durationUs;
+                }
+                seek(0L);
+            } else if (durationUs > 10000000) {
+                p3(durationUs);
+                durationUs2 = durationUs;
+                seek(0L);
+            } else {
+                if (getDurationUs() > 10000000) {
+                    p3(10000000L);
+                    durationUs2 = 10000000;
+                }
+                seek(0L);
+            }
+        }
+        AudioModel audioModel = new AudioModel(null, null, 0L, 0L, 0L, 0.0f, 0.0f, null, null, null, 0L, 0L, 0L, 0L, null, null, null, null, null, 524287, null);
+        String g16 = com.tencent.videocut.render.extension.a.g(stickerId);
+        if (g16 == null) {
+            return;
+        }
+        copy = audioModel.copy((r37 & 1) != 0 ? audioModel.id : g16, (r37 & 2) != 0 ? audioModel.path : path, (r37 & 4) != 0 ? Long.valueOf(audioModel.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(audioModel.sourceDuration) : Long.valueOf(durationUs2), (r37 & 16) != 0 ? Long.valueOf(audioModel.startTimeInTimeline) : Long.valueOf(timeInTimeline), (r37 & 32) != 0 ? Float.valueOf(audioModel.volume) : Float.valueOf(2 * r442), (r37 & 64) != 0 ? Float.valueOf(audioModel.speed) : Float.valueOf(1.0f), (r37 & 128) != 0 ? audioModel.volumeEffects : null, (r37 & 256) != 0 ? audioModel.name : md5, (r37 & 512) != 0 ? audioModel.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(audioModel.selectStartTime) : 0L, (r37 & 2048) != 0 ? Long.valueOf(audioModel.selectDuration) : Long.valueOf(durationUs), (r37 & 4096) != 0 ? Long.valueOf(audioModel.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(audioModel.fadeOutDuration) : null, (r37 & 16384) != 0 ? audioModel.lyricInfo : null, (r37 & 32768) != 0 ? audioModel.type : AudioModel.Type.TTS, (r37 & 65536) != 0 ? audioModel.waveSampleData : null, (r37 & 131072) != 0 ? audioModel.event : null, (r37 & 262144) != 0 ? audioModel.unknownFields() : null);
+        WinkEditData K1 = K1();
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            String key = entry.getKey();
+            copy3 = r14.copy((r37 & 1) != 0 ? r14.id : null, (r37 & 2) != 0 ? r14.path : null, (r37 & 4) != 0 ? Long.valueOf(r14.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(r14.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(r14.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(r14.volume) : null, (r37 & 64) != 0 ? Float.valueOf(r14.speed) : null, (r37 & 128) != 0 ? r14.volumeEffects : null, (r37 & 256) != 0 ? r14.name : null, (r37 & 512) != 0 ? r14.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(r14.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(r14.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(r14.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(r14.fadeOutDuration) : null, (r37 & 16384) != 0 ? r14.lyricInfo : null, (r37 & 32768) != 0 ? r14.type : null, (r37 & 65536) != 0 ? r14.waveSampleData : null, (r37 & 131072) != 0 ? r14.event : null, (r37 & 262144) != 0 ? entry.getValue().unknownFields() : null);
+            linkedHashMap.put(key, copy3);
+        }
+        linkedHashMap.remove(g16);
+        linkedHashMap.put(g16, copy);
+        copy2 = r5.copy((r39 & 1) != 0 ? r5.id : null, (r39 & 2) != 0 ? r5.name : null, (r39 & 4) != 0 ? r5.version : null, (r39 & 8) != 0 ? r5.createTime : null, (r39 & 16) != 0 ? r5.updateTime : null, (r39 & 32) != 0 ? r5.duration : null, (r39 & 64) != 0 ? r5.videos : null, (r39 & 128) != 0 ? r5.audios : linkedHashMap, (r39 & 256) != 0 ? r5.stickers : null, (r39 & 512) != 0 ? r5.backgroundModel : null, (r39 & 1024) != 0 ? r5.filterModels : null, (r39 & 2048) != 0 ? r5.specialEffects : null, (r39 & 4096) != 0 ? r5.transitions : null, (r39 & 8192) != 0 ? r5.templateModel : null, (r39 & 16384) != 0 ? r5.coverInfo : null, (r39 & 32768) != 0 ? r5.exportSetting : null, (r39 & 65536) != 0 ? r5.openHDR : null, (r39 & 131072) != 0 ? r5.hdrModels : null, (r39 & 262144) != 0 ? r5.smoothModels : null, (r39 & 524288) != 0 ? r5.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy2);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    /* JADX WARN: Removed duplicated region for block: B:16:0x003d  */
+    /* JADX WARN: Removed duplicated region for block: B:22:0x004e  */
+    /* JADX WARN: Removed duplicated region for block: B:25:0x0056  */
+    /* JADX WARN: Removed duplicated region for block: B:28:0x0078  */
+    /* JADX WARN: Removed duplicated region for block: B:36:0x00b0  */
+    /* JADX WARN: Removed duplicated region for block: B:54:0x00f7 A[LOOP:2: B:52:0x00f1->B:54:0x00f7, LOOP_END] */
+    @Nullable
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public final WinkStickerModel Q1(@Nullable Entity rootEntity, long currentTimeUs, @Nullable MetaMaterial textFontMaterial) {
+        boolean z16;
+        Companion companion;
+        Entity k3;
+        Entity j3;
+        Entity i3;
+        String str;
+        WinkStickerModel e16;
+        ArrayList arrayList;
+        Map<String, WinkStickerModel> m3;
+        Iterator it;
+        boolean z17;
+        int collectionSizeOrDefault;
+        int mapCapacity;
+        int coerceAtLeast;
+        Map<String, WinkStickerModel> mutableMap;
+        boolean z18;
+        boolean isBlank;
+        String templatePath = getTemplatePath();
+        if (templatePath != null) {
+            isBlank = StringsKt__StringsJVMKt.isBlank(templatePath);
+            if (!isBlank) {
+                z16 = false;
+                ICutSession iCutSession = null;
+                if (!z16 && this.isFromQzoneText && rootEntity != null) {
+                    companion = INSTANCE;
+                    k3 = companion.k(templatePath);
+                    j3 = companion.j(templatePath);
+                    if (k3 != null && j3 != null) {
+                        this.backgroundImageEntityId = j3.getId();
+                        i3 = companion.i(rootEntity, k3.getId());
+                        if (i3 != null) {
+                            ICutSession iCutSession2 = this.cutSession;
+                            if (iCutSession2 == null) {
+                                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                            } else {
+                                iCutSession = iCutSession2;
+                            }
+                            iCutSession.switchEntity(i3, false);
+                        }
+                        if (textFontMaterial == null) {
+                            textFontMaterial = com.tencent.mobileqq.wink.editor.sticker.m.a0();
+                        }
+                        str = this.textQzoneText;
+                        if (str == null) {
+                            str = " ";
+                        }
+                        com.tencent.mobileqq.wink.editor.sticker.m.n0(textFontMaterial, str);
+                        com.tencent.mobileqq.wink.editor.sticker.m.G0(textFontMaterial, 0.6f);
+                        com.tencent.mobileqq.wink.editor.sticker.m.E0(textFontMaterial, true);
+                        e16 = companion.e(textFontMaterial, this, this.renderWidth, this.renderHeight);
+                        arrayList = new ArrayList();
+                        m3 = m();
+                        if (m3 != null) {
+                            ArrayList arrayList2 = new ArrayList(m3.size());
+                            Iterator<Map.Entry<String, WinkStickerModel>> it5 = m3.entrySet().iterator();
+                            while (it5.hasNext()) {
+                                arrayList2.add(Boolean.valueOf(arrayList.add(it5.next().getValue())));
+                            }
+                        }
+                        it = arrayList.iterator();
+                        z17 = false;
+                        while (it.hasNext()) {
+                            MetaMaterial material = ((WinkStickerModel) it.next()).getMaterial();
+                            if (material != null && com.tencent.mobileqq.wink.editor.sticker.m.T(material)) {
+                                z18 = true;
+                            } else {
+                                z18 = false;
+                            }
+                            if (z18) {
+                                z17 = true;
+                            }
+                        }
+                        if (!z17 && e16 != null) {
+                            arrayList.add(e16);
+                            B(new LinkedHashMap());
+                            collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList, 10);
+                            mapCapacity = MapsKt__MapsJVMKt.mapCapacity(collectionSizeOrDefault);
+                            coerceAtLeast = RangesKt___RangesKt.coerceAtLeast(mapCapacity, 16);
+                            LinkedHashMap linkedHashMap = new LinkedHashMap(coerceAtLeast);
+                            for (Object obj : arrayList) {
+                                linkedHashMap.put(((WinkStickerModel) obj).id, obj);
+                            }
+                            mutableMap = MapsKt__MapsKt.toMutableMap(linkedHashMap);
+                            x3(mutableMap, currentTimeUs);
+                        }
+                        this.isBackgroundTemplateInited = true;
+                        return e16;
+                    }
+                }
+                return null;
+            }
+        }
+        z16 = true;
+        ICutSession iCutSession3 = null;
+        if (!z16) {
+            companion = INSTANCE;
+            k3 = companion.k(templatePath);
+            j3 = companion.j(templatePath);
+            if (k3 != null) {
+                this.backgroundImageEntityId = j3.getId();
+                i3 = companion.i(rootEntity, k3.getId());
+                if (i3 != null) {
+                }
+                if (textFontMaterial == null) {
+                }
+                str = this.textQzoneText;
+                if (str == null) {
+                }
+                com.tencent.mobileqq.wink.editor.sticker.m.n0(textFontMaterial, str);
+                com.tencent.mobileqq.wink.editor.sticker.m.G0(textFontMaterial, 0.6f);
+                com.tencent.mobileqq.wink.editor.sticker.m.E0(textFontMaterial, true);
+                e16 = companion.e(textFontMaterial, this, this.renderWidth, this.renderHeight);
+                arrayList = new ArrayList();
+                m3 = m();
+                if (m3 != null) {
+                }
+                it = arrayList.iterator();
+                z17 = false;
+                while (it.hasNext()) {
+                }
+                if (!z17) {
+                    arrayList.add(e16);
+                    B(new LinkedHashMap());
+                    collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(arrayList, 10);
+                    mapCapacity = MapsKt__MapsJVMKt.mapCapacity(collectionSizeOrDefault);
+                    coerceAtLeast = RangesKt___RangesKt.coerceAtLeast(mapCapacity, 16);
+                    LinkedHashMap linkedHashMap2 = new LinkedHashMap(coerceAtLeast);
+                    while (r10.hasNext()) {
+                    }
+                    mutableMap = MapsKt__MapsKt.toMutableMap(linkedHashMap2);
+                    x3(mutableMap, currentTimeUs);
+                }
+                this.isBackgroundTemplateInited = true;
+                return e16;
+            }
+        }
+        return null;
+    }
+
+    public final void Q2(@Nullable IRenderTimeListener listener) {
+        if (listener != null) {
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            iCutSession.setRenderTimeListener(listener);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void R(final int i3) {
+        final SizeF sizeF;
+        final FrameLayout frameLayout;
+        boolean z16;
+        BackgroundModel backgroundModel = V().backgroundModel;
+        if (backgroundModel != null && (sizeF = backgroundModel.renderSize) != null && (frameLayout = this.playerContainerWrapper) != null) {
+            if (sizeF.height == 0.0f) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (!z16 && frameLayout.getHeight() != 0) {
+                frameLayout.post(new Runnable() { // from class: com.tencent.mobileqq.wink.editor.dw
+                    @Override // java.lang.Runnable
+                    public final void run() {
+                        WinkVideoTavCut.z3(i3, this, sizeF, frameLayout);
+                    }
+                });
+            }
+        }
+    }
+
+    public void R0(@NotNull com.tencent.mobileqq.wink.editor.sticker.sticker.d stickerUpdateListener) {
+        Intrinsics.checkNotNullParameter(stickerUpdateListener, "stickerUpdateListener");
+        this.stickerUpdateListeners.add(stickerUpdateListener);
+    }
+
+    public void R2(@Nullable String str) {
+        this.templatePath = str;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean S() {
+        return dr.b.g(this);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void T(@NotNull List<? extends WinkStickerModel> stickerModelList) {
+        ComposeRenderLayer composeRenderLayer;
+        MediaModel copy;
+        MediaModel copy2;
+        AudioModel copy3;
+        String str;
+        Intrinsics.checkNotNullParameter(stickerModelList, "stickerModelList");
+        B2(stickerModelList);
+        WinkEditData K1 = K1();
+        Map<String, WinkStickerModel> stickerModelMap = K1.getStickerModelMap();
+        if (stickerModelMap != null) {
+            boolean z16 = true;
+            if (!stickerModelMap.isEmpty()) {
+                Iterator<T> it = stickerModelList.iterator();
+                while (true) {
+                    composeRenderLayer = null;
+                    Object obj = null;
+                    if (!it.hasNext()) {
+                        break;
+                    }
+                    WinkStickerModel winkStickerModel = (WinkStickerModel) it.next();
+                    stickerModelMap.remove(winkStickerModel.id);
+                    ms.a.f("WinkVideoTavCut", "remove sticker " + winkStickerModel.id);
+                    MetaMaterial material = winkStickerModel.getMaterial();
+                    boolean z17 = false;
+                    if (material != null && com.tencent.mobileqq.wink.editor.sticker.m.Q(material) == z16) {
+                        z17 = z16;
+                    }
+                    if (z17) {
+                        Iterator<T> it5 = stickerModelMap.values().iterator();
+                        while (true) {
+                            if (!it5.hasNext()) {
+                                break;
+                            }
+                            Object next = it5.next();
+                            MetaMaterial material2 = ((WinkStickerModel) next).getMaterial();
+                            if (material2 != null) {
+                                str = com.tencent.mobileqq.wink.editor.sticker.m.u(material2);
+                            } else {
+                                str = null;
+                            }
+                            if (Intrinsics.areEqual(str, com.tencent.mobileqq.wink.editor.sticker.m.u(winkStickerModel.getMaterial()))) {
+                                obj = next;
+                                break;
+                            }
+                        }
+                        WinkStickerModel winkStickerModel2 = (WinkStickerModel) obj;
+                        if (winkStickerModel2 != null) {
+                            stickerModelMap.remove(winkStickerModel2.id);
+                            ms.a.f("WinkVideoTavCut", "remove frame sticker " + com.tencent.mobileqq.wink.editor.sticker.m.u(winkStickerModel.getMaterial()));
+                        }
+                    }
+                    if (winkStickerModel.getHasChooseTTS()) {
+                        LinkedHashMap linkedHashMap = new LinkedHashMap();
+                        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+                            String key = entry.getKey();
+                            copy3 = r16.copy((r37 & 1) != 0 ? r16.id : null, (r37 & 2) != 0 ? r16.path : null, (r37 & 4) != 0 ? Long.valueOf(r16.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(r16.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(r16.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(r16.volume) : null, (r37 & 64) != 0 ? Float.valueOf(r16.speed) : null, (r37 & 128) != 0 ? r16.volumeEffects : null, (r37 & 256) != 0 ? r16.name : null, (r37 & 512) != 0 ? r16.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(r16.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(r16.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(r16.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(r16.fadeOutDuration) : null, (r37 & 16384) != 0 ? r16.lyricInfo : null, (r37 & 32768) != 0 ? r16.type : null, (r37 & 65536) != 0 ? r16.waveSampleData : null, (r37 & 131072) != 0 ? r16.event : null, (r37 & 262144) != 0 ? entry.getValue().unknownFields() : null);
+                            linkedHashMap.put(key, copy3);
+                        }
+                        TypeIntrinsics.asMutableMap(linkedHashMap).remove(com.tencent.videocut.render.extension.a.g(winkStickerModel.id));
+                        copy2 = r16.copy((r39 & 1) != 0 ? r16.id : null, (r39 & 2) != 0 ? r16.name : null, (r39 & 4) != 0 ? r16.version : null, (r39 & 8) != 0 ? r16.createTime : null, (r39 & 16) != 0 ? r16.updateTime : null, (r39 & 32) != 0 ? r16.duration : null, (r39 & 64) != 0 ? r16.videos : null, (r39 & 128) != 0 ? r16.audios : linkedHashMap, (r39 & 256) != 0 ? r16.stickers : null, (r39 & 512) != 0 ? r16.backgroundModel : null, (r39 & 1024) != 0 ? r16.filterModels : null, (r39 & 2048) != 0 ? r16.specialEffects : null, (r39 & 4096) != 0 ? r16.transitions : null, (r39 & 8192) != 0 ? r16.templateModel : null, (r39 & 16384) != 0 ? r16.coverInfo : null, (r39 & 32768) != 0 ? r16.exportSetting : null, (r39 & 65536) != 0 ? r16.openHDR : null, (r39 & 131072) != 0 ? r16.hdrModels : null, (r39 & 262144) != 0 ? r16.smoothModels : null, (r39 & 524288) != 0 ? r16.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+                        K1.setMediaModel(copy2);
+                    }
+                    copy = r2.copy((r39 & 1) != 0 ? r2.id : null, (r39 & 2) != 0 ? r2.name : null, (r39 & 4) != 0 ? r2.version : null, (r39 & 8) != 0 ? r2.createTime : null, (r39 & 16) != 0 ? r2.updateTime : null, (r39 & 32) != 0 ? r2.duration : null, (r39 & 64) != 0 ? r2.videos : null, (r39 & 128) != 0 ? r2.audios : null, (r39 & 256) != 0 ? r2.stickers : stickerModelMap, (r39 & 512) != 0 ? r2.backgroundModel : null, (r39 & 1024) != 0 ? r2.filterModels : null, (r39 & 2048) != 0 ? r2.specialEffects : null, (r39 & 4096) != 0 ? r2.transitions : null, (r39 & 8192) != 0 ? r2.templateModel : null, (r39 & 16384) != 0 ? r2.coverInfo : null, (r39 & 32768) != 0 ? r2.exportSetting : null, (r39 & 65536) != 0 ? r2.openHDR : null, (r39 & 131072) != 0 ? r2.hdrModels : null, (r39 & 262144) != 0 ? r2.smoothModels : null, (r39 & 524288) != 0 ? r2.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+                    K1.setMediaModel(copy);
+                    z16 = z16;
+                }
+                ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+                if (composeRenderLayer2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                } else {
+                    composeRenderLayer = composeRenderLayer2;
+                }
+                composeRenderLayer.l(K1.getMediaModel());
+            }
+        }
+    }
+
+    public final void T2(@Nullable IStickerUpdateCallback iStickerUpdateCallback) {
+        this.traceStickerUpdateCallback = iStickerUpdateCallback;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean U() {
+        return com.tencent.mobileqq.wink.editor.model.a.y(K1().getMediaModel());
+    }
+
+    public final boolean U2(@NotNull Size renderSize) {
+        Intrinsics.checkNotNullParameter(renderSize, "renderSize");
+        Integer num = renderSize.width;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        int width = winkTavCutParams.getWidth();
+        if ((num == null || num.intValue() != width) && (!com.tencent.mobileqq.wink.editor.draft.c.B(K1()) || H1())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public MediaModel V() {
+        return K1().getMediaModel();
+    }
+
+    @NotNull
+    public SizeF V0(@NotNull MediaModel mediaModel, int paramsWidth, int paramsHeight) {
+        Intrinsics.checkNotNullParameter(mediaModel, "mediaModel");
+        if (!this.notChangeSize && H1()) {
+            dr.WinkTavCutParams winkTavCutParams = this.params;
+            dr.WinkTavCutParams winkTavCutParams2 = null;
+            if (winkTavCutParams == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams = null;
+            }
+            float height = winkTavCutParams.getHeight();
+            Size size = f318688n0;
+            Intrinsics.checkNotNull(size.width);
+            Intrinsics.checkNotNull(size.height);
+            float intValue = (height * r1.intValue()) / r0.intValue();
+            dr.WinkTavCutParams winkTavCutParams3 = this.params;
+            if (winkTavCutParams3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+                winkTavCutParams3 = null;
+            }
+            float height2 = winkTavCutParams3.getHeight();
+            this.renderWidth = (int) intValue;
+            dr.WinkTavCutParams winkTavCutParams4 = this.params;
+            if (winkTavCutParams4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("params");
+            } else {
+                winkTavCutParams2 = winkTavCutParams4;
+            }
+            this.renderHeight = winkTavCutParams2.getHeight();
+            return new SizeF(intValue, height2, null, 4, null);
+        }
+        org.light.lightAssetKit.components.Size Z0 = Z0(mediaModel, paramsWidth, paramsHeight);
+        return new SizeF(Z0.width, Z0.height, null, 4, null);
+    }
+
+    public final void V1(@Nullable FrameLayout front, @Nullable FrameLayout back) {
+        this.frontPlayerViewContainer = front;
+        this.backPlayerViewContainer = back;
+        this.currentPlayerViewContainer = front;
+        if (front != null) {
+            front.setVisibility(0);
+        }
+    }
+
+    public boolean V2(@NotNull SizeF renderSize) {
+        Intrinsics.checkNotNullParameter(renderSize, "renderSize");
+        Companion companion = INSTANCE;
+        float f16 = renderSize.width;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return companion.n(f16, winkTavCutParams.getWidth(), com.tencent.mobileqq.wink.editor.draft.c.B(K1()), H1());
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void W(@NotNull List<? extends WinkStickerModel> stickerModels) {
+        Intrinsics.checkNotNullParameter(stickerModels, "stickerModels");
+        if (stickerModels.isEmpty()) {
+            return;
+        }
+        Map<String, WinkStickerModel> stickerModelMap = K1().getStickerModelMap();
+        if (stickerModelMap == null) {
+            stickerModelMap = new LinkedHashMap<>();
+        }
+        for (WinkStickerModel winkStickerModel : stickerModels) {
+            stickerModelMap.put(winkStickerModel.id, winkStickerModel);
+        }
+        B(stickerModelMap);
+    }
+
+    public final boolean W2(boolean enable) {
+        ICutSession iCutSession;
+        w53.b.a("WinkVideoTavCut", "switchTemplateMusic " + enable + " " + this.templateMusicEntities.size());
+        this.enableTemplateMusic = enable;
+        boolean z16 = true;
+        if (!this.templateMusicEntities.isEmpty()) {
+            Iterator<T> it = this.templateMusicEntities.iterator();
+            while (true) {
+                iCutSession = null;
+                if (!it.hasNext()) {
+                    break;
+                }
+                Entity entity = (Entity) it.next();
+                ICutSession iCutSession2 = this.cutSession;
+                if (iCutSession2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                } else {
+                    iCutSession = iCutSession2;
+                }
+                iCutSession.switchEntity(entity, enable);
+            }
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession = iCutSession3;
+            }
+            iCutSession.flush();
+        } else {
+            z16 = false;
+        }
+        this.switchTemplateMusicSuccess = z16;
+        return z16;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    public String X() {
+        Map<String, FilterModel> filterModelMap = K1().getFilterModelMap();
+        if (filterModelMap != null && filterModelMap.size() == 1) {
+            Iterator<T> it = filterModelMap.values().iterator();
+            while (it.hasNext()) {
+                LutFilterModel lutFilterModel = ((FilterModel) it.next()).lut;
+                if (lutFilterModel != null) {
+                    return lutFilterModel.filterId;
+                }
+            }
+            return "";
+        }
+        return "";
+    }
+
+    public final void X2(boolean enable) {
+        Entity entity = this.templateTTSEntity;
+        if (entity != null) {
+            ICutSession iCutSession = null;
+            if (!enable) {
+                ICutSession iCutSession2 = this.cutSession;
+                if (iCutSession2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession2 = null;
+                }
+                iCutSession2.removeEntity(entity);
+            } else {
+                ICutSession iCutSession3 = this.cutSession;
+                if (iCutSession3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession3 = null;
+                }
+                iCutSession3.addBgm(entity);
+            }
+            ICutSession iCutSession4 = this.cutSession;
+            if (iCutSession4 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession = iCutSession4;
+            }
+            iCutSession.flushWithoutDelay();
+        }
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void Y(boolean r17, int bottomOffset, int topOffset, boolean isBackgroundPanel) {
+        SizeF sizeF;
+        float f16;
+        FrameLayout frameLayout;
+        FrameLayout frameLayout2;
+        ViewGroup.LayoutParams layoutParams;
+        ViewGroup.LayoutParams layoutParams2;
+        ViewGroup.LayoutParams layoutParams3;
+        ViewGroup.LayoutParams layoutParams4;
+        ViewGroup.LayoutParams layoutParams5;
+        int roundToInt;
+        int roundToInt2;
+        int roundToInt3;
+        int roundToInt4;
+        int roundToInt5;
+        int roundToInt6;
+        int roundToInt7;
+        int roundToInt8;
+        int roundToInt9;
+        int roundToInt10;
+        int roundToInt11;
+        FrameLayout frameLayout3 = this.playerContainerWrapper;
+        if (frameLayout3 != null) {
+            ICutSession iCutSession = null;
+            FrameLayout.LayoutParams layoutParams6 = null;
+            if (!r17) {
+                ViewGroup.LayoutParams layoutParams7 = frameLayout3.getLayoutParams();
+                Intrinsics.checkNotNull(layoutParams7, "null cannot be cast to non-null type androidx.constraintlayout.widget.ConstraintLayout.LayoutParams");
+                ConstraintLayout.LayoutParams layoutParams8 = (ConstraintLayout.LayoutParams) layoutParams7;
+                FrameLayout frameLayout4 = this.frontPlayerViewContainer;
+                if (frameLayout4 != null) {
+                    layoutParams = frameLayout4.getLayoutParams();
+                } else {
+                    layoutParams = null;
+                }
+                FrameLayout.LayoutParams layoutParams9 = (FrameLayout.LayoutParams) layoutParams;
+                FrameLayout frameLayout5 = this.backPlayerViewContainer;
+                if (frameLayout5 != null) {
+                    layoutParams2 = frameLayout5.getLayoutParams();
+                } else {
+                    layoutParams2 = null;
+                }
+                this.playerWrapperOriginLayoutInfo = new Triple<>(layoutParams8, layoutParams9, (FrameLayout.LayoutParams) layoutParams2);
+                this.playerWrapperOriginSize = new Size(Integer.valueOf(frameLayout3.getMeasuredWidth()), Integer.valueOf(frameLayout3.getMeasuredHeight()), null, 4, null);
+                int a16 = com.tencent.videocut.utils.e.f384236a.a(16.0f);
+                ConstraintLayout.LayoutParams layoutParams10 = new ConstraintLayout.LayoutParams(-1, -1);
+                ((ViewGroup.MarginLayoutParams) layoutParams10).bottomMargin = bottomOffset;
+                ((ViewGroup.MarginLayoutParams) layoutParams10).topMargin = topOffset;
+                if (isBackgroundPanel) {
+                    int screenHeight = (ImmersiveUtils.getScreenHeight() - ((ViewGroup.MarginLayoutParams) layoutParams10).bottomMargin) - ((ViewGroup.MarginLayoutParams) layoutParams10).topMargin;
+                    int screenWidth = ImmersiveUtils.getScreenWidth() - (a16 * 2);
+                    if (this.useVerticalPlayer) {
+                        int i3 = this.renderHeight;
+                        dr.WinkTavCutParams winkTavCutParams = this.params;
+                        if (winkTavCutParams == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("params");
+                            winkTavCutParams = null;
+                        }
+                        if (i3 <= winkTavCutParams.getHeight()) {
+                            ((ViewGroup.MarginLayoutParams) layoutParams10).leftMargin = a16;
+                            ((ViewGroup.MarginLayoutParams) layoutParams10).rightMargin = a16;
+                            int i16 = this.renderHeight;
+                            if ((screenWidth * i16) / this.renderWidth > screenHeight) {
+                                roundToInt11 = MathKt__MathJVMKt.roundToInt((com.tencent.mobileqq.wink.editor.util.m.o().width - ((screenHeight * r5) / i16)) / 2);
+                                ((ViewGroup.MarginLayoutParams) layoutParams10).leftMargin = roundToInt11;
+                                ((ViewGroup.MarginLayoutParams) layoutParams10).rightMargin = roundToInt11;
+                            } else {
+                                float f17 = (screenHeight - r10) / 2.0f;
+                                roundToInt9 = MathKt__MathJVMKt.roundToInt(topOffset + f17);
+                                ((ViewGroup.MarginLayoutParams) layoutParams10).topMargin = roundToInt9;
+                                roundToInt10 = MathKt__MathJVMKt.roundToInt(f17 + bottomOffset);
+                                ((ViewGroup.MarginLayoutParams) layoutParams10).bottomMargin = roundToInt10;
+                            }
+                        }
+                    }
+                    int i17 = (screenWidth - ((screenHeight * this.renderWidth) / this.renderHeight)) / 2;
+                    ((ViewGroup.MarginLayoutParams) layoutParams10).leftMargin = i17;
+                    ((ViewGroup.MarginLayoutParams) layoutParams10).rightMargin = i17;
+                }
+                frameLayout3.setLayoutParams(layoutParams10);
+                ViewParent parent = frameLayout3.getParent();
+                Intrinsics.checkNotNull(parent, "null cannot be cast to non-null type android.view.View");
+                int measuredHeight = ((View) parent).getMeasuredHeight();
+                ViewParent parent2 = frameLayout3.getParent();
+                Intrinsics.checkNotNull(parent2, "null cannot be cast to non-null type android.view.View");
+                float min = Math.min(((measuredHeight - ((ViewGroup.MarginLayoutParams) layoutParams10).topMargin) - ((ViewGroup.MarginLayoutParams) layoutParams10).bottomMargin) / measuredHeight, ((r2 - ((ViewGroup.MarginLayoutParams) layoutParams10).leftMargin) - ((ViewGroup.MarginLayoutParams) layoutParams10).rightMargin) / ((View) parent2).getMeasuredWidth());
+                FrameLayout frameLayout6 = this.frontPlayerViewContainer;
+                if (frameLayout6 != null) {
+                    layoutParams3 = frameLayout6.getLayoutParams();
+                } else {
+                    layoutParams3 = null;
+                }
+                if (((FrameLayout.LayoutParams) layoutParams3) != null) {
+                    FrameLayout.LayoutParams layoutParams11 = new FrameLayout.LayoutParams(-1, -1);
+                    roundToInt5 = MathKt__MathJVMKt.roundToInt(r2.leftMargin * min);
+                    roundToInt6 = MathKt__MathJVMKt.roundToInt(r2.topMargin * min);
+                    roundToInt7 = MathKt__MathJVMKt.roundToInt(r2.rightMargin * min);
+                    roundToInt8 = MathKt__MathJVMKt.roundToInt(r2.bottomMargin * min);
+                    layoutParams11.setMargins(roundToInt5, roundToInt6, roundToInt7, roundToInt8);
+                    FrameLayout frameLayout7 = this.frontPlayerViewContainer;
+                    if (frameLayout7 != null) {
+                        frameLayout7.setLayoutParams(layoutParams11);
+                    }
+                }
+                FrameLayout frameLayout8 = this.backPlayerViewContainer;
+                if (frameLayout8 != null) {
+                    layoutParams4 = frameLayout8.getLayoutParams();
+                } else {
+                    layoutParams4 = null;
+                }
+                if (((FrameLayout.LayoutParams) layoutParams4) != null) {
+                    FrameLayout.LayoutParams layoutParams12 = new FrameLayout.LayoutParams(-1, -1);
+                    roundToInt = MathKt__MathJVMKt.roundToInt(r2.leftMargin * min);
+                    roundToInt2 = MathKt__MathJVMKt.roundToInt(r2.topMargin * min);
+                    roundToInt3 = MathKt__MathJVMKt.roundToInt(r2.rightMargin * min);
+                    roundToInt4 = MathKt__MathJVMKt.roundToInt(r2.bottomMargin * min);
+                    layoutParams12.setMargins(roundToInt, roundToInt2, roundToInt3, roundToInt4);
+                    FrameLayout frameLayout9 = this.backPlayerViewContainer;
+                    if (frameLayout9 != null) {
+                        frameLayout9.setLayoutParams(layoutParams12);
+                    }
+                }
+                FrameLayout frameLayout10 = this.currentPlayerViewContainer;
+                if (frameLayout10 != null) {
+                    layoutParams5 = frameLayout10.getLayoutParams();
+                } else {
+                    layoutParams5 = null;
+                }
+                if (layoutParams5 instanceof FrameLayout.LayoutParams) {
+                    layoutParams6 = (FrameLayout.LayoutParams) layoutParams5;
+                }
+                this.playerLayoutParams = layoutParams6;
+                IPlayer iPlayer = this.currentPlayer;
+                if (iPlayer != null) {
+                    iPlayer.setBgColor(f318687m0);
+                }
+                R(bottomOffset);
+                return;
+            }
+            Triple<? extends ConstraintLayout.LayoutParams, ? extends FrameLayout.LayoutParams, ? extends FrameLayout.LayoutParams> triple = this.playerWrapperOriginLayoutInfo;
+            if (triple != null) {
+                if (frameLayout3 != null) {
+                    frameLayout3.setLayoutParams(triple.getFirst());
+                }
+                if (triple.getSecond() != null && (frameLayout2 = this.frontPlayerViewContainer) != null) {
+                    frameLayout2.setLayoutParams(triple.getSecond());
+                }
+                if (triple.getThird() != null && (frameLayout = this.backPlayerViewContainer) != null) {
+                    frameLayout.setLayoutParams(triple.getThird());
+                }
+            }
+            if (this.useVerticalPlayer) {
+                int i18 = this.renderHeight;
+                dr.WinkTavCutParams winkTavCutParams2 = this.params;
+                if (winkTavCutParams2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("params");
+                    winkTavCutParams2 = null;
+                }
+                if (i18 > winkTavCutParams2.getHeight()) {
+                    BackgroundModel backgroundModel = V().backgroundModel;
+                    if (backgroundModel != null) {
+                        sizeF = backgroundModel.renderSize;
+                    } else {
+                        sizeF = null;
+                    }
+                    if (sizeF != null) {
+                        ICutSession iCutSession2 = this.cutSession;
+                        if (iCutSession2 == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                            iCutSession2 = null;
+                        }
+                        org.light.lightAssetKit.components.Size size = new org.light.lightAssetKit.components.Size((int) sizeF.width, (int) sizeF.height);
+                        if (sizeF.width > sizeF.height) {
+                            f16 = 1000.0f;
+                        } else {
+                            f16 = 0.0f;
+                        }
+                        iCutSession2.updateRenderSize(size, f16);
+                        ICutSession iCutSession3 = this.cutSession;
+                        if (iCutSession3 == null) {
+                            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                        } else {
+                            iCutSession = iCutSession3;
+                        }
+                        iCutSession.flush();
+                    }
+                }
+            }
+            if (!this.isSinglePlayerModel) {
+                a3(this, K1().getMediaModel(), false, 0L, 6, null);
+            }
+            IPlayer.PlayerListener playerListener = this.playerListener;
+            if (playerListener != null) {
+                IPlayer iPlayer2 = this.currentPlayer;
+                if (iPlayer2 != null) {
+                    iPlayer2.removePlayerListener(playerListener);
+                }
+                IPlayer iPlayer3 = this.currentPlayer;
+                if (iPlayer3 != null) {
+                    iPlayer3.addPlayerListener(playerListener);
+                }
+            }
+            IPlayer iPlayer4 = this.currentPlayer;
+            if (iPlayer4 != null) {
+                iPlayer4.setBgColor(-16777216);
+            }
+            R(0);
+        }
+    }
+
+    public final void Y0(@NotNull String stickerId) {
+        MediaModel copy;
+        AudioModel copy2;
+        Intrinsics.checkNotNullParameter(stickerId, "stickerId");
+        WinkEditData K1 = K1();
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            String key = entry.getKey();
+            copy2 = r10.copy((r37 & 1) != 0 ? r10.id : null, (r37 & 2) != 0 ? r10.path : null, (r37 & 4) != 0 ? Long.valueOf(r10.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(r10.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(r10.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(r10.volume) : null, (r37 & 64) != 0 ? Float.valueOf(r10.speed) : null, (r37 & 128) != 0 ? r10.volumeEffects : null, (r37 & 256) != 0 ? r10.name : null, (r37 & 512) != 0 ? r10.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(r10.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(r10.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(r10.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(r10.fadeOutDuration) : null, (r37 & 16384) != 0 ? r10.lyricInfo : null, (r37 & 32768) != 0 ? r10.type : null, (r37 & 65536) != 0 ? r10.waveSampleData : null, (r37 & 131072) != 0 ? r10.event : null, (r37 & 262144) != 0 ? entry.getValue().unknownFields() : null);
+            linkedHashMap.put(key, copy2);
+        }
+        TypeIntrinsics.asMutableMap(linkedHashMap).remove(com.tencent.videocut.render.extension.a.g(stickerId));
+        copy = r1.copy((r39 & 1) != 0 ? r1.id : null, (r39 & 2) != 0 ? r1.name : null, (r39 & 4) != 0 ? r1.version : null, (r39 & 8) != 0 ? r1.createTime : null, (r39 & 16) != 0 ? r1.updateTime : null, (r39 & 32) != 0 ? r1.duration : null, (r39 & 64) != 0 ? r1.videos : null, (r39 & 128) != 0 ? r1.audios : linkedHashMap, (r39 & 256) != 0 ? r1.stickers : null, (r39 & 512) != 0 ? r1.backgroundModel : null, (r39 & 1024) != 0 ? r1.filterModels : null, (r39 & 2048) != 0 ? r1.specialEffects : null, (r39 & 4096) != 0 ? r1.transitions : null, (r39 & 8192) != 0 ? r1.templateModel : null, (r39 & 16384) != 0 ? r1.coverInfo : null, (r39 & 32768) != 0 ? r1.exportSetting : null, (r39 & 65536) != 0 ? r1.openHDR : null, (r39 & 131072) != 0 ? r1.hdrModels : null, (r39 & 262144) != 0 ? r1.smoothModels : null, (r39 & 524288) != 0 ? r1.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    public final void Y2(@NotNull StickerTrackerManager stickerTrackerManager, @NotNull sd4.b r36, @NotNull WinkStickerModel curStickerModel, @NotNull com.tencent.tavcut.core.manager.a callback) {
+        Intrinsics.checkNotNullParameter(stickerTrackerManager, "stickerTrackerManager");
+        Intrinsics.checkNotNullParameter(r36, "config");
+        Intrinsics.checkNotNullParameter(curStickerModel, "curStickerModel");
+        Intrinsics.checkNotNullParameter(callback, "callback");
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.k(stickerTrackerManager, r36, curStickerModel, callback);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void Z() {
+        dr.b.j(this);
+    }
+
+    /* renamed from: Z1, reason: from getter */
+    public final boolean getIsBackgroundTemplateInited() {
+        return this.isBackgroundTemplateInited;
+    }
+
+    public final void Z2(@NotNull MediaModel mediaModel, boolean needUpdate, long initTime) {
+        Intrinsics.checkNotNullParameter(mediaModel, "mediaModel");
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (winkTavCutParams.getPlayerSurface() != null) {
+            R3(mediaModel);
+        } else {
+            Q3(mediaModel, needUpdate, initTime);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public Size a() {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return ds.d(winkTavCutParams, null, null, 6, null);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<MediaClip> a0() {
+        return g0();
+    }
+
+    public boolean a2() {
+        Map<String, FilterModel> map;
+        if (K1().getFilterModelMap() == null) {
+            return false;
+        }
+        WinkEditData K1 = K1();
+        if (K1 != null) {
+            map = K1.getFilterModelMap();
+        } else {
+            map = null;
+        }
+        Intrinsics.checkNotNull(map);
+        return !map.isEmpty();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void addPlayerListener(@NotNull IPlayer.PlayerListener playerListener) {
+        Intrinsics.checkNotNullParameter(playerListener, "playerListener");
+        if (this.playerListenerList.contains(playerListener)) {
+            return;
+        }
+        this.playerListenerList.add(playerListener);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void b(boolean hidden) {
+        if (hidden) {
+            FrameLayout frameLayout = this.currentPlayerViewContainer;
+            if (frameLayout != null) {
+                frameLayout.setVisibility(4);
+            }
+            IPlayer iPlayer = this.currentPlayer;
+            if (iPlayer != null) {
+                iPlayer.pause();
+                return;
+            }
+            return;
+        }
+        FrameLayout frameLayout2 = this.currentPlayerViewContainer;
+        if (frameLayout2 != null) {
+            frameLayout2.setVisibility(0);
+        }
+        IPlayer iPlayer2 = this.currentPlayer;
+        if (iPlayer2 != null) {
+            iPlayer2.seek(0L);
+        }
+        IPlayer iPlayer3 = this.currentPlayer;
+        if (iPlayer3 != null) {
+            iPlayer3.play();
+        }
+        g();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void b0(float r342, @NotNull AudioModel.Type audioType) {
+        MediaModel copy;
+        AudioModel copy2;
+        AudioModel copy3;
+        Intrinsics.checkNotNullParameter(audioType, "audioType");
+        WinkEditData K1 = K1();
+        HashMap hashMap = new HashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            String key = entry.getKey();
+            AudioModel value = entry.getValue();
+            if (value.type == audioType) {
+                copy2 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : Float.valueOf(r342), (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy2);
+            } else {
+                copy3 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : null, (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy3);
+            }
+        }
+        copy = r2.copy((r39 & 1) != 0 ? r2.id : null, (r39 & 2) != 0 ? r2.name : null, (r39 & 4) != 0 ? r2.version : null, (r39 & 8) != 0 ? r2.createTime : null, (r39 & 16) != 0 ? r2.updateTime : null, (r39 & 32) != 0 ? r2.duration : null, (r39 & 64) != 0 ? r2.videos : null, (r39 & 128) != 0 ? r2.audios : hashMap, (r39 & 256) != 0 ? r2.stickers : null, (r39 & 512) != 0 ? r2.backgroundModel : null, (r39 & 1024) != 0 ? r2.filterModels : null, (r39 & 2048) != 0 ? r2.specialEffects : null, (r39 & 4096) != 0 ? r2.transitions : null, (r39 & 8192) != 0 ? r2.templateModel : null, (r39 & 16384) != 0 ? r2.coverInfo : null, (r39 & 32768) != 0 ? r2.exportSetting : null, (r39 & 65536) != 0 ? r2.openHDR : null, (r39 & 131072) != 0 ? r2.hdrModels : null, (r39 & 262144) != 0 ? r2.smoothModels : null, (r39 & 524288) != 0 ? r2.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    /* renamed from: b2, reason: from getter */
+    public final boolean getIsFromQzoneText() {
+        return this.isFromQzoneText;
+    }
+
+    public final void b3(@NotNull String path) {
+        boolean isBlank;
+        Entity j3;
+        String str;
+        Companion companion;
+        String l3;
+        Collection<Component> components;
+        Intrinsics.checkNotNullParameter(path, "path");
+        isBlank = StringsKt__StringsJVMKt.isBlank(path);
+        if (isBlank || !this.isFromQzoneText || (j3 = INSTANCE.j(path)) == null) {
+            return;
+        }
+        Collection<Component> components2 = j3.getComponents();
+        ICutSession iCutSession = null;
+        if (components2 != null) {
+            str = null;
+            for (Component component : components2) {
+                if (component instanceof Image) {
+                    str = ((Image) component).getSrc();
+                }
+            }
+        } else {
+            str = null;
+        }
+        if (str == null || (l3 = (companion = INSTANCE).l(str, path)) == null) {
+            return;
+        }
+        InputSource d16 = g.a.d(rd4.c.f431135f.r(), str, l3, null, 4, null);
+        ICutSession iCutSession2 = this.cutSession;
+        if (iCutSession2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession2 = null;
+        }
+        if (iCutSession2.accessInputSource(str) == null) {
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession3 = null;
+            }
+            ICutSession.DefaultImpls.addInputSource$default(iCutSession3, d16, false, 2, null);
+        }
+        ICutSession iCutSession4 = this.cutSession;
+        if (iCutSession4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession4 = null;
+        }
+        Entity i3 = companion.i(iCutSession4.getRootEntity(), this.backgroundImageEntityId);
+        if (i3 != null && (components = i3.getComponents()) != null) {
+            for (Component component2 : components) {
+                if (component2 instanceof Image) {
+                    ((Image) component2).setSrc(str);
+                }
+            }
+        }
+        ICutSession iCutSession5 = this.cutSession;
+        if (iCutSession5 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession = iCutSession5;
+        }
+        iCutSession.flushWithoutDelay();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<MediaClip> c(@NotNull List<? extends Pair<? extends Matrix, ? extends RectF>> cropInfoList) {
+        int collectionSizeOrDefault;
+        Object orNull;
+        ResourceModel resourceModel;
+        int roundToInt;
+        int roundToInt2;
+        int roundToInt3;
+        int roundToInt4;
+        Intrinsics.checkNotNullParameter(cropInfoList, "cropInfoList");
+        List<MediaClip> list = K1().getMediaModel().videos;
+        collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(list, 10);
+        ArrayList arrayList = new ArrayList(collectionSizeOrDefault);
+        int i3 = 0;
+        for (Object obj : list) {
+            int i16 = i3 + 1;
+            if (i3 < 0) {
+                CollectionsKt__CollectionsKt.throwIndexOverflow();
+            }
+            MediaClip mediaClip = (MediaClip) obj;
+            orNull = CollectionsKt___CollectionsKt.getOrNull(cropInfoList, i3);
+            Pair pair = (Pair) orNull;
+            if (pair != null) {
+                w53.b.a("WinkVideoTavCut", i3 + " updateCropInfoList  " + pair.getFirst() + " " + pair.getSecond());
+                List<Float> a16 = com.tencent.mobileqq.wink.editor.crop.a.a((Matrix) pair.getFirst());
+                ResourceModel resourceModel2 = mediaClip.resource;
+                if (resourceModel2 != null) {
+                    roundToInt = MathKt__MathJVMKt.roundToInt(((RectF) pair.getSecond()).left);
+                    roundToInt2 = MathKt__MathJVMKt.roundToInt(((RectF) pair.getSecond()).top);
+                    roundToInt3 = MathKt__MathJVMKt.roundToInt(((RectF) pair.getSecond()).right);
+                    roundToInt4 = MathKt__MathJVMKt.roundToInt(((RectF) pair.getSecond()).bottom);
+                    resourceModel = resourceModel2.copy((r35 & 1) != 0 ? resourceModel2.id : null, (r35 & 2) != 0 ? resourceModel2.path : null, (r35 & 4) != 0 ? Long.valueOf(resourceModel2.scaleDuration) : null, (r35 & 8) != 0 ? Long.valueOf(resourceModel2.sourceStart) : null, (r35 & 16) != 0 ? Long.valueOf(resourceModel2.sourceDuration) : null, (r35 & 32) != 0 ? Long.valueOf(resourceModel2.selectStart) : null, (r35 & 64) != 0 ? Long.valueOf(resourceModel2.selectDuration) : null, (r35 & 128) != 0 ? resourceModel2.type : null, (r35 & 256) != 0 ? resourceModel2.size : null, (r35 & 512) != 0 ? Float.valueOf(resourceModel2.volume) : null, (r35 & 1024) != 0 ? resourceModel2.extras : null, (r35 & 2048) != 0 ? resourceModel2.picClipRect : new com.tencent.videocut.model.RectF(roundToInt, roundToInt2, roundToInt3, roundToInt4, null, 16, null), (r35 & 4096) != 0 ? resourceModel2.reversePath : null, (r35 & 8192) != 0 ? resourceModel2.normalPath : null, (r35 & 16384) != 0 ? resourceModel2.isReverseMode : null, (r35 & 32768) != 0 ? Float.valueOf(resourceModel2.deblurScore) : null, (r35 & 65536) != 0 ? resourceModel2.unknownFields() : null);
+                } else {
+                    resourceModel = null;
+                }
+                mediaClip = MediaClip.copy$default(mediaClip, resourceModel, null, null, null, null, a16, null, 94, null);
+            }
+            arrayList.add(mediaClip);
+            i3 = i16;
+        }
+        t3(this, arrayList, true, false, 4, null);
+        return arrayList;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void c0(boolean r27) {
+        MediaModel copy;
+        WinkEditData K1 = K1();
+        if (K1.getOpenHDR() != r27) {
+            K1.setOpenHDR(!K1.getOpenHDR());
+            copy = r2.copy((r39 & 1) != 0 ? r2.id : null, (r39 & 2) != 0 ? r2.name : null, (r39 & 4) != 0 ? r2.version : null, (r39 & 8) != 0 ? r2.createTime : null, (r39 & 16) != 0 ? r2.updateTime : null, (r39 & 32) != 0 ? r2.duration : null, (r39 & 64) != 0 ? r2.videos : null, (r39 & 128) != 0 ? r2.audios : null, (r39 & 256) != 0 ? r2.stickers : null, (r39 & 512) != 0 ? r2.backgroundModel : null, (r39 & 1024) != 0 ? r2.filterModels : null, (r39 & 2048) != 0 ? r2.specialEffects : null, (r39 & 4096) != 0 ? r2.transitions : null, (r39 & 8192) != 0 ? r2.templateModel : null, (r39 & 16384) != 0 ? r2.coverInfo : null, (r39 & 32768) != 0 ? r2.exportSetting : null, (r39 & 65536) != 0 ? r2.openHDR : Boolean.valueOf(K1.getOpenHDR()), (r39 & 131072) != 0 ? r2.hdrModels : null, (r39 & 262144) != 0 ? r2.smoothModels : null, (r39 & 524288) != 0 ? r2.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+            K1.setMediaModel(copy);
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            composeRenderLayer.l(K1.getMediaModel());
+        }
+    }
+
+    public final void c1(boolean r36) {
+        ComposeRenderLayer composeRenderLayer = null;
+        ICutSession iCutSession = null;
+        if (r36) {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession = iCutSession2;
+            }
+            iCutSession.flushWithoutDelay();
+            return;
+        }
+        WinkEditData K1 = K1();
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+        } else {
+            composeRenderLayer = composeRenderLayer2;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void d(@NotNull ICutStatusCallback listener) {
+        Intrinsics.checkNotNullParameter(listener, "listener");
+        this.cutStatusCallBackList.remove(listener);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public Size d0(@Nullable MetaMaterial metaMaterial) {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return ds.c(winkTavCutParams, this.playerContainerWrapper, metaMaterial);
+    }
+
+    /* renamed from: d2, reason: from getter */
+    public final boolean getIsInit() {
+        return this.isInit;
+    }
+
+    /* JADX WARN: Code restructure failed: missing block: B:12:0x0097, code lost:
+    
+        r2 = r4.copy((r24 & 1) != 0 ? r4.id : null, (r24 & 2) != 0 ? r4.renderSize : r1, (r24 & 4) != 0 ? r4.bgFillMode : null, (r24 & 8) != 0 ? r4.bgColor : null, (r24 & 16) != 0 ? r4.bgPagPath : null, (r24 & 32) != 0 ? r4.ratioType : null, (r24 & 64) != 0 ? r4.resPack : null, (r24 & 128) != 0 ? r4.categoryId : null, (r24 & 256) != 0 ? r4.fillScale : r27, (r24 & 512) != 0 ? r4.imageEffect : 0, (r24 & 1024) != 0 ? r4.unknownFields() : null);
+     */
+    @NotNull
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public final MediaModel d3(@NotNull MediaModel mediaModel, @NotNull SizeF renderSize, float fillScale) {
+        Integer num;
+        float f16;
+        SizeF sizeF;
+        BackgroundModel c16;
+        MediaModel copy;
+        BackgroundModel copy2;
+        Intrinsics.checkNotNullParameter(mediaModel, "mediaModel");
+        Intrinsics.checkNotNullParameter(renderSize, "renderSize");
+        if (!H1()) {
+            num = Integer.valueOf(com.tencent.mobileqq.wink.editor.util.m.f322645a.b().height);
+        } else {
+            num = f318688n0.height;
+        }
+        float f17 = renderSize.height;
+        float f18 = renderSize.width;
+        if (f17 * f18 <= 0.0f) {
+            ms.a.c("WinkVideoTavCut", "render size is error: width = " + f18 + ",height=" + f17);
+            f16 = 1.0f;
+        } else {
+            f16 = f17 / f18;
+        }
+        if (f16 < 1.0f) {
+            Intrinsics.checkNotNull(num);
+            sizeF = new SizeF(num.intValue(), num.intValue() * f16, ByteString.EMPTY);
+        } else {
+            Intrinsics.checkNotNull(num);
+            sizeF = new SizeF(num.intValue() / f16, num.intValue(), ByteString.EMPTY);
+        }
+        SizeF d16 = com.tencent.mobileqq.wink.editor.model.a.d(g0(), sizeF.width, sizeF.height);
+        BackgroundModel backgroundModel = mediaModel.backgroundModel;
+        if (backgroundModel != null && copy2 != null) {
+            c16 = copy2;
+        } else {
+            c16 = com.tencent.videocut.render.g.c(d16, fillScale, null, 4, null);
+        }
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : c16, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        return copy;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void e(@NotNull WinkStickerModel stickerModel) {
+        List<? extends WinkStickerModel> listOf;
+        Intrinsics.checkNotNullParameter(stickerModel, "stickerModel");
+        listOf = CollectionsKt__CollectionsJVMKt.listOf(stickerModel);
+        T(listOf);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean e0(@NotNull List<? extends MediaClip> videos) {
+        Intrinsics.checkNotNullParameter(videos, "videos");
+        return n3(this, videos, false, 0L, false, 14, null);
+    }
+
+    public final void e3(@NotNull String path) {
+        boolean isBlank;
+        Entity k3;
+        Map<String, WinkStickerModel> m3;
+        Intrinsics.checkNotNullParameter(path, "path");
+        isBlank = StringsKt__StringsJVMKt.isBlank(path);
+        if (!isBlank && this.isFromQzoneText && (k3 = INSTANCE.k(path)) != null && (m3 = m()) != null) {
+            ArrayList arrayList = new ArrayList(m3.size());
+            Iterator<Map.Entry<String, WinkStickerModel>> it = m3.entrySet().iterator();
+            while (it.hasNext()) {
+                WinkStickerModel value = it.next().getValue();
+                Unit unit = null;
+                if (value != null) {
+                    MetaMaterial material = value.getMaterial();
+                    Intrinsics.checkNotNull(material);
+                    if (com.tencent.mobileqq.wink.editor.sticker.m.T(material)) {
+                        Companion companion = INSTANCE;
+                        int i3 = this.renderWidth;
+                        dr.b.n(this, companion.o(k3, value, i3, i3), false, 2, null);
+                    }
+                    unit = Unit.INSTANCE;
+                }
+                arrayList.add(unit);
+            }
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<WinkStickerModel> f() {
+        List<WinkStickerModel> emptyList;
+        Collection<WinkStickerModel> values;
+        boolean z16;
+        Map<String, WinkStickerModel> stickerModelMap = K1().getStickerModelMap();
+        if (stickerModelMap == null || (values = stickerModelMap.values()) == null) {
+            emptyList = CollectionsKt__CollectionsKt.emptyList();
+            return emptyList;
+        }
+        ArrayList arrayList = new ArrayList();
+        for (Object obj : values) {
+            WinkStickerModel winkStickerModel = (WinkStickerModel) obj;
+            if (!winkStickerModel.isTemplateTextSticker() && !winkStickerModel.isBackgroundTextSticker()) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (z16) {
+                arrayList.add(obj);
+            }
+        }
+        return arrayList;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean f0(@Nullable String str) {
+        return dr.b.i(this, str);
+    }
+
+    public final boolean f2() {
+        return g2(K1().getMediaModel().videos);
+    }
+
+    public final void f3(@NotNull List<? extends MediaClip> clips, @NotNull Map<String, TransitionModel> transforms) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(clips, "clips");
+        Intrinsics.checkNotNullParameter(transforms, "transforms");
+        MediaModel V = V();
+        if (V != null) {
+            copy = V.copy((r39 & 1) != 0 ? V.id : null, (r39 & 2) != 0 ? V.name : null, (r39 & 4) != 0 ? V.version : null, (r39 & 8) != 0 ? V.createTime : null, (r39 & 16) != 0 ? V.updateTime : null, (r39 & 32) != 0 ? V.duration : null, (r39 & 64) != 0 ? V.videos : clips, (r39 & 128) != 0 ? V.audios : null, (r39 & 256) != 0 ? V.stickers : null, (r39 & 512) != 0 ? V.backgroundModel : null, (r39 & 1024) != 0 ? V.filterModels : null, (r39 & 2048) != 0 ? V.specialEffects : null, (r39 & 4096) != 0 ? V.transitions : transforms, (r39 & 8192) != 0 ? V.templateModel : null, (r39 & 16384) != 0 ? V.coverInfo : null, (r39 & 32768) != 0 ? V.exportSetting : null, (r39 & 65536) != 0 ? V.openHDR : null, (r39 & 131072) != 0 ? V.hdrModels : null, (r39 & 262144) != 0 ? V.smoothModels : null, (r39 & 524288) != 0 ? V.openSuperHDR : null, (r39 & 1048576) != 0 ? V.unknownFields() : null);
+            r(copy);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void flush(boolean z16) {
+        ComposeRenderLayer composeRenderLayer = null;
+        ICutSession iCutSession = null;
+        if (z16) {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            } else {
+                iCutSession = iCutSession2;
+            }
+            iCutSession.flush();
+            return;
+        }
+        WinkEditData K1 = K1();
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+        } else {
+            composeRenderLayer = composeRenderLayer2;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    /* JADX WARN: Code restructure failed: missing block: B:6:0x0019, code lost:
+    
+        if (r0 != null) goto L24;
+     */
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public void g() {
+        MetaMaterial metaMaterial;
+        Collection<MetaMaterial> values;
+        Object elementAtOrNull;
+        Map<String, MetaMaterial> templateMaterialMap = K1().getTemplateMaterialMap();
+        if (templateMaterialMap != null && (values = templateMaterialMap.values()) != null) {
+            elementAtOrNull = CollectionsKt___CollectionsKt.elementAtOrNull(values, 0);
+            metaMaterial = (MetaMaterial) elementAtOrNull;
+        }
+        metaMaterial = null;
+        if (metaMaterial != null) {
+            this.templateMaterial = metaMaterial;
+            SimpleEventBus.getInstance().dispatchEvent(new TemplateSelectEvent(metaMaterial, false));
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<MediaClip> g0() {
+        return V().videos;
+    }
+
+    @Nullable
+    public final Bitmap g1(long atTimeMs, @NotNull org.light.lightAssetKit.components.Size size, @NotNull String templateDir, @Nullable List<? extends BaseEffectNode> renderNodes) {
+        Intrinsics.checkNotNullParameter(size, "size");
+        Intrinsics.checkNotNullParameter(templateDir, "templateDir");
+        com.tencent.mobileqq.wink.editor.cover.b bVar = com.tencent.mobileqq.wink.editor.cover.b.f319709a;
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        return com.tencent.mobileqq.wink.editor.cover.b.c(bVar, iCutSession, atTimeMs, size, templateDir, renderNodes, null, 32, null);
+    }
+
+    public final boolean g2(@Nullable List<? extends MediaClip> clips) {
+        if (clips == null) {
+            return false;
+        }
+        Iterator<? extends MediaClip> it = clips.iterator();
+        while (it.hasNext()) {
+            ResourceModel resourceModel = it.next().resource;
+            if (resourceModel != null && resourceModel.type != MediaType.IMAGE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public long getCurrentPlayUs() {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            return iPlayer.getCurrentPlayUs();
+        }
+        return 0L;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public long getDurationUs() {
+        return K1().getDurationUs();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public long getFrameDuration() {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        return iCutSession.getFrameDuration();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    /* renamed from: getPlayer, reason: from getter */
+    public IPlayer getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public Size getRenderSize() {
+        return new Size(Integer.valueOf(this.renderWidth), Integer.valueOf(this.renderHeight), null, 4, null);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public long h() {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return winkTavCutParams.getMaxPlayerTimeLimit();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    public WinkEditData h0() {
+        Object orNull;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        orNull = CollectionsKt___CollectionsKt.getOrNull(winkTavCutParams.u(), 0);
+        return (WinkEditData) orNull;
+    }
+
+    @Nullable
+    /* renamed from: h1, reason: from getter */
+    public final FrameLayout getCurrentPlayerViewContainer() {
+        return this.currentPlayerViewContainer;
+    }
+
+    public boolean h2() {
+        return !K1().getMediaModel().specialEffects.isEmpty();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean i() {
+        boolean z16;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        List<WinkEditData> u16 = winkTavCutParams.u();
+        if (u16 != null && !u16.isEmpty()) {
+            z16 = false;
+        } else {
+            z16 = true;
+        }
+        return !z16;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void i0(@Nullable FilterModel filterModel, @Nullable MetaMaterial r312, boolean onlyUpdateIntensity) {
+        MediaModel copy;
+        ComposeRenderLayer composeRenderLayer;
+        WinkEditData K1 = K1();
+        if (K1.getFilterModelMap() == null) {
+            K1.setFilterModelMap(new LinkedHashMap());
+        }
+        if (K1.getFilterMaterialMap() == null) {
+            K1.setFilterMaterialMap(new LinkedHashMap());
+        }
+        Map<String, MetaMaterial> filterMaterialMap = K1.getFilterMaterialMap();
+        Intrinsics.checkNotNull(filterMaterialMap);
+        filterMaterialMap.clear();
+        Map<String, FilterModel> filterModelMap = K1.getFilterModelMap();
+        Intrinsics.checkNotNull(filterModelMap);
+        filterModelMap.clear();
+        if (r312 != null) {
+            Map<String, MetaMaterial> filterMaterialMap2 = K1.getFilterMaterialMap();
+            Intrinsics.checkNotNull(filterMaterialMap2);
+            String str = r312.f30533id;
+            Intrinsics.checkNotNullExpressionValue(str, "it.id");
+            filterMaterialMap2.put(str, r312);
+        }
+        if (filterModel != null) {
+            Map<String, FilterModel> filterModelMap2 = K1.getFilterModelMap();
+            Intrinsics.checkNotNull(filterModelMap2);
+            filterModelMap2.put(filterModel.id, filterModel);
+        }
+        MediaModel mediaModel = K1.getMediaModel();
+        Map<String, FilterModel> filterModelMap3 = K1.getFilterModelMap();
+        Intrinsics.checkNotNull(filterModelMap3);
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : null, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : filterModelMap3, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer2 = null;
+        if (onlyUpdateIntensity) {
+            ICutSession iCutSession = this.cutSession;
+            if (iCutSession == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession = null;
+            }
+            IPlayer player = iCutSession.getPlayer();
+            boolean z16 = false;
+            if (player != null && player.isPlaying()) {
+                z16 = true;
+            }
+            if (z16) {
+                ComposeRenderLayer composeRenderLayer3 = this.renderLayerHelper;
+                if (composeRenderLayer3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                } else {
+                    composeRenderLayer = composeRenderLayer3;
+                }
+                ComposeRenderLayer.p(composeRenderLayer, K1.getMediaModel(), ComposeRenderLayer.FlushMode.NO_FLUSH, 0L, 4, null);
+                return;
+            }
+        }
+        ComposeRenderLayer composeRenderLayer4 = this.renderLayerHelper;
+        if (composeRenderLayer4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+        } else {
+            composeRenderLayer2 = composeRenderLayer4;
+        }
+        composeRenderLayer2.l(K1.getMediaModel());
+    }
+
+    @NotNull
+    public final Entity i1(@Nullable String entityName) {
+        if (entityName == null) {
+            return new Entity();
+        }
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        Entity c16 = composeRenderLayer.c(entityName);
+        if (c16 == null) {
+            return new Entity();
+        }
+        return c16;
+    }
+
+    public boolean i2() {
+        return !K1().getMediaModel().stickers.isEmpty();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean isPlaying() {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            return iPlayer.isPlaying();
+        }
+        return false;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    /* renamed from: isReady, reason: from getter */
+    public boolean getIsReady() {
+        return this.isReady;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void j() {
+        this.oriMediaModel = V();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void j0(@NotNull String r26) {
+        Intrinsics.checkNotNullParameter(r26, "dir");
+        String str = r26 + "/template.json";
+        e3(str);
+        b3(str);
+    }
+
+    public final int j1(@Nullable String entityName) {
+        if (entityName == null) {
+            return 0;
+        }
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        Entity c16 = composeRenderLayer.c(entityName);
+        if (c16 == null) {
+            return 0;
+        }
+        return c16.getId();
+    }
+
+    public final boolean j2() {
+        return Intrinsics.areEqual(K1().getMediaModel().openSuperHDR, Boolean.TRUE);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public final void j3() {
+        byte b16;
+        WinkEditData winkEditData;
+        LAKRenderModel allInputSourceRenderModel;
+        if (com.tencent.mobileqq.wink.editor.export.b.INSTANCE.a().c() && (!TextUtils.isEmpty(getTemplatePath()) || (!c2() && !com.tencent.mobileqq.wink.editor.draft.c.w(K1())))) {
+            b16 = true;
+        } else {
+            b16 = false;
+        }
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        String str = null;
+        ICutSession iCutSession = null;
+        str = null;
+        str = null;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        List<WinkEditData> u16 = winkTavCutParams.u();
+        if (u16 != null && (winkEditData = u16.get(0)) != null) {
+            if (b16 != false) {
+                ICutSession iCutSession2 = this.cutSession;
+                if (iCutSession2 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession2 = null;
+                }
+                if (iCutSession2 != null && (allInputSourceRenderModel = iCutSession2.getAllInputSourceRenderModel()) != null) {
+                    ICutSession iCutSession3 = this.cutSession;
+                    if (iCutSession3 == null) {
+                        Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    } else {
+                        iCutSession = iCutSession3;
+                    }
+                    allInputSourceRenderModel.setJsonData(LightAssetUtils.getAssetJsonString(iCutSession.getLightAsset()));
+                    str = com.tencent.mobileqq.wink.editor.draft.c.D(allInputSourceRenderModel);
+                }
+            }
+            winkEditData.setRenderModelStr(str);
+            winkEditData.setLakData(true);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void k(@NotNull HashMap<String, HDRModel> inputMap, long r56, boolean useHDR, boolean needPlay) {
+        Intrinsics.checkNotNullParameter(inputMap, "inputMap");
+        for (WinkEditData winkEditData : n()) {
+            winkEditData.setMediaModel(MediaModelUtilsKt.updateHDRClips(winkEditData.getMediaModel(), inputMap, useHDR));
+        }
+        List<MediaClip> list = n().get(0).getMediaModel().videos;
+        seek(r56);
+        boolean p16 = p1();
+        M2(true);
+        e0(list);
+        M2(p16);
+        if (needPlay) {
+            play();
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void k0(@Nullable AudioModel audioModel, @NotNull AudioModel.Type audioType) {
+        MediaModel copy;
+        AudioModel copy2;
+        AudioModel audioModel2 = audioModel;
+        Intrinsics.checkNotNullParameter(audioType, "audioType");
+        WinkEditData K1 = K1();
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            if (entry.getValue().type != audioType) {
+                String key = entry.getKey();
+                copy2 = r12.copy((r37 & 1) != 0 ? r12.id : null, (r37 & 2) != 0 ? r12.path : null, (r37 & 4) != 0 ? Long.valueOf(r12.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(r12.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(r12.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(r12.volume) : null, (r37 & 64) != 0 ? Float.valueOf(r12.speed) : null, (r37 & 128) != 0 ? r12.volumeEffects : null, (r37 & 256) != 0 ? r12.name : null, (r37 & 512) != 0 ? r12.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(r12.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(r12.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(r12.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(r12.fadeOutDuration) : null, (r37 & 16384) != 0 ? r12.lyricInfo : null, (r37 & 32768) != 0 ? r12.type : null, (r37 & 65536) != 0 ? r12.waveSampleData : null, (r37 & 131072) != 0 ? r12.event : null, (r37 & 262144) != 0 ? entry.getValue().unknownFields() : null);
+                linkedHashMap.put(key, copy2);
+            }
+        }
+        if (audioModel2 != null) {
+            String str = audioModel2.id;
+            if (audioModel2.type == AudioModel.Type.MUSIC) {
+                audioModel2 = com.tencent.videocut.render.extension.a.j(audioModel2, g0(), K1.getDurationUs());
+            }
+            linkedHashMap.put(str, audioModel2);
+        }
+        copy = r3.copy((r39 & 1) != 0 ? r3.id : null, (r39 & 2) != 0 ? r3.name : null, (r39 & 4) != 0 ? r3.version : null, (r39 & 8) != 0 ? r3.createTime : null, (r39 & 16) != 0 ? r3.updateTime : null, (r39 & 32) != 0 ? r3.duration : null, (r39 & 64) != 0 ? r3.videos : null, (r39 & 128) != 0 ? r3.audios : linkedHashMap, (r39 & 256) != 0 ? r3.stickers : null, (r39 & 512) != 0 ? r3.backgroundModel : null, (r39 & 1024) != 0 ? r3.filterModels : null, (r39 & 2048) != 0 ? r3.specialEffects : null, (r39 & 4096) != 0 ? r3.transitions : null, (r39 & 8192) != 0 ? r3.templateModel : null, (r39 & 16384) != 0 ? r3.coverInfo : null, (r39 & 32768) != 0 ? r3.exportSetting : null, (r39 & 65536) != 0 ? r3.openHDR : null, (r39 & 131072) != 0 ? r3.hdrModels : null, (r39 & 262144) != 0 ? r3.smoothModels : null, (r39 & 524288) != 0 ? r3.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    /* JADX WARN: Removed duplicated region for block: B:130:0x02ab  */
+    /* JADX WARN: Removed duplicated region for block: B:132:0x02b0  */
+    /* JADX WARN: Removed duplicated region for block: B:140:0x02da  */
+    /* JADX WARN: Removed duplicated region for block: B:143:? A[RETURN, SYNTHETIC] */
+    /* JADX WARN: Removed duplicated region for block: B:146:0x02ad  */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public final void k3(@NotNull LAKRenderModel templateRenderModel, @Nullable MetaMaterial r19) {
+        String str;
+        String str2;
+        String str3;
+        String str4;
+        String str5;
+        boolean z16;
+        boolean z17;
+        boolean z18;
+        boolean z19;
+        boolean z26;
+        boolean z27;
+        boolean z28;
+        boolean z29;
+        Map<String, String> map;
+        String str6;
+        Map<String, String> map2;
+        Map<String, String> map3;
+        Map<String, String> map4;
+        Map<String, String> map5;
+        Map<String, String> map6;
+        String str7;
+        Map<String, String> map7;
+        Intrinsics.checkNotNullParameter(templateRenderModel, "templateRenderModel");
+        LightAssetDataContext make = LightAssetDataContext.make(LightAsset.Load(getTemplatePath(), 0), LightAssetDataType.EntityTree);
+        JsonObject inputSources = make.getInputSources();
+        Entity rootEntity = make.getRootEntity();
+        ArrayList<PAGAsset> arrayList = new ArrayList();
+        Iterator<T> it = INSTANCE.f(rootEntity, n.a.INSTANCE.d()).iterator();
+        while (it.hasNext()) {
+            Collection<Component> components = ((Entity) it.next()).getComponents();
+            Intrinsics.checkNotNullExpressionValue(components, "assetEntity.components");
+            for (Component component : components) {
+                if (component instanceof PAGAsset) {
+                    Intrinsics.checkNotNull(component, "null cannot be cast to non-null type org.light.lightAssetKit.components.PAGAsset");
+                    PAGAsset pAGAsset = (PAGAsset) component;
+                    ArrayList<ReplaceItem> replacement = pAGAsset.getReplacement();
+                    Intrinsics.checkNotNullExpressionValue(replacement, "replacement");
+                    if (!replacement.isEmpty()) {
+                        Iterator<ReplaceItem> it5 = replacement.iterator();
+                        while (true) {
+                            if (it5.hasNext()) {
+                                if (Intrinsics.areEqual(it5.next().src, "videoSource")) {
+                                    arrayList.add(pAGAsset);
+                                    break;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        String str8 = "";
+        String str9 = "";
+        String str10 = str9;
+        for (PAGAsset pAGAsset2 : arrayList) {
+            String asString = inputSources.getAsJsonObject(pAGAsset2.getSrc()).get("path").getAsString();
+            if (r19 != null && (map7 = r19.additionalFields) != null) {
+                str7 = map7.get("download_folder");
+            } else {
+                str7 = null;
+            }
+            PagEffectData A = rd4.c.f431135f.A(str7 + File.separator + asString);
+            if (A != null) {
+                for (ImageLayerData imageLayerData : A.getImageLayerList()) {
+                    if (Intrinsics.areEqual(imageLayerData.getLayerName(), "uesequence")) {
+                        int layerIndex = imageLayerData.getLayerIndex();
+                        Iterator<ReplaceItem> it6 = pAGAsset2.getReplacement().iterator();
+                        while (it6.hasNext()) {
+                            ReplaceItem next = it6.next();
+                            if (next.replaceType == ReplaceType.Image && layerIndex == next.index) {
+                                str9 = next.src;
+                                Intrinsics.checkNotNullExpressionValue(str9, "item.src");
+                            }
+                        }
+                    } else if (Intrinsics.areEqual(imageLayerData.getLayerName(), "background")) {
+                        int layerIndex2 = imageLayerData.getLayerIndex();
+                        Iterator<ReplaceItem> it7 = pAGAsset2.getReplacement().iterator();
+                        while (it7.hasNext()) {
+                            ReplaceItem next2 = it7.next();
+                            if (next2.replaceType == ReplaceType.Image && layerIndex2 == next2.index) {
+                                str10 = next2.src;
+                                Intrinsics.checkNotNullExpressionValue(str10, "item.src");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (r19 == null || (map6 = r19.additionalFields) == null || (str = map6.get(QQWinkConstants.ZSHOW_MATERIAL_MOOD_IMSEQ_PATH_KEY)) == null) {
+            str = "";
+        }
+        if (r19 == null || (map5 = r19.additionalFields) == null || (str2 = map5.get(QQWinkConstants.ZSHOW_MATERIAL_MOOD_IMSEQ_COUNT_KEY)) == null) {
+            str2 = "";
+        }
+        if (r19 == null || (map4 = r19.additionalFields) == null || (str3 = map4.get(QQWinkConstants.ZSHOW_MATERIAL_MOOD_IMSEQ_WIDTH_KEY)) == null) {
+            str3 = "";
+        }
+        if (r19 == null || (map3 = r19.additionalFields) == null || (str4 = map3.get(QQWinkConstants.ZSHOW_MATERIAL_MOOD_IMSEQ_HEIGHT_KEY)) == null) {
+            str4 = "";
+        }
+        if (r19 == null || (map2 = r19.additionalFields) == null || (str5 = map2.get(QQWinkConstants.ZSHOW_MATERIAL_BACKGROUND_IMSEQ_PATH_KEY)) == null) {
+            str5 = "";
+        }
+        if (r19 != null && (map = r19.additionalFields) != null && (str6 = map.get(QQWinkConstants.ZSHOW_MATERIAL_MOOD_IMSEQ_FORMAT)) != null) {
+            str8 = str6;
+        }
+        if (inputSources != null) {
+            if (str9.length() == 0) {
+                z16 = true;
+            } else {
+                z16 = false;
+            }
+            if (!z16) {
+                JsonObject asJsonObject = inputSources.getAsJsonObject(str9);
+                if (Intrinsics.areEqual(asJsonObject.get("type").getAsString(), "ImageSequence")) {
+                    if (str.length() == 0) {
+                        z28 = true;
+                    } else {
+                        z28 = false;
+                    }
+                    if (!z28) {
+                        if (str2.length() == 0) {
+                            z29 = true;
+                        } else {
+                            z29 = false;
+                        }
+                        if (!z29) {
+                            asJsonObject.addProperty("path", str);
+                            asJsonObject.addProperty("colorFormat", str8);
+                            asJsonObject.addProperty("totalFrameCount", Integer.valueOf(Integer.parseInt(str2)));
+                            asJsonObject.addProperty("spriteSheetFileCount", Integer.valueOf(Integer.parseInt(str2)));
+                            z17 = true;
+                            asJsonObject.addProperty("spriteSheetCols", (Number) 1);
+                            asJsonObject.addProperty("spriteSheetRows", (Number) 1);
+                            asJsonObject.addProperty("spriteSheetImageWidth", Integer.valueOf(Integer.parseInt(str3)));
+                            asJsonObject.addProperty("spriteSheetImageHeight", Integer.valueOf(Integer.parseInt(str4)));
+                            asJsonObject.addProperty("frameRate", (Number) 30);
+                            asJsonObject.addProperty("duration", Float.valueOf((Integer.parseInt(str2) / 30.0f) * 1000000.0f));
+                            make.updateInputSource(str9, asJsonObject);
+                            z18 = true;
+                            if (str10.length() != 0) {
+                                z19 = z17;
+                            } else {
+                                z19 = false;
+                            }
+                            if (!z19) {
+                                JsonObject asJsonObject2 = inputSources.getAsJsonObject(str10);
+                                if (Intrinsics.areEqual(asJsonObject2.get("type").getAsString(), "ImageSequence")) {
+                                    if (str5.length() == 0) {
+                                        z27 = z17;
+                                    } else {
+                                        z27 = false;
+                                    }
+                                    if (!z27) {
+                                        asJsonObject2.addProperty("path", str5);
+                                        make.updateInputSource(str10, asJsonObject2);
+                                        z26 = z17;
+                                        if (z26) {
+                                            templateRenderModel.setJsonData(LightAssetUtils.getAssetJsonString(make.exportLightAsset()));
+                                            return;
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+                            z26 = z18;
+                            if (z26) {
+                            }
+                        }
+                    }
+                }
+            }
+            z17 = true;
+            z18 = false;
+            if (str10.length() != 0) {
+            }
+            if (!z19) {
+            }
+            z26 = z18;
+            if (z26) {
+            }
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    /* renamed from: l */
+    public ICutSession getSession() {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            return null;
+        }
+        return iCutSession;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean l0() {
+        return !Intrinsics.areEqual(this.oriMediaModel, V());
+    }
+
+    /* renamed from: l2, reason: from getter */
+    public final boolean getUseVerticalPlayer() {
+        return this.useVerticalPlayer;
+    }
+
+    public final boolean l3(@NotNull List<? extends MediaClip> videos, boolean justFlush) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(videos, "videos");
+        ms.a.a("WinkVideoTavCut", "updateMediaClips justFlush: " + justFlush);
+        WinkEditData K1 = K1();
+        copy = r1.copy((r39 & 1) != 0 ? r1.id : null, (r39 & 2) != 0 ? r1.name : null, (r39 & 4) != 0 ? r1.version : null, (r39 & 8) != 0 ? r1.createTime : null, (r39 & 16) != 0 ? r1.updateTime : null, (r39 & 32) != 0 ? r1.duration : null, (r39 & 64) != 0 ? r1.videos : videos, (r39 & 128) != 0 ? r1.audios : null, (r39 & 256) != 0 ? r1.stickers : null, (r39 & 512) != 0 ? r1.backgroundModel : null, (r39 & 1024) != 0 ? r1.filterModels : null, (r39 & 2048) != 0 ? r1.specialEffects : null, (r39 & 4096) != 0 ? r1.transitions : null, (r39 & 8192) != 0 ? r1.templateModel : null, (r39 & 16384) != 0 ? r1.coverInfo : null, (r39 & 32768) != 0 ? r1.exportSetting : null, (r39 & 65536) != 0 ? r1.openHDR : null, (r39 & 131072) != 0 ? r1.hdrModels : null, (r39 & 262144) != 0 ? r1.smoothModels : null, (r39 & 524288) != 0 ? r1.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        if (justFlush) {
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+            return true;
+        }
+        return true;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @Nullable
+    public Map<String, WinkStickerModel> m() {
+        return K1().getStickerModelMap();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void m0(@NotNull ICutStatusCallback listener) {
+        Intrinsics.checkNotNullParameter(listener, "listener");
+        this.cutStatusCallBackList.add(listener);
+    }
+
+    @NotNull
+    public List<MediaModel> m1() {
+        List<MediaModel> mutableListOf;
+        mutableListOf = CollectionsKt__CollectionsKt.mutableListOf(K1().getMediaModel());
+        return mutableListOf;
+    }
+
+    public final boolean m3(@NotNull List<? extends MediaClip> videos, boolean needFlushPlayer, long targetTimeUs, boolean forceFlush) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(videos, "videos");
+        ms.a.f("WinkVideoTavCut", "updateMediaClipsAndPlayer");
+        WinkEditData K1 = K1();
+        copy = r0.copy((r39 & 1) != 0 ? r0.id : null, (r39 & 2) != 0 ? r0.name : null, (r39 & 4) != 0 ? r0.version : null, (r39 & 8) != 0 ? r0.createTime : null, (r39 & 16) != 0 ? r0.updateTime : null, (r39 & 32) != 0 ? r0.duration : null, (r39 & 64) != 0 ? r0.videos : videos, (r39 & 128) != 0 ? r0.audios : null, (r39 & 256) != 0 ? r0.stickers : null, (r39 & 512) != 0 ? r0.backgroundModel : null, (r39 & 1024) != 0 ? r0.filterModels : null, (r39 & 2048) != 0 ? r0.specialEffects : null, (r39 & 4096) != 0 ? r0.transitions : null, (r39 & 8192) != 0 ? r0.templateModel : null, (r39 & 16384) != 0 ? r0.coverInfo : null, (r39 & 32768) != 0 ? r0.exportSetting : null, (r39 & 65536) != 0 ? r0.openHDR : null, (r39 & 131072) != 0 ? r0.hdrModels : null, (r39 & 262144) != 0 ? r0.smoothModels : null, (r39 & 524288) != 0 ? r0.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.t(K1.getMediaModel(), needFlushPlayer, targetTimeUs, forceFlush);
+        return true;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<WinkEditData> n() {
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        return winkTavCutParams.u();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void n0(int width, int height) {
+        dr.WinkTavCutParams a16;
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        a16 = r2.a((r41 & 1) != 0 ? r2.isFirstInit : false, (r41 & 2) != 0 ? r2.editMode : null, (r41 & 4) != 0 ? r2.winkEditData : null, (r41 & 8) != 0 ? r2.templatePath : null, (r41 & 16) != 0 ? r2.isFromTemplateColl : null, (r41 & 32) != 0 ? r2.width : width, (r41 & 64) != 0 ? r2.height : height, (r41 & 128) != 0 ? r2.playerSurface : null, (r41 & 256) != 0 ? r2.assetData : null, (r41 & 512) != 0 ? r2.enableSoftDecode : false, (r41 & 1024) != 0 ? r2.softDecodeThreadCount : 0, (r41 & 2048) != 0 ? r2.maxPlayerTimeLimit : 0L, (r41 & 4096) != 0 ? r2.enableImageTemplateEdit : false, (r41 & 8192) != 0 ? r2.isFromQzoneText : false, (r41 & 16384) != 0 ? r2.textQzoneText : null, (r41 & 32768) != 0 ? r2.scene : null, (r41 & 65536) != 0 ? r2.autoPlay : false, (r41 & 131072) != 0 ? r2.enableVideoFilter : false, (r41 & 262144) != 0 ? r2.surfaceHeight : 0, (r41 & 524288) != 0 ? r2.surfaceWidth : 0, (r41 & 1048576) != 0 ? r2.needPaintingFlush : false, (r41 & 2097152) != 0 ? winkTavCutParams.watermarkConfig : null);
+        this.params = a16;
+    }
+
+    public final void n2() {
+        MediaModel copy;
+        WinkEditData K1 = K1();
+        copy = r1.copy((r39 & 1) != 0 ? r1.id : null, (r39 & 2) != 0 ? r1.name : null, (r39 & 4) != 0 ? r1.version : null, (r39 & 8) != 0 ? r1.createTime : null, (r39 & 16) != 0 ? r1.updateTime : null, (r39 & 32) != 0 ? r1.duration : null, (r39 & 64) != 0 ? r1.videos : null, (r39 & 128) != 0 ? r1.audios : null, (r39 & 256) != 0 ? r1.stickers : null, (r39 & 512) != 0 ? r1.backgroundModel : null, (r39 & 1024) != 0 ? r1.filterModels : null, (r39 & 2048) != 0 ? r1.specialEffects : null, (r39 & 4096) != 0 ? r1.transitions : null, (r39 & 8192) != 0 ? r1.templateModel : null, (r39 & 16384) != 0 ? r1.coverInfo : null, (r39 & 32768) != 0 ? r1.exportSetting : null, (r39 & 65536) != 0 ? r1.openHDR : null, (r39 & 131072) != 0 ? r1.hdrModels : null, (r39 & 262144) != 0 ? r1.smoothModels : null, (r39 & 524288) != 0 ? r1.openSuperHDR : Boolean.TRUE, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void o(float r252) {
+        int collectionSizeOrDefault;
+        ClipSource copy;
+        ICutSession iCutSession = null;
+        if (getTemplatePath() != null) {
+            ICutSession iCutSession2 = this.cutSession;
+            if (iCutSession2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession2 = null;
+            }
+            LAKRenderModel renderModel = iCutSession2.getRenderModel();
+            if (renderModel != null) {
+                List<ClipSource> clipsAssets = renderModel.getClipsAssets();
+                collectionSizeOrDefault = CollectionsKt__IterablesKt.collectionSizeOrDefault(clipsAssets, 10);
+                ArrayList arrayList = new ArrayList(collectionSizeOrDefault);
+                Iterator<T> it = clipsAssets.iterator();
+                while (true) {
+                    boolean z16 = false;
+                    if (!it.hasNext()) {
+                        break;
+                    }
+                    ClipSource clipSource = (ClipSource) it.next();
+                    Float valueOf = Float.valueOf(r252);
+                    if (this.isZShowTemplate || k2()) {
+                        z16 = true;
+                    }
+                    copy = clipSource.copy((r30 & 1) != 0 ? clipSource.sourceId : null, (r30 & 2) != 0 ? clipSource.path : null, (r30 & 4) != 0 ? clipSource.type : null, (r30 & 8) != 0 ? clipSource.duration : 0L, (r30 & 16) != 0 ? clipSource.speed : null, (r30 & 32) != 0 ? clipSource.volume : valueOf, (r30 & 64) != 0 ? clipSource.startOffset : null, (r30 & 128) != 0 ? clipSource.matrix : null, (r30 & 256) != 0 ? clipSource.photoEffectPath : null, (r30 & 512) != 0 ? clipSource.transform : null, (r30 & 1024) != 0 ? clipSource.clipRect : null, (r30 & 2048) != 0 ? clipSource.byteArray : null, (r30 & 4096) != 0 ? clipSource.autoLoop : Boolean.valueOf(z16));
+                    arrayList.add(copy);
+                }
+                ICutSession iCutSession3 = this.cutSession;
+                if (iCutSession3 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                } else {
+                    iCutSession = iCutSession3;
+                }
+                iCutSession.getIClipSourceOperator().e(0, arrayList);
+                return;
+            }
+            return;
+        }
+        ICutSession iCutSession4 = this.cutSession;
+        if (iCutSession4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession = iCutSession4;
+        }
+        iCutSession.setOriginVolume(r252);
+    }
+
+    public final void o3(@NotNull Matrix matrix, boolean refreshPlayer) {
+        IPlayer iPlayer;
+        List<Entity> entitiesWithComponent;
+        Object orNull;
+        Intrinsics.checkNotNullParameter(matrix, "matrix");
+        ICutSession iCutSession = this.cutSession;
+        MultiMedia multiMedia = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        Entity rootEntity = iCutSession.getRootEntity();
+        if (rootEntity != null && (entitiesWithComponent = rootEntity.getEntitiesWithComponent(MultiMedia.class)) != null) {
+            orNull = CollectionsKt___CollectionsKt.getOrNull(entitiesWithComponent, 0);
+            Entity entity = (Entity) orNull;
+            if (entity != null) {
+                multiMedia = (MultiMedia) entity.getComponent(MultiMedia.class);
+            }
+        }
+        if (multiMedia != null) {
+            multiMedia.setScaleMode(PAGScaleMode.LetterBox);
+        }
+        if (multiMedia != null) {
+            multiMedia.setFillScale(0.0f);
+        }
+        if (multiMedia != null) {
+            multiMedia.setImageEffect(0);
+        }
+        if (multiMedia != null) {
+            multiMedia.setMatrix(new org.light.lightAssetKit.components.Matrix(com.tencent.mobileqq.wink.editor.crop.a.d(matrix), 0.0f, 0.0f, com.tencent.mobileqq.wink.editor.crop.a.e(matrix), com.tencent.mobileqq.wink.editor.crop.a.f(matrix), com.tencent.mobileqq.wink.editor.crop.a.g(matrix)));
+        }
+        ms.a.f("WinkVideoTavCut", "matrix:" + matrix.toShortString());
+        if (refreshPlayer && (iPlayer = this.currentPlayer) != null) {
+            iPlayer.requestRender();
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public boolean p() {
+        return K1().getOpenHDR();
+    }
+
+    public final boolean p1() {
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        return composeRenderLayer.d();
+    }
+
+    public final void p3(final long durationUs) {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        iCutSession.runOnPlayerThread(new Function0<Unit>() { // from class: com.tencent.mobileqq.wink.editor.WinkVideoTavCut$updateMediaModelDuration$1
+            /* JADX INFO: Access modifiers changed from: package-private */
+            /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+            {
+                super(0);
+            }
+
+            @Override // kotlin.jvm.functions.Function0
+            public /* bridge */ /* synthetic */ Unit invoke() {
+                invoke2();
+                return Unit.INSTANCE;
+            }
+
+            /* renamed from: invoke, reason: avoid collision after fix types in other method */
+            public final void invoke2() {
+                MediaModel copy;
+                WinkEditData K1 = WinkVideoTavCut.this.K1();
+                WinkVideoTavCut winkVideoTavCut = WinkVideoTavCut.this;
+                long j3 = durationUs;
+                ArrayList arrayList = new ArrayList();
+                Iterator<T> it = K1.getMediaModel().videos.iterator();
+                while (it.hasNext()) {
+                    arrayList.add(com.tencent.videocut.render.extension.e.F((MediaClip) it.next(), j3));
+                }
+                copy = r5.copy((r39 & 1) != 0 ? r5.id : null, (r39 & 2) != 0 ? r5.name : null, (r39 & 4) != 0 ? r5.version : null, (r39 & 8) != 0 ? r5.createTime : null, (r39 & 16) != 0 ? r5.updateTime : null, (r39 & 32) != 0 ? r5.duration : null, (r39 & 64) != 0 ? r5.videos : arrayList, (r39 & 128) != 0 ? r5.audios : null, (r39 & 256) != 0 ? r5.stickers : null, (r39 & 512) != 0 ? r5.backgroundModel : null, (r39 & 1024) != 0 ? r5.filterModels : null, (r39 & 2048) != 0 ? r5.specialEffects : null, (r39 & 4096) != 0 ? r5.transitions : null, (r39 & 8192) != 0 ? r5.templateModel : null, (r39 & 16384) != 0 ? r5.coverInfo : null, (r39 & 32768) != 0 ? r5.exportSetting : null, (r39 & 65536) != 0 ? r5.openHDR : null, (r39 & 131072) != 0 ? r5.hdrModels : null, (r39 & 262144) != 0 ? r5.smoothModels : null, (r39 & 524288) != 0 ? r5.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+                K1.setMediaModel(copy);
+                ComposeRenderLayer composeRenderLayer = winkVideoTavCut.renderLayerHelper;
+                if (composeRenderLayer == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                    composeRenderLayer = null;
+                }
+                ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+                WinkVideoTavCut.this.setPlayTimeRange(0L, durationUs);
+            }
+        });
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void pause() {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.pause();
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void play() {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.play();
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    /* renamed from: q */
+    public boolean getIsInit() {
+        return this.isInit;
+    }
+
+    @Nullable
+    /* renamed from: q1, reason: from getter */
+    public final FrameLayout getPlayerContainerWrapper() {
+        return this.playerContainerWrapper;
+    }
+
+    /* JADX WARN: Removed duplicated region for block: B:12:0x0034  */
+    /* JADX WARN: Removed duplicated region for block: B:14:0x0040  */
+    /* JADX WARN: Removed duplicated region for block: B:20:0x004e  */
+    /* JADX WARN: Removed duplicated region for block: B:24:0x0052  */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+    */
+    public final void q3(int backgroundFillMode, @NotNull String backColor) {
+        MultiMedia multiMedia;
+        ICutSession iCutSession;
+        org.light.lightAssetKit.enums.BackgroundFillMode backgroundFillMode2;
+        List<Entity> entitiesWithComponent;
+        Object orNull;
+        Intrinsics.checkNotNullParameter(backColor, "backColor");
+        ICutSession iCutSession2 = this.cutSession;
+        ICutSession iCutSession3 = null;
+        if (iCutSession2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession2 = null;
+        }
+        Entity rootEntity = iCutSession2.getRootEntity();
+        if (rootEntity != null && (entitiesWithComponent = rootEntity.getEntitiesWithComponent(MultiMedia.class)) != null) {
+            orNull = CollectionsKt___CollectionsKt.getOrNull(entitiesWithComponent, 0);
+            Entity entity = (Entity) orNull;
+            if (entity != null) {
+                multiMedia = (MultiMedia) entity.getComponent(MultiMedia.class);
+                if (multiMedia != null) {
+                    multiMedia.setBackgroundColor(com.tencent.videocut.utils.d.f384234a.a(backColor));
+                }
+                if (multiMedia != null) {
+                    if (backgroundFillMode == 0) {
+                        backgroundFillMode2 = org.light.lightAssetKit.enums.BackgroundFillMode.GaussianBlur;
+                    } else {
+                        backgroundFillMode2 = org.light.lightAssetKit.enums.BackgroundFillMode.SolidColorFill;
+                    }
+                    multiMedia.setBackgroundFillMode(backgroundFillMode2);
+                }
+                iCutSession = this.cutSession;
+                if (iCutSession != null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                } else {
+                    iCutSession3 = iCutSession;
+                }
+                iCutSession3.flushWithoutDelay();
+            }
+        }
+        multiMedia = null;
+        if (multiMedia != null) {
+        }
+        if (multiMedia != null) {
+        }
+        iCutSession = this.cutSession;
+        if (iCutSession != null) {
+        }
+        iCutSession3.flushWithoutDelay();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void r(@NotNull MediaModel mediaModel) {
+        Intrinsics.checkNotNullParameter(mediaModel, "mediaModel");
+        K1().setMediaModel(mediaModel);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(mediaModel);
+    }
+
+    public final long r1() {
+        float f16;
+        long j3;
+        long durationUs = getDurationUs();
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        TemplateConfig movieConfig = iCutSession.getMovieConfig();
+        if (movieConfig != null) {
+            f16 = movieConfig.preferredCoverTimePercent;
+        } else {
+            f16 = -1.0f;
+        }
+        if (f16 >= 0.0f) {
+            return Math.min(durationUs, ((float) durationUs) * f16);
+        }
+        ICutSession iCutSession3 = this.cutSession;
+        if (iCutSession3 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession2 = iCutSession3;
+        }
+        TemplateConfig movieConfig2 = iCutSession2.getMovieConfig();
+        if (movieConfig2 != null) {
+            j3 = movieConfig2.preferredCoverTime;
+        } else {
+            j3 = 0;
+        }
+        return Math.min(durationUs, Math.max(j3, 0L));
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void release() {
+        C2();
+        ICutSession iCutSession = this.cutSession;
+        ICutSession iCutSession2 = null;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        IPlayer player = iCutSession.getPlayer();
+        if (player != null) {
+            ICutSession iCutSession3 = this.cutSession;
+            if (iCutSession3 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                iCutSession3 = null;
+            }
+            iCutSession3.unbindCutPlayer(player);
+        }
+        dr.WinkTavCutParams winkTavCutParams = this.params;
+        if (winkTavCutParams == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("params");
+            winkTavCutParams = null;
+        }
+        if (winkTavCutParams.getPlayerSurface() != null) {
+            IPlayer iPlayer = this.currentPlayer;
+            if (iPlayer != null) {
+                iPlayer.destroySurface();
+            }
+            IPlayer iPlayer2 = this.currentPlayer;
+            if (iPlayer2 != null) {
+                iPlayer2.release();
+            }
+        }
+        IPlayer iPlayer3 = this.verticalPlayer;
+        if (iPlayer3 != null) {
+            iPlayer3.release();
+        }
+        IPlayer iPlayer4 = this.horizontalPlayer;
+        if (iPlayer4 != null) {
+            iPlayer4.release();
+        }
+        ICutSession iCutSession4 = this.cutSession;
+        if (iCutSession4 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+        } else {
+            iCutSession2 = iCutSession4;
+        }
+        iCutSession2.release();
+        this.playerListenerList.clear();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void removePlayerListener(@NotNull IPlayer.PlayerListener playerListener) {
+        Intrinsics.checkNotNullParameter(playerListener, "playerListener");
+        this.playerListenerList.remove(playerListener);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void s(float f16, @NotNull AudioModel.Type audioType) {
+        MediaModel copy;
+        AudioModel copy2;
+        AudioModel copy3;
+        Intrinsics.checkNotNullParameter(audioType, "audioType");
+        WinkEditData K1 = K1();
+        HashMap hashMap = new HashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            String key = entry.getKey();
+            AudioModel value = entry.getValue();
+            if (value.type == audioType) {
+                copy2 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : Float.valueOf(f16), (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy2);
+            } else {
+                copy3 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : null, (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy3);
+            }
+        }
+        copy = r2.copy((r39 & 1) != 0 ? r2.id : null, (r39 & 2) != 0 ? r2.name : null, (r39 & 4) != 0 ? r2.version : null, (r39 & 8) != 0 ? r2.createTime : null, (r39 & 16) != 0 ? r2.updateTime : null, (r39 & 32) != 0 ? r2.duration : null, (r39 & 64) != 0 ? r2.videos : null, (r39 & 128) != 0 ? r2.audios : hashMap, (r39 & 256) != 0 ? r2.stickers : null, (r39 & 512) != 0 ? r2.backgroundModel : null, (r39 & 1024) != 0 ? r2.filterModels : null, (r39 & 2048) != 0 ? r2.specialEffects : null, (r39 & 4096) != 0 ? r2.transitions : null, (r39 & 8192) != 0 ? r2.templateModel : null, (r39 & 16384) != 0 ? r2.coverInfo : null, (r39 & 32768) != 0 ? r2.exportSetting : null, (r39 & 65536) != 0 ? r2.openHDR : null, (r39 & 131072) != 0 ? r2.hdrModels : null, (r39 & 262144) != 0 ? r2.smoothModels : null, (r39 & 524288) != 0 ? r2.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.l(K1.getMediaModel());
+    }
+
+    /* renamed from: s1, reason: from getter */
+    public final int getRenderFillType() {
+        return this.renderFillType;
+    }
+
+    public final void s3(@NotNull List<? extends MediaClip> videos, boolean z16, boolean z17) {
+        SizeF sizeF;
+        SizeF sizeF2;
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(videos, "videos");
+        WinkEditData K1 = K1();
+        BackgroundModel backgroundModel = K1.getMediaModel().backgroundModel;
+        BackgroundModel g16 = com.tencent.videocut.render.g.g(videos, 0.0f, backgroundModel, G(), 2, null);
+        if (g16 == null) {
+            g16 = backgroundModel;
+        }
+        Map<String, StickerModel> map = K1.getMediaModel().stickers;
+        ComposeRenderLayer composeRenderLayer = null;
+        if (backgroundModel != null) {
+            sizeF = backgroundModel.renderSize;
+        } else {
+            sizeF = null;
+        }
+        if (g16 != null) {
+            sizeF2 = g16.renderSize;
+        } else {
+            sizeF2 = null;
+        }
+        copy = r8.copy((r39 & 1) != 0 ? r8.id : null, (r39 & 2) != 0 ? r8.name : null, (r39 & 4) != 0 ? r8.version : null, (r39 & 8) != 0 ? r8.createTime : null, (r39 & 16) != 0 ? r8.updateTime : null, (r39 & 32) != 0 ? r8.duration : null, (r39 & 64) != 0 ? r8.videos : videos, (r39 & 128) != 0 ? r8.audios : null, (r39 & 256) != 0 ? r8.stickers : u3(map, sizeF, sizeF2), (r39 & 512) != 0 ? r8.backgroundModel : g16, (r39 & 1024) != 0 ? r8.filterModels : null, (r39 & 2048) != 0 ? r8.specialEffects : null, (r39 & 4096) != 0 ? r8.transitions : null, (r39 & 8192) != 0 ? r8.templateModel : null, (r39 & 16384) != 0 ? r8.coverInfo : null, (r39 & 32768) != 0 ? r8.exportSetting : null, (r39 & 65536) != 0 ? r8.openHDR : null, (r39 & 131072) != 0 ? r8.hdrModels : null, (r39 & 262144) != 0 ? r8.smoothModels : null, (r39 & 524288) != 0 ? r8.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        K1.setStretchData(null);
+        if (this.isSinglePlayerModel) {
+            ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+            if (composeRenderLayer2 == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            } else {
+                composeRenderLayer = composeRenderLayer2;
+            }
+            if (composeRenderLayer != null) {
+                composeRenderLayer.l(K1.getMediaModel());
+            }
+        } else {
+            this.isCropScene = z16;
+            a3(this, K1.getMediaModel(), false, 0L, 6, null);
+        }
+        y3();
+        if (z17) {
+            D(true);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void seek(long j3) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.seek(j3);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void setAutoPlay(boolean isAutoPlay) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.setAutoPlay(isAutoPlay);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void setLoopPlay(boolean isLoop) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.setLoopPlay(isLoop);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void setPlayTimeRange(long startTimeUs, long durationUs) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.setPlayTimeRange(startTimeUs, durationUs);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void stop(long timeUs) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.stop(timeUs);
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void t(@NotNull WinkStickerModel stickerModel, boolean isTransition) {
+        String entityName;
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(stickerModel, "stickerModel");
+        Map<String, WinkStickerModel> stickerModelMap = K1().getStickerModelMap();
+        if (stickerModelMap == null) {
+            stickerModelMap = new LinkedHashMap<>();
+        }
+        w53.b.a("WinkVideoTavCut", "updateSticker stickerModelMap size " + stickerModelMap.size());
+        Iterator<T> it = this.stickerUpdateListeners.iterator();
+        while (it.hasNext()) {
+            ((com.tencent.mobileqq.wink.editor.sticker.sticker.d) it.next()).a(stickerModel, stickerModelMap);
+        }
+        WinkStickerModel winkStickerModel = stickerModelMap.get(stickerModel.id);
+        stickerModelMap.put(stickerModel.id, stickerModel);
+        if (winkStickerModel != null && isTransition && (stickerModel.isTemplateTextSticker() || stickerModel.isTemplateImageSticker())) {
+            WinkEditData K1 = K1();
+            K1.setStickerModelMap(stickerModelMap);
+            MediaModel mediaModel = K1.getMediaModel();
+            Map<String, WinkStickerModel> stickerModelMap2 = K1.getStickerModelMap();
+            Intrinsics.checkNotNull(stickerModelMap2);
+            copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : stickerModelMap2, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+            K1.setMediaModel(copy);
+            ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+            if (composeRenderLayer == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+                composeRenderLayer = null;
+            }
+            composeRenderLayer.s(winkStickerModel, stickerModel);
+        }
+        B(stickerModelMap);
+        ArrayList<GYTrackStickerInfo> d16 = d1(stickerModel.getStickerTrackerResult());
+        if (d16 != null && (entityName = stickerModel.getEntityName()) != null) {
+            L3(this, d16, entityName, null, 4, null);
+        }
+    }
+
+    /* renamed from: t1, reason: from getter */
+    public final int getRenderHeight() {
+        return this.renderHeight;
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void u() {
+        this.lastMediaModels = m1();
+    }
+
+    @Nullable
+    public final LAKRenderModel u1() {
+        ICutSession iCutSession = this.cutSession;
+        if (iCutSession == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+            iCutSession = null;
+        }
+        return iCutSession.getAllInputSourceRenderModel();
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void v(@NotNull Map<Integer, Float> clipVolumes) {
+        Object orNull;
+        Intrinsics.checkNotNullParameter(clipVolumes, "clipVolumes");
+        WinkEditData K1 = K1();
+        for (Map.Entry<Integer, Float> entry : clipVolumes.entrySet()) {
+            orNull = CollectionsKt___CollectionsKt.getOrNull(K1.getMediaModel().videos, entry.getKey().intValue());
+            MediaClip mediaClip = (MediaClip) orNull;
+            if (mediaClip != null) {
+                ResourceModel resourceModel = mediaClip.resource;
+                if (resourceModel != null) {
+                    resourceModel.volume = entry.getValue().floatValue();
+                }
+                ICutSession iCutSession = this.cutSession;
+                if (iCutSession == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("cutSession");
+                    iCutSession = null;
+                }
+                iCutSession.setOriginVolumeForClip(entry.getKey().intValue(), entry.getValue().floatValue());
+            }
+        }
+    }
+
+    public final void v3() {
+        MediaModel copy;
+        ComposeRenderLayer composeRenderLayer;
+        AudioModel copy2;
+        AudioModel copy3;
+        WinkEditData K1 = K1();
+        HashMap hashMap = new HashMap();
+        Iterator<Map.Entry<String, AudioModel>> it = K1.getMediaModel().audios.entrySet().iterator();
+        while (true) {
+            WinkStickerModel winkStickerModel = null;
+            if (!it.hasNext()) {
+                break;
+            }
+            Map.Entry<String, AudioModel> next = it.next();
+            String key = next.getKey();
+            AudioModel value = next.getValue();
+            if (value.type != AudioModel.Type.TTS) {
+                copy3 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : null, (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy3);
+            } else {
+                String f16 = com.tencent.videocut.render.extension.a.f(key);
+                float f17 = value.volume;
+                if (f16 != null) {
+                    Map<String, WinkStickerModel> stickerModelMap = K1.getStickerModelMap();
+                    if (stickerModelMap != null) {
+                        winkStickerModel = stickerModelMap.get(f16);
+                    }
+                    boolean z16 = false;
+                    if (winkStickerModel != null && winkStickerModel.getHasChooseTTS()) {
+                        z16 = true;
+                    }
+                    if (z16 && winkStickerModel.getTtsAudioInfo() != null) {
+                        TTSAudioInfo ttsAudioInfo = winkStickerModel.getTtsAudioInfo();
+                        Intrinsics.checkNotNull(ttsAudioInfo);
+                        f17 = ttsAudioInfo.getVolume();
+                    }
+                }
+                copy2 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : Float.valueOf(f17), (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy2);
+            }
+        }
+        copy = r1.copy((r39 & 1) != 0 ? r1.id : null, (r39 & 2) != 0 ? r1.name : null, (r39 & 4) != 0 ? r1.version : null, (r39 & 8) != 0 ? r1.createTime : null, (r39 & 16) != 0 ? r1.updateTime : null, (r39 & 32) != 0 ? r1.duration : null, (r39 & 64) != 0 ? r1.videos : null, (r39 & 128) != 0 ? r1.audios : hashMap, (r39 & 256) != 0 ? r1.stickers : null, (r39 & 512) != 0 ? r1.backgroundModel : null, (r39 & 1024) != 0 ? r1.filterModels : null, (r39 & 2048) != 0 ? r1.specialEffects : null, (r39 & 4096) != 0 ? r1.transitions : null, (r39 & 8192) != 0 ? r1.templateModel : null, (r39 & 16384) != 0 ? r1.coverInfo : null, (r39 & 32768) != 0 ? r1.exportSetting : null, (r39 & 65536) != 0 ? r1.openHDR : null, (r39 & 131072) != 0 ? r1.hdrModels : null, (r39 & 262144) != 0 ? r1.smoothModels : null, (r39 & 524288) != 0 ? r1.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer2 = this.renderLayerHelper;
+        if (composeRenderLayer2 == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        } else {
+            composeRenderLayer = composeRenderLayer2;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public HashMap<String, List<String>> w() {
+        return this.mediaLabels;
+    }
+
+    /* renamed from: w1, reason: from getter */
+    public final int getRenderWidth() {
+        return this.renderWidth;
+    }
+
+    public final void w3(@NotNull String stickerID, long startTime) {
+        MediaModel copy;
+        AudioModel copy2;
+        AudioModel copy3;
+        Intrinsics.checkNotNullParameter(stickerID, "stickerID");
+        WinkEditData K1 = K1();
+        HashMap hashMap = new HashMap();
+        for (Map.Entry<String, AudioModel> entry : K1.getMediaModel().audios.entrySet()) {
+            String key = entry.getKey();
+            AudioModel value = entry.getValue();
+            if (Intrinsics.areEqual(key, com.tencent.videocut.render.extension.a.g(stickerID))) {
+                copy2 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : Long.valueOf(startTime), (r37 & 32) != 0 ? Float.valueOf(value.volume) : null, (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy2);
+            } else {
+                copy3 = value.copy((r37 & 1) != 0 ? value.id : null, (r37 & 2) != 0 ? value.path : null, (r37 & 4) != 0 ? Long.valueOf(value.sourceStartTime) : null, (r37 & 8) != 0 ? Long.valueOf(value.sourceDuration) : null, (r37 & 16) != 0 ? Long.valueOf(value.startTimeInTimeline) : null, (r37 & 32) != 0 ? Float.valueOf(value.volume) : null, (r37 & 64) != 0 ? Float.valueOf(value.speed) : null, (r37 & 128) != 0 ? value.volumeEffects : null, (r37 & 256) != 0 ? value.name : null, (r37 & 512) != 0 ? value.timelineTrackIndex : null, (r37 & 1024) != 0 ? Long.valueOf(value.selectStartTime) : null, (r37 & 2048) != 0 ? Long.valueOf(value.selectDuration) : null, (r37 & 4096) != 0 ? Long.valueOf(value.fadeInDuration) : null, (r37 & 8192) != 0 ? Long.valueOf(value.fadeOutDuration) : null, (r37 & 16384) != 0 ? value.lyricInfo : null, (r37 & 32768) != 0 ? value.type : null, (r37 & 65536) != 0 ? value.waveSampleData : null, (r37 & 131072) != 0 ? value.event : null, (r37 & 262144) != 0 ? value.unknownFields() : null);
+                hashMap.put(key, copy3);
+            }
+        }
+        copy = r1.copy((r39 & 1) != 0 ? r1.id : null, (r39 & 2) != 0 ? r1.name : null, (r39 & 4) != 0 ? r1.version : null, (r39 & 8) != 0 ? r1.createTime : null, (r39 & 16) != 0 ? r1.updateTime : null, (r39 & 32) != 0 ? r1.duration : null, (r39 & 64) != 0 ? r1.videos : null, (r39 & 128) != 0 ? r1.audios : hashMap, (r39 & 256) != 0 ? r1.stickers : null, (r39 & 512) != 0 ? r1.backgroundModel : null, (r39 & 1024) != 0 ? r1.filterModels : null, (r39 & 2048) != 0 ? r1.specialEffects : null, (r39 & 4096) != 0 ? r1.transitions : null, (r39 & 8192) != 0 ? r1.templateModel : null, (r39 & 16384) != 0 ? r1.coverInfo : null, (r39 & 32768) != 0 ? r1.exportSetting : null, (r39 & 65536) != 0 ? r1.openHDR : null, (r39 & 131072) != 0 ? r1.hdrModels : null, (r39 & 262144) != 0 ? r1.smoothModels : null, (r39 & 524288) != 0 ? r1.openSuperHDR : null, (r39 & 1048576) != 0 ? K1.getMediaModel().unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        ComposeRenderLayer.u(composeRenderLayer, K1.getMediaModel(), false, 0L, false, 14, null);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void x(@NotNull BasePartFragment hostFragment, @NotNull dr.WinkTavCutParams params, @NotNull HashMap<String, Object> extraMap) {
+        Intrinsics.checkNotNullParameter(hostFragment, "hostFragment");
+        Intrinsics.checkNotNullParameter(params, "params");
+        Intrinsics.checkNotNullParameter(extraMap, "extraMap");
+        P1(this, hostFragment, params, false, 0L, extraMap, null, 32, null);
+    }
+
+    @Nullable
+    public String x1() {
+        Map<String, SpecialEffectModel> map = K1().getMediaModel().specialEffects;
+        String str = "";
+        if (map != null) {
+            int i3 = 5;
+            for (SpecialEffectModel specialEffectModel : map.values()) {
+                if (i3 < 0) {
+                    return str;
+                }
+                i3--;
+                str = ((Object) str) + specialEffectModel.materialId + " ";
+            }
+        }
+        return str;
+    }
+
+    public final void x3(@NotNull Map<String, WinkStickerModel> stickerModelMap, long timeUs) {
+        MediaModel copy;
+        Intrinsics.checkNotNullParameter(stickerModelMap, "stickerModelMap");
+        WinkEditData K1 = K1();
+        K1.setStickerModelMap(stickerModelMap);
+        MediaModel mediaModel = K1.getMediaModel();
+        Map<String, WinkStickerModel> stickerModelMap2 = K1.getStickerModelMap();
+        Intrinsics.checkNotNull(stickerModelMap2);
+        copy = mediaModel.copy((r39 & 1) != 0 ? mediaModel.id : null, (r39 & 2) != 0 ? mediaModel.name : null, (r39 & 4) != 0 ? mediaModel.version : null, (r39 & 8) != 0 ? mediaModel.createTime : null, (r39 & 16) != 0 ? mediaModel.updateTime : null, (r39 & 32) != 0 ? mediaModel.duration : null, (r39 & 64) != 0 ? mediaModel.videos : null, (r39 & 128) != 0 ? mediaModel.audios : null, (r39 & 256) != 0 ? mediaModel.stickers : stickerModelMap2, (r39 & 512) != 0 ? mediaModel.backgroundModel : null, (r39 & 1024) != 0 ? mediaModel.filterModels : null, (r39 & 2048) != 0 ? mediaModel.specialEffects : null, (r39 & 4096) != 0 ? mediaModel.transitions : null, (r39 & 8192) != 0 ? mediaModel.templateModel : null, (r39 & 16384) != 0 ? mediaModel.coverInfo : null, (r39 & 32768) != 0 ? mediaModel.exportSetting : null, (r39 & 65536) != 0 ? mediaModel.openHDR : null, (r39 & 131072) != 0 ? mediaModel.hdrModels : null, (r39 & 262144) != 0 ? mediaModel.smoothModels : null, (r39 & 524288) != 0 ? mediaModel.openSuperHDR : null, (r39 & 1048576) != 0 ? mediaModel.unknownFields() : null);
+        K1.setMediaModel(copy);
+        ComposeRenderLayer composeRenderLayer = this.renderLayerHelper;
+        if (composeRenderLayer == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("renderLayerHelper");
+            composeRenderLayer = null;
+        }
+        composeRenderLayer.t(K1.getMediaModel(), true, timeUs, true);
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<SpecialEffectModel> y() {
+        return new ArrayList(K1().getMediaModel().specialEffects.values());
+    }
+
+    @NotNull
+    public String y1() {
+        int i3 = 5;
+        String str = "";
+        for (StickerModel stickerModel : K1().getMediaModel().stickers.values()) {
+            if (i3 < 0) {
+                return str;
+            }
+            i3--;
+            str = ((Object) str) + stickerModel.materialId + " ";
+        }
+        return str;
+    }
+
+    public final void y3() {
+        LinkedHashMap linkedHashMap;
+        SizeF sizeF;
+        FrameLayout frameLayout;
+        int mapCapacity;
+        boolean z16;
+        Map<String, WinkStickerModel> m3 = m();
+        boolean z17 = true;
+        Map<String, WinkStickerModel> map = null;
+        if (m3 != null) {
+            linkedHashMap = new LinkedHashMap();
+            for (Map.Entry<String, WinkStickerModel> entry : m3.entrySet()) {
+                if (entry.getValue().type == StickerModel.Type.TOP_FRAME) {
+                    z16 = true;
+                } else {
+                    z16 = false;
+                }
+                if (z16) {
+                    linkedHashMap.put(entry.getKey(), entry.getValue());
+                }
+            }
+        } else {
+            linkedHashMap = null;
+        }
+        if (linkedHashMap != null) {
+            linkedHashMap.isEmpty();
+        }
+        BackgroundModel backgroundModel = V().backgroundModel;
+        if (backgroundModel != null && (sizeF = backgroundModel.renderSize) != null && (frameLayout = this.playerContainerWrapper) != null) {
+            if (sizeF.height != 0.0f) {
+                z17 = false;
+            }
+            if (!z17 && frameLayout.getHeight() != 0) {
+                Map<String, WinkStickerModel> m16 = m();
+                if (m16 != null) {
+                    mapCapacity = MapsKt__MapsJVMKt.mapCapacity(m16.size());
+                    LinkedHashMap linkedHashMap2 = new LinkedHashMap(mapCapacity);
+                    Iterator<T> it = m16.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry entry2 = (Map.Entry) it.next();
+                        Object key = entry2.getKey();
+                        PointF n3 = com.tencent.mobileqq.wink.editor.sticker.l.n(getRenderSize(), new Size(Integer.valueOf(frameLayout.getWidth()), Integer.valueOf(frameLayout.getHeight()), null, 4, null));
+                        WinkStickerModel copy = ((WinkStickerModel) entry2.getValue()).copy();
+                        ((WinkStickerModel) entry2.getValue()).getOriginPointInView().f320587x = n3.f320587x;
+                        ((WinkStickerModel) entry2.getValue()).getOriginPointInView().f320588y = n3.f320588y;
+                        ((WinkStickerModel) entry2.getValue()).updatePositionInView(this.renderWidth, this.renderHeight, copy.scaleX, copy.scaleY, copy.centerX, copy.centerY);
+                        linkedHashMap2.put(key, ((WinkStickerModel) entry2.getValue()).copy());
+                    }
+                    map = MapsKt__MapsKt.toMutableMap(linkedHashMap2);
+                }
+                if (map != null) {
+                    B(map);
+                }
+            }
+        }
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    @NotNull
+    public List<String> z() {
+        ArrayList arrayList = new ArrayList();
+        Collection<List<String>> values = this.mediaLabels.values();
+        if (values != null) {
+            Iterator<T> it = values.iterator();
+            while (it.hasNext()) {
+                List it5 = (List) it.next();
+                Intrinsics.checkNotNullExpressionValue(it5, "it");
+                arrayList.addAll(it5);
+            }
+        }
+        return arrayList;
+    }
+
+    @NotNull
+    /* renamed from: z1, reason: from getter */
+    public final IPlayer.PlayerStatus getStickerOperationPlayerStatus() {
+        return this.stickerOperationPlayerStatus;
+    }
+
+    public WinkVideoTavCut(@Nullable String str) {
+        List<ClipSource> emptyList;
+        List<? extends Entity> emptyList2;
+        this.templatePath = str;
+        this.playerListenerList = new CopyOnWriteArrayList();
+        this.useVerticalPlayer = true;
+        this.renderWidth = 720;
+        this.renderHeight = 1280;
+        this.stickerScaleMap = new LinkedHashMap();
+        this.lastMediaModels = new ArrayList();
+        this.from = -1;
+        this.stickerOperationPlayerStatus = IPlayer.PlayerStatus.PLAYING;
+        this.needStretchBack = true;
+        this.originScale = 1.0f;
+        this.mediaLabels = new HashMap<>();
+        emptyList = CollectionsKt__CollectionsKt.emptyList();
+        this.gyResultList = emptyList;
+        emptyList2 = CollectionsKt__CollectionsKt.emptyList();
+        this.templateMusicEntities = emptyList2;
+        this.enableTemplateMusic = true;
+        this.switchTemplateMusicSuccess = true;
+        this.cutStatusCallBackList = new CopyOnWriteArrayList<>();
+        this.isMovieControllDurationInTempColl = QzoneConfig.isTemplateCollUseMovieControllerDuration();
+        this.isUsetNewReload = QzoneConfig.isUseNewReloadAssetSwitch();
+        this.stickerUpdateListeners = new ArrayList();
+        this.defaultOnClipAssetListener = new OnClipAssetListener() { // from class: com.tencent.mobileqq.wink.editor.du
+            @Override // org.light.listener.OnClipAssetListener
+            public final void OnLoadClipError(int i3, String str2) {
+                WinkVideoTavCut.a1(i3, str2);
+            }
+        };
+    }
+
+    @Override // com.tencent.mobileqq.wink.editor.dr
+    public void seek(long j3, boolean z16) {
+        IPlayer iPlayer = this.currentPlayer;
+        if (iPlayer != null) {
+            iPlayer.seek(j3, z16);
+        }
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000\u001d\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0002\b\u0004*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\b\u0010\u0003\u001a\u00020\u0002H\u0016J \u0010\t\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0007\u001a\u00020\u00062\u0006\u0010\b\u001a\u00020\u0006H\u0016\u00a8\u0006\n"}, d2 = {"com/tencent/mobileqq/wink/editor/WinkVideoTavCut$i", "Lcom/tencent/tavcut/core/session/ISessionListener;", "", "onRenderDataApplied", "Lcom/tencent/tavcut/core/render/builder/light/model/LAKRenderModel;", "newData", "", "duration", "mediaDuration", "onRenderDataChanged", "qq-wink-impl_release"}, k = 1, mv = {1, 7, 1})
+    /* loaded from: classes21.dex */
+    public static final class i implements ISessionListener {
+
+        /* renamed from: b */
+        final /* synthetic */ Function0<Unit> f318744b;
+
+        i(Function0<Unit> function0) {
+            this.f318744b = function0;
+        }
+
+        @Override // com.tencent.tavcut.core.session.ISessionListener
+        public void onRenderDataChanged(@NotNull LAKRenderModel newData, long duration, long mediaDuration) {
+            Intrinsics.checkNotNullParameter(newData, "newData");
+            WinkVideoTavCut.this.Q(this);
+            this.f318744b.invoke();
+        }
+
+        @Override // com.tencent.tavcut.core.session.ISessionListener
+        public void onRenderDataApplied() {
+        }
+    }
+
+    public /* synthetic */ WinkVideoTavCut(String str, int i3, DefaultConstructorMarker defaultConstructorMarker) {
+        this((i3 & 1) != 0 ? null : str);
+    }
+}

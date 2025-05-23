@@ -1,0 +1,93 @@
+package com.tencent.mobileqq.activity.richmedia.p2veffect.effect.base;
+
+import com.tencent.mobileqq.activity.richmedia.g;
+import common.config.service.QzoneConfig;
+import java.io.File;
+
+/* loaded from: classes10.dex */
+public class P2VGlobalConfig {
+    public static final int COLUMN_COUNT = 3;
+    public static String CONCAT_FINAL_M4A = null;
+    public static String CONCAT_FINAL_MP3 = null;
+    public static final int ERR_ASYNC_REFRESHPREPARE = 4;
+    public static final int ERR_FAST_RENDER_START = 10;
+    public static final int ERR_GENERATOR_PREPARE = 6;
+    public static final int ERR_GET_DIMENS = 2;
+    public static final int ERR_INVALID_DURATION = 3;
+    public static final int ERR_MATERIAL_PARSE = 1;
+    public static final int ERR_MIX_MUSIC = 11;
+    public static final int ERR_ONFRAME_AVAILABLE = 9;
+    public static final int ERR_REFRESH_CONTROLLER_REFRESH = 7;
+    public static final int ERR_SAVE_IMG = 8;
+    public static final int ERR_SYNC_REFRESHPREPARE = 5;
+    public static final String KEY_FILL_COLOR_B = "fillColorB";
+    public static final String KEY_FILL_COLOR_G = "fillColorG";
+    public static final String KEY_FILL_COLOR_R = "fillColorR";
+    public static final String KEY_FILL_TYPE = "fillType";
+    public static final String KEY_LYRICS = "lyrics";
+    public static final String KEY_VIDEO_DURATION = "videoDuration";
+    public static final String KEY_VIDEO_HEIGHT = "videoHeight";
+    public static final String KEY_VIDEO_PATH = "videoPath";
+    public static final String KEY_VIDEO_WIDTH = "videoWidth";
+    public static String NO_AUDIO_MP4 = null;
+    public static final int OUTPUT_VIDEO_BIT_RATE = 960000;
+    public static final int OUTPUT_VIDEO_FPS = 25;
+    public static final int OUTPUT_VIDEO_HEIGHT = 1280;
+    public static final int OUTPUT_VIDEO_WIDTH = 720;
+    public static final long P2V_DEFAULT_VIDEO_CAN_UPLOAD_LIMIT_MS = 15000;
+    public static final String P2V_EFFECT_DEFAILY_NAME = "DEFAULT_NAME";
+    public static final String P2V_EFFECT_DEFAULT_ID = "DEFAULT";
+    public static String P2V_MATERIAL_DUMMY_VIDEO_NAME = null;
+    public static String P2V_MATERIAL_ROOT = null;
+    public static String P2V_MATERIAL_WATER_MARKER_PNG_NAME = null;
+    public static final int P2V_MAX_RECOMMEND_INT_DEFAULT = 30;
+    public static final int P2V_MAX_RECOMMEND_VIDEO_INT_DEFAULT = 3;
+    public static final long P2V_PIC_DURING = 1500;
+    public static final long P2V_PIC_DURING_FOR_MORE_FIVE = 3000;
+    public static final float P2V_PIC_EFFECT_DURING = 1500.0f;
+    public static String P2V_VIDEO_CACHE_ROOT = null;
+    public static String P2V_VIDEO_ROOT = null;
+    public static final float VIEW_SCLE = 1.7777778f;
+    public static final float WATER_MARKER_BG_COLOR_ALPHA_END = 0.1f;
+    public static final float WATER_MARKER_BG_COLOR_ALPHA_START = 0.0f;
+    public static final int WATER_MARKER_BLUR_FADE_DURATION = 640;
+    public static final int WATER_MARKER_DURATION = 2000;
+    public static final int WATER_MARKER_HEIGHT = 252;
+    public static final int WATER_MARKER_LOGO_FADE_END_TIME = 1000;
+    public static final int WATER_MARKER_LOGO_FADE_START_TIME = 320;
+    public static final int WATER_MARKER_WATER_MARKER_BLUR_RADIUS_END = 5;
+    public static final int WATER_MARKER_WATER_MARKER_BLUR_RADIUS_START = 1;
+    public static final int WATER_MARKER_WIDTH = 490;
+    public static final String P2V_CONFIG_MAIN_KEY = "p2v_config_main_key";
+    public static final String P2V_MAX_RECOMMEND_VIDEO_INT_SECONDARY_KEY = "p2v_max_recommend_video_int";
+    public static final int MAX_P2V_RECOMMEND_VIDEO = QzoneConfig.getInstance().getConfig(P2V_CONFIG_MAIN_KEY, P2V_MAX_RECOMMEND_VIDEO_INT_SECONDARY_KEY, 3);
+    public static final String P2V_MAX_RECOMMEND_INT_SECONDARY_KEY = "p2v_max_recommend_int";
+    public static final int MAX_P2V_RECOMMEND_INT = QzoneConfig.getInstance().getConfig(P2V_CONFIG_MAIN_KEY, P2V_MAX_RECOMMEND_INT_SECONDARY_KEY, 30);
+    public static final String P2V_CAN_UPLOAD_LIMIT_MS_SECONDARY_KEY = "p2v_can_upload_limit_ms_secondary_key";
+    public static final long VIDEO_CAN_UPLOAD_LIMIT_MS = QzoneConfig.getInstance().getConfig(P2V_CONFIG_MAIN_KEY, P2V_CAN_UPLOAD_LIMIT_MS_SECONDARY_KEY, 15000L);
+
+    static {
+        StringBuilder sb5 = new StringBuilder();
+        String str = g.f185853a;
+        sb5.append(str);
+        sb5.append("/tencent");
+        String str2 = File.separator;
+        sb5.append(str2);
+        sb5.append("dynamic_video_cache");
+        sb5.append(str2);
+        P2V_VIDEO_CACHE_ROOT = sb5.toString();
+        P2V_VIDEO_ROOT = str + "/qzone_dynamic_video" + str2;
+        StringBuilder sb6 = new StringBuilder();
+        sb6.append(P2V_VIDEO_CACHE_ROOT);
+        sb6.append("concat_final.m4a");
+        CONCAT_FINAL_M4A = sb6.toString();
+        CONCAT_FINAL_MP3 = P2V_VIDEO_CACHE_ROOT + "concat_final.mp3";
+        P2V_MATERIAL_ROOT = P2V_VIDEO_CACHE_ROOT + "p2v_material" + str2;
+        StringBuilder sb7 = new StringBuilder();
+        sb7.append(P2V_MATERIAL_ROOT);
+        sb7.append("qzone_p2v_watermark.png");
+        P2V_MATERIAL_WATER_MARKER_PNG_NAME = sb7.toString();
+        P2V_MATERIAL_DUMMY_VIDEO_NAME = P2V_MATERIAL_ROOT + "resizeddummy.mp4";
+        NO_AUDIO_MP4 = P2V_VIDEO_CACHE_ROOT + "no_audio.mp4";
+    }
+}

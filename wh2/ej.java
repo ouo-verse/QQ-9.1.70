@@ -1,0 +1,7 @@
+package wh2;
+
+/* compiled from: P */
+/* loaded from: classes17.dex */
+public interface ej {
+    void onSetQQMsgListGuildCallback(int i3, String str);
+}

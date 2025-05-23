@@ -1,0 +1,30 @@
+package com.tencent.hippykotlin.demo.pages.qqkmp.qzone.data;
+
+import com.tencent.hippykotlin.demo.pages.qqkmp.qzone.pb.kuikly.trpc.qzone.base.StOperationShareOutInfo;
+import kotlin.Metadata;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\u001a\u0010\u0010\u0000\u001a\u0004\u0018\u00010\u0001*\u0004\u0018\u00010\u0002H\u0000\u001a\u0010\u0010\u0003\u001a\u0004\u0018\u00010\u0002*\u0004\u0018\u00010\u0001H\u0000\u00a8\u0006\u0004"}, d2 = {"toCommon", "Lcom/tencent/hippykotlin/demo/pages/qqkmp/qzone/data/CommonOperationShareOutInfo;", "Lcom/tencent/hippykotlin/demo/pages/qqkmp/qzone/pb/kuikly/trpc/qzone/base/StOperationShareOutInfo;", "toPb", "qecommerce-biz_release"}, k = 2, mv = {1, 7, 1}, xi = 48)
+/* loaded from: classes37.dex */
+public final class CommonOperationShareOutInfoKt {
+    public static final CommonOperationShareOutInfo toCommon(StOperationShareOutInfo stOperationShareOutInfo) {
+        if (stOperationShareOutInfo == null) {
+            return null;
+        }
+        CommonOperationShareOutInfo commonOperationShareOutInfo = new CommonOperationShareOutInfo();
+        commonOperationShareOutInfo.setShareAccessResource(CommonShareAccessResourceInfoKt.toCommon(stOperationShareOutInfo.shareAccessResource));
+        String str = stOperationShareOutInfo.shareOutButtonToast;
+        if (str == null) {
+            str = "";
+        }
+        commonOperationShareOutInfo.setShareOutButtonToast(str);
+        return commonOperationShareOutInfo;
+    }
+
+    public static final StOperationShareOutInfo toPb(CommonOperationShareOutInfo commonOperationShareOutInfo) {
+        if (commonOperationShareOutInfo != null) {
+            return new StOperationShareOutInfo(CommonShareAccessResourceInfoKt.toPb(commonOperationShareOutInfo.getShareAccessResource()), commonOperationShareOutInfo.getShareOutButtonToast());
+        }
+        return null;
+    }
+}

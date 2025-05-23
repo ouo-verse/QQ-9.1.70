@@ -1,0 +1,8 @@
+package com.tencent.hippykotlin.demo.pages.compose_ui.view.adelie;
+
+import com.tencent.kuikly.core.base.event.Event;
+
+/* compiled from: P */
+/* loaded from: classes31.dex */
+public final class AdelieScanningLightViewEvent extends Event {
+}

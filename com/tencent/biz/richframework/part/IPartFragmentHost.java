@@ -1,0 +1,13 @@
+package com.tencent.biz.richframework.part;
+
+import androidx.fragment.app.Fragment;
+import com.tencent.biz.richframework.part.interfaces.IPartHost;
+import kotlin.Metadata;
+import org.jetbrains.annotations.NotNull;
+
+@Metadata(d1 = {"\u0000\u0010\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0004\bf\u0018\u00002\u00020\u0001R\u0014\u0010\u0005\u001a\u00020\u00028&X\u00a6\u0004\u00a2\u0006\u0006\u001a\u0004\b\u0003\u0010\u0004\u00a8\u0006\u0006"}, d2 = {"Lcom/tencent/biz/richframework/part/IPartFragmentHost;", "Lcom/tencent/biz/richframework/part/interfaces/IPartHost;", "Landroidx/fragment/app/Fragment;", "getHostFragment", "()Landroidx/fragment/app/Fragment;", "hostFragment", "part-fragment_debug"}, k = 1, mv = {1, 4, 1})
+/* loaded from: classes5.dex */
+public interface IPartFragmentHost extends IPartHost {
+    @NotNull
+    Fragment getHostFragment();
+}

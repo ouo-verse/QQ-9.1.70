@@ -1,0 +1,44 @@
+package com.tencent.turingcam;
+
+import com.tencent.mobileqq.qfix.redirect.IPatchRedirector;
+import java.util.concurrent.atomic.AtomicReference;
+
+/* compiled from: P */
+/* loaded from: classes27.dex */
+public class s7Dnc extends xEKdO {
+    static IPatchRedirector $redirector_;
+
+    /* renamed from: a, reason: collision with root package name */
+    public final AtomicReference<String> f382359a;
+
+    /* renamed from: b, reason: collision with root package name */
+    public final boolean f382360b;
+
+    public s7Dnc(boolean z16) {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 1)) {
+            iPatchRedirector.redirect((short) 1, (Object) this, z16);
+        } else {
+            this.f382359a = new AtomicReference<>(null);
+            this.f382360b = z16;
+        }
+    }
+
+    public String toString() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector != null && iPatchRedirector.hasPatch((short) 2)) {
+            return (String) iPatchRedirector.redirect((short) 2, (Object) this);
+        }
+        synchronized (this.f382359a) {
+            String str = this.f382359a.get();
+            if (str != null) {
+                return str;
+            }
+            try {
+                this.f382359a.wait(2000L);
+            } catch (InterruptedException unused) {
+            }
+            return this.f382359a.get();
+        }
+    }
+}

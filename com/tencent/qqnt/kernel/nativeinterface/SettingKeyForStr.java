@@ -1,0 +1,16 @@
+package com.tencent.qqnt.kernel.nativeinterface;
+
+/* compiled from: P */
+/* loaded from: classes24.dex */
+public enum SettingKeyForStr {
+    KDEFAULT,
+    KFILESAVEPATH,
+    KDEFAULTSOUNDFILESAVEPATH,
+    KBUDDYSOUNDFILESAVEPATH,
+    KGROUPMSGFILESAVEPATH,
+    KBUDDYONLINEFILESAVEPATH,
+    KAUDIOVIDEOCALLFILESAVEPATH,
+    KSYSTEMMSGFILESAVEPATH,
+    KWIFIPHOTOFILESAVEPATH,
+    KWXMSGNOTIFYINFO
+}

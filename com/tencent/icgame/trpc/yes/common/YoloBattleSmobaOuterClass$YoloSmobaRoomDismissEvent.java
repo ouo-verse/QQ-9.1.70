@@ -1,0 +1,14 @@
+package com.tencent.icgame.trpc.yes.common;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+import com.tencent.qqlive.common.api.AegisLogger;
+
+/* compiled from: P */
+/* loaded from: classes7.dex */
+public final class YoloBattleSmobaOuterClass$YoloSmobaRoomDismissEvent extends MessageMicro<YoloBattleSmobaOuterClass$YoloSmobaRoomDismissEvent> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{8, 18}, new String[]{"reason", AegisLogger.ROOM_INFO}, new Object[]{0, null}, YoloBattleSmobaOuterClass$YoloSmobaRoomDismissEvent.class);
+    public final PBUInt32Field reason = PBField.initUInt32(0);
+    public SmobaDataOuterClass$YoloBattleRoomInfo room_info = new SmobaDataOuterClass$YoloBattleRoomInfo();
+}

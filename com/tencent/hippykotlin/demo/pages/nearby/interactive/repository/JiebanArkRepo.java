@@ -1,0 +1,80 @@
+package com.tencent.hippykotlin.demo.pages.nearby.interactive.repository;
+
+import c45.a;
+import com.tencent.hippykotlin.demo.pages.activity.blind_box.jiguangshang.view.BlindBoxOperationBottomBarButton$$ExternalSyntheticOutline2;
+import com.tencent.hippykotlin.demo.pages.adelie.page.compose.category_home.AdelieCategoryHomePage$$ExternalSyntheticOutline1;
+import com.tencent.hippykotlin.demo.pages.foundation.module.PbResponse;
+import com.tencent.hippykotlin.demo.pages.foundation.module.QQKuiklyPlatformApi;
+import com.tencent.hippykotlin.demo.pages.nearby.base.NearbyApi$sendPbRequest$1;
+import com.tencent.hippykotlin.demo.pages.nearby.base.tech_reporter.APICallTechReporter;
+import com.tencent.kuikly.core.log.KLog;
+import j35.b;
+import j35.g;
+import j35.h;
+import j35.k;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function3;
+import kotlin.text.StringsKt__StringsJVMKt;
+import org.apache.httpcore.message.TokenParser;
+
+/* compiled from: P */
+/* loaded from: classes31.dex */
+public final class JiebanArkRepo implements IStrangerArkRepo {
+    public static final JiebanArkRepo INSTANCE = new JiebanArkRepo();
+
+    /* JADX WARN: Multi-variable type inference failed */
+    @Override // com.tencent.hippykotlin.demo.pages.nearby.interactive.repository.IStrangerArkRepo
+    public final <T> void getArkMsg(T t16, final Function3<? super Integer, ? super String, ? super String, Unit> function3) {
+        if (t16 instanceof g) {
+            KLog kLog = KLog.INSTANCE;
+            StringBuilder m3 = BlindBoxOperationBottomBarButton$$ExternalSyntheticOutline2.m("getJiebanArkMsg msgType=");
+            g gVar = (g) t16;
+            m3.append(gVar.f409221d);
+            m3.append(" feed_id=");
+            b bVar = gVar.f409222e;
+            m3.append(bVar != null ? bVar.f409205d : null);
+            m3.append(" tiny_id=");
+            k kVar = gVar.f409223f;
+            m3.append(kVar != null ? Long.valueOf(kVar.f409228d) : null);
+            m3.append(TokenParser.SP);
+            kLog.i("JieBanInteractiveRepo", m3.toString());
+            GetJieBanArkSignRequest getJieBanArkSignRequest = new GetJieBanArkSignRequest(gVar);
+            Function1<PbResponse<h>, Unit> function1 = new Function1<PbResponse<h>, Unit>() { // from class: com.tencent.hippykotlin.demo.pages.nearby.interactive.repository.JiebanArkRepo$getArkMsg$1
+                /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+                /* JADX WARN: Multi-variable type inference failed */
+                {
+                    super(1);
+                }
+
+                @Override // kotlin.jvm.functions.Function1
+                public final Unit invoke(PbResponse<h> pbResponse) {
+                    a aVar;
+                    byte[] bArr;
+                    PbResponse<h> pbResponse2 = pbResponse;
+                    KLog kLog2 = KLog.INSTANCE;
+                    StringBuilder m16 = BlindBoxOperationBottomBarButton$$ExternalSyntheticOutline2.m("getJiebanArkMsg result: ");
+                    m16.append(pbResponse2.code);
+                    m16.append(", ");
+                    AdelieCategoryHomePage$$ExternalSyntheticOutline1.m(m16, pbResponse2.f114187msg, kLog2, "JieBanInteractiveRepo");
+                    h hVar = pbResponse2.rsp;
+                    String decodeToString = (hVar == null || (aVar = hVar.f409224d) == null || (bArr = aVar.f30291a) == null) ? null : StringsKt__StringsJVMKt.decodeToString(bArr);
+                    if (!pbResponse2.success) {
+                        function3.invoke(Integer.valueOf(pbResponse2.code), pbResponse2.f114187msg, "");
+                    } else if (decodeToString != null) {
+                        function3.invoke(Integer.valueOf(pbResponse2.code), pbResponse2.f114187msg, decodeToString);
+                    } else {
+                        function3.invoke(-1, pbResponse2.f114187msg, "");
+                    }
+                    return Unit.INSTANCE;
+                }
+            };
+            APICallTechReporter aPICallTechReporter = new APICallTechReporter(1, "trpc.lplan.interact_svr.Interact.SsoGetKuolieArkSign");
+            QQKuiklyPlatformApi.Companion companion = QQKuiklyPlatformApi.Companion;
+            QQKuiklyPlatformApi.Companion.sendPbRequest$default(getJieBanArkSignRequest, null, new NearbyApi$sendPbRequest$1(aPICallTechReporter, function1), 6);
+            return;
+        }
+        KLog.INSTANCE.e("JieBanInteractiveRepo", "getJiebanArkMsg params error: " + t16);
+        function3.invoke(-1, "params is not GetKuolieArkSignReq", "");
+    }
+}

@@ -1,0 +1,33 @@
+package com.tencent.ecommerce.repo.buyerorder.orderlist;
+
+import com.tencent.component.network.downloader.impl.ipc.Const;
+import kotlin.Metadata;
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.jvm.internal.ContinuationImpl;
+import kotlin.coroutines.jvm.internal.DebugMetadata;
+
+/* JADX INFO: Access modifiers changed from: package-private */
+@Metadata(d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0000\n\u0000\u0010\t\u001a\u0004\u0018\u00010\b2\u0006\u0010\u0001\u001a\u00020\u00002\n\b\u0002\u0010\u0003\u001a\u0004\u0018\u00010\u00022\u0018\u0010\u0007\u001a\u0014\u0012\u0010\u0012\u000e\u0012\u0004\u0012\u00020\u0006\u0012\u0004\u0012\u00020\u00020\u00050\u0004H\u0082@"}, d2 = {"Lcom/tencent/ecommerce/repo/buyerorder/orderlist/c;", Const.BUNDLE_KEY_REQUEST, "Lcom/tencent/ecommerce/repo/buyerorder/orderlist/a;", "extra", "Lkotlin/coroutines/Continuation;", "Lcom/tencent/ecommerce/base/list/IListRepository$a;", "Lcom/tencent/ecommerce/repo/buyerorder/orderlist/b;", "continuation", "", "loadPageFromServer"}, k = 3, mv = {1, 4, 1})
+@DebugMetadata(c = "com.tencent.ecommerce.repo.buyerorder.orderlist.ECOrderListDataSource", f = "ECOrderListDataSource.kt", i = {0, 0}, l = {49}, m = "loadPageFromServer", n = {"this", Const.BUNDLE_KEY_REQUEST}, s = {"L$0", "L$1"})
+/* loaded from: classes31.dex */
+public final class ECOrderListDataSource$loadPageFromServer$1 extends ContinuationImpl {
+    Object L$0;
+    Object L$1;
+    int label;
+    /* synthetic */ Object result;
+    final /* synthetic */ ECOrderListDataSource this$0;
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public ECOrderListDataSource$loadPageFromServer$1(ECOrderListDataSource eCOrderListDataSource, Continuation continuation) {
+        super(continuation);
+        this.this$0 = eCOrderListDataSource;
+    }
+
+    @Override // kotlin.coroutines.jvm.internal.BaseContinuationImpl
+    public final Object invokeSuspend(Object obj) {
+        this.result = obj;
+        this.label |= Integer.MIN_VALUE;
+        return this.this$0.p(null, null, this);
+    }
+}

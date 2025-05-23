@@ -1,0 +1,13 @@
+package com.tencent.qqnt.kernel.nativeinterface;
+
+/* compiled from: P */
+/* loaded from: classes24.dex */
+public enum MediaSortType {
+    KMEDIASORTTYPEDEFAULT,
+    KMEDIASORTTYPEMODIFYTIMEDESC,
+    KMEDIASORTTYPEMODIFYTIMEASC,
+    KMEDIASORTTYPEUPLOADTIMEDESC,
+    KMEDIASORTTYPEUPLOADTIMEASC,
+    KMEDIASORTTYPESHOOTTIMEDESC,
+    KMEDIASORTTYPESHOOTTIMEASC
+}

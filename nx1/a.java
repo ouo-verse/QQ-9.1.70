@@ -1,0 +1,9 @@
+package nx1;
+
+/* compiled from: P */
+/* loaded from: classes14.dex */
+public class a {
+    public static String a(String str) {
+        return "FUNCTION_SORT_KEY" + str;
+    }
+}

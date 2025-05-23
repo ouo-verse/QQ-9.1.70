@@ -1,0 +1,108 @@
+package ek3;
+
+import com.google.protobuf.nano.MessageNano;
+import com.tencent.common.app.AppInterface;
+import com.tencent.common.app.ToolAppRuntime;
+import com.tencent.mobileqq.qroute.QRoute;
+import com.tencent.mobileqq.qroute.QRouteApi;
+import com.tencent.mobileqq.zootopia.sso.api.IZootopiaProxyServlet;
+import hv4.e;
+import hv4.f;
+import java.util.Map;
+import kotlin.Metadata;
+import kotlin.collections.MapsKt__MapsKt;
+import kotlin.jvm.internal.Intrinsics;
+import mqq.app.AppRuntime;
+import mqq.app.MobileQQ;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000&\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0004\b\u00c6\u0002\u0018\u00002\u00020\u0001B\t\b\u0002\u00a2\u0006\u0004\b\u000b\u0010\fJ&\u0010\n\u001a\u00020\t2\u0006\u0010\u0003\u001a\u00020\u00022\f\u0010\u0006\u001a\b\u0012\u0004\u0012\u00020\u00050\u00042\b\b\u0002\u0010\b\u001a\u00020\u0007\u00a8\u0006\r"}, d2 = {"Lek3/a;", "", "Lhv4/e;", "req", "Lcom/tencent/mobileqq/zootopia/api/e;", "Lhv4/f;", "callback", "", "source", "", "a", "<init>", "()V", "zplan_impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes38.dex */
+public final class a {
+
+    /* renamed from: a, reason: collision with root package name */
+    public static final a f396529a = new a();
+
+    a() {
+    }
+
+    public final void a(e req, com.tencent.mobileqq.zootopia.api.e<f> callback, int source) {
+        Map emptyMap;
+        Intrinsics.checkNotNullParameter(req, "req");
+        Intrinsics.checkNotNullParameter(callback, "callback");
+        AppRuntime peekAppRuntime = MobileQQ.sMobileQQ.peekAppRuntime();
+        if (!(peekAppRuntime instanceof AppInterface)) {
+            if (peekAppRuntime instanceof ToolAppRuntime) {
+                AppRuntime appRuntime = peekAppRuntime.getAppRuntime("modular_web");
+                Intrinsics.checkNotNullExpressionValue(appRuntime, "app.getAppRuntime(WebVie\u2026nt.WEB_MODULAR_MODULE_ID)");
+                if (appRuntime instanceof AppInterface) {
+                    peekAppRuntime = appRuntime;
+                }
+            } else {
+                callback.onResultFailure(-12, "\u83b7\u53d6app\u5f02\u5e38");
+            }
+        }
+        AppInterface appInterface = peekAppRuntime instanceof AppInterface ? (AppInterface) peekAppRuntime : null;
+        if (appInterface == null) {
+            return;
+        }
+        QRouteApi api = QRoute.api(IZootopiaProxyServlet.class);
+        Intrinsics.checkNotNullExpressionValue(api, "api(IZootopiaProxyServlet::class.java)");
+        byte[] byteArray = MessageNano.toByteArray(req);
+        Intrinsics.checkNotNullExpressionValue(byteArray, "toByteArray(req)");
+        emptyMap = MapsKt__MapsKt.emptyMap();
+        IZootopiaProxyServlet.b.b((IZootopiaProxyServlet) api, appInterface, "trpc.metaverse.resource_manage_svr.ResourceManageSvr", "QuerySceneResources", byteArray, emptyMap, new C10245a(callback), source, 0, 128, null);
+    }
+
+    /* compiled from: P */
+    @Metadata(d1 = {"\u0000#\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0012\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0004*\u0001\u0000\b\n\u0018\u00002\u00020\u0001J\u0012\u0010\u0005\u001a\u00020\u00042\b\u0010\u0003\u001a\u0004\u0018\u00010\u0002H\u0016J#\u0010\n\u001a\u00020\u00042\b\u0010\u0007\u001a\u0004\u0018\u00010\u00062\b\u0010\t\u001a\u0004\u0018\u00010\bH\u0016\u00a2\u0006\u0004\b\n\u0010\u000b\u00a8\u0006\f"}, d2 = {"ek3/a$a", "Ltd3/a;", "", "data", "", "onReceive", "", "errCode", "", "errMsg", "a", "(Ljava/lang/Integer;Ljava/lang/String;)V", "zplan_impl_release"}, k = 1, mv = {1, 7, 1})
+    /* renamed from: ek3.a$a, reason: collision with other inner class name */
+    /* loaded from: classes38.dex */
+    public static final class C10245a implements td3.a {
+
+        /* renamed from: a, reason: collision with root package name */
+        final /* synthetic */ com.tencent.mobileqq.zootopia.api.e<f> f396530a;
+
+        C10245a(com.tencent.mobileqq.zootopia.api.e<f> eVar) {
+            this.f396530a = eVar;
+        }
+
+        @Override // td3.a
+        public void a(Integer errCode, String errMsg) {
+            this.f396530a.onResultFailure(errCode != null ? errCode.intValue() : -11, errMsg);
+        }
+
+        @Override // td3.a
+        public void onReceive(byte[] data) {
+            String str;
+            f fVar;
+            if (data == null) {
+                this.f396530a.onResultFailure(-10, "rsp is null");
+                return;
+            }
+            try {
+                fVar = f.c(data);
+                str = "";
+            } catch (Exception e16) {
+                String message = e16.getMessage();
+                if (message == null) {
+                    message = "RSP_PARSE_FAILED";
+                }
+                str = message;
+                fVar = null;
+            }
+            if (fVar == null) {
+                this.f396530a.onResultFailure(-13, str);
+            } else {
+                this.f396530a.onResultSuccess(fVar);
+            }
+        }
+    }
+
+    public static /* synthetic */ void b(a aVar, e eVar, com.tencent.mobileqq.zootopia.api.e eVar2, int i3, int i16, Object obj) {
+        if ((i16 & 4) != 0) {
+            i3 = 0;
+        }
+        aVar.a(eVar, eVar2, i3);
+    }
+}

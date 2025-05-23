@@ -1,0 +1,9 @@
+package com.tencent.mobileqq.friend.inject;
+
+import mqq.app.AppRuntime;
+
+/* compiled from: P */
+/* loaded from: classes12.dex */
+public interface d {
+    String a(AppRuntime appRuntime, String str);
+}

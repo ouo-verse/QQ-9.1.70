@@ -1,0 +1,72 @@
+package com.tencent.richmediabrowser.utils;
+
+import android.os.Build;
+
+/* compiled from: P */
+/* loaded from: classes25.dex */
+public final class VersionUtils {
+    VersionUtils() {
+    }
+
+    public static boolean isECLAIR_MR1() {
+        return true;
+    }
+
+    public static boolean isGingerBread() {
+        return true;
+    }
+
+    public static boolean isHoneycomb() {
+        return true;
+    }
+
+    public static boolean isHoneycombMR2() {
+        return true;
+    }
+
+    public static boolean isIceScreamSandwich() {
+        return true;
+    }
+
+    public static boolean isJellyBean() {
+        return true;
+    }
+
+    public static boolean isJellyBeanM1() {
+        return true;
+    }
+
+    public static boolean isJellyBeanMA2() {
+        return true;
+    }
+
+    public static boolean isKITKAT() {
+        return true;
+    }
+
+    public static boolean isLOLLIPOP() {
+        return true;
+    }
+
+    public static boolean isM() {
+        return true;
+    }
+
+    public static boolean isNougat() {
+        if (Build.VERSION.SDK_INT >= 24) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isOreo() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isrFroyo() {
+        return true;
+    }
+}

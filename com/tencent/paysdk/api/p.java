@@ -1,0 +1,16 @@
+package com.tencent.paysdk.api;
+
+import android.content.Context;
+import kotlin.Metadata;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\"\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0002\bf\u0018\u00002\u00020\u0001J\u0012\u0010\u0005\u001a\u0004\u0018\u00010\u00042\u0006\u0010\u0003\u001a\u00020\u0002H&J\u0010\u0010\t\u001a\u00020\b2\u0006\u0010\u0007\u001a\u00020\u0006H&\u00a8\u0006\n"}, d2 = {"Lcom/tencent/paysdk/api/p;", "", "Landroid/content/Context;", "context", "Lcom/tencent/paysdk/api/o;", "a", "Lcom/tencent/paysdk/api/h;", "callback", "", "b", "tencentvideo_pay_sdk_debug"}, k = 1, mv = {1, 4, 2})
+/* loaded from: classes22.dex */
+public interface p {
+    @Nullable
+    o a(@NotNull Context context);
+
+    void b(@NotNull h callback);
+}

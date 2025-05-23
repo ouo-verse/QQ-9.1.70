@@ -1,0 +1,186 @@
+package com.tencent.mobileqq.search.ftsmsg;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.view.View;
+import com.tencent.mobileqq.fts.v1.FTSEntity;
+import com.tencent.mobileqq.qcircle.api.constant.QCircleScheme;
+import com.tencent.mobileqq.qroute.QRoute;
+import com.tencent.mobileqq.search.ftsentity.FTSEntitySearchFragment;
+import com.tencent.mobileqq.text.QQText;
+import com.tencent.qphone.base.util.BaseApplication;
+import com.tencent.qqnt.aio.adapter.api.IAIOStarterApi;
+import com.tencent.qqnt.emotion.text.style.api.IEmojiSpanService;
+import com.tencent.qqnt.kernel.nativeinterface.FaceElement;
+import com.tencent.qqnt.kernel.nativeinterface.MsgElement;
+import com.tencent.qqnt.kernel.nativeinterface.MsgRecord;
+import com.tencent.qqnt.kernel.nativeinterface.SearchAtMeChatItem;
+import java.util.ArrayList;
+import java.util.List;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import mqq.app.MobileQQ;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000N\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\r\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\u0001\n\u0002\b\u000b\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010!\n\u0002\u0018\u0002\n\u0002\b\u0004\u0018\u00002\u00020\u0001Bo\u0012\b\u0010#\u001a\u0004\u0018\u00010\u0004\u0012\b\u0010$\u001a\u0004\u0018\u00010\u0004\u0012\u001a\u0010'\u001a\u0016\u0012\u0004\u0012\u00020\u0004\u0018\u00010%j\n\u0012\u0004\u0012\u00020\u0004\u0018\u0001`&\u0012\u0010\u0010*\u001a\f\u0012\u0006\b\u0001\u0012\u00020)\u0018\u00010(\u0012\b\b\u0002\u0010\u0014\u001a\u00020\u0002\u0012\b\b\u0002\u0010\u0019\u001a\u00020\u0004\u0012\u0006\u0010\u001f\u001a\u00020\u001a\u0012\b\b\u0002\u0010\"\u001a\u00020\u0004\u00a2\u0006\u0004\b+\u0010,J\b\u0010\u0003\u001a\u00020\u0002H\u0016J\b\u0010\u0005\u001a\u00020\u0004H\u0016J\b\u0010\u0007\u001a\u00020\u0006H\u0016J\b\u0010\b\u001a\u00020\u0006H\u0016J\b\u0010\t\u001a\u00020\u0006H\u0016J\u0012\u0010\r\u001a\u00020\f2\b\u0010\u000b\u001a\u0004\u0018\u00010\nH\u0016J\n\u0010\u000f\u001a\u0004\u0018\u00010\u000eH\u0016J\n\u0010\u0010\u001a\u0004\u0018\u00010\u000eH\u0016R\u0017\u0010\u0014\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0011\u0010\u0010\u001a\u0004\b\u0012\u0010\u0013R\u0017\u0010\u0019\u001a\u00020\u00048\u0006\u00a2\u0006\f\n\u0004\b\u0015\u0010\u0016\u001a\u0004\b\u0017\u0010\u0018R\u0017\u0010\u001f\u001a\u00020\u001a8\u0006\u00a2\u0006\f\n\u0004\b\u001b\u0010\u001c\u001a\u0004\b\u001d\u0010\u001eR\u0017\u0010\"\u001a\u00020\u00048\u0006\u00a2\u0006\f\n\u0004\b \u0010\u0016\u001a\u0004\b!\u0010\u0018\u00a8\u0006-"}, d2 = {"Lcom/tencent/mobileqq/search/ftsmsg/h;", "Lep2/d;", "", "k", "", "l", "", "u", "t", QCircleScheme.AttrQQPublish.INPUT_TAB_MAGIC_STUDIO, "Landroid/view/View;", "view", "", "v", "", "J", "I", "T", "getDtReferPage", "()I", "dtReferPage", "U", "Ljava/lang/String;", "getTraceId", "()Ljava/lang/String;", "traceId", "Lcom/tencent/qqnt/kernel/nativeinterface/SearchAtMeChatItem;", "V", "Lcom/tencent/qqnt/kernel/nativeinterface/SearchAtMeChatItem;", "getSearchAtMeChatItem", "()Lcom/tencent/qqnt/kernel/nativeinterface/SearchAtMeChatItem;", "searchAtMeChatItem", "W", "getSelfGroupCardName", "selfGroupCardName", "originalKeyword", "segmentKeyword", "Ljava/util/ArrayList;", "Lkotlin/collections/ArrayList;", "splitKeywords", "", "Lcom/tencent/mobileqq/fts/v1/FTSEntity;", "entityList", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/ArrayList;Ljava/util/List;ILjava/lang/String;Lcom/tencent/qqnt/kernel/nativeinterface/SearchAtMeChatItem;Ljava/lang/String;)V", "AQQLiteModule_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes18.dex */
+public final class h extends ep2.d {
+
+    /* renamed from: T, reason: from kotlin metadata */
+    private final int dtReferPage;
+
+    /* renamed from: U, reason: from kotlin metadata */
+    @NotNull
+    private final String traceId;
+
+    /* renamed from: V, reason: from kotlin metadata */
+    @NotNull
+    private final SearchAtMeChatItem searchAtMeChatItem;
+
+    /* renamed from: W, reason: from kotlin metadata */
+    @NotNull
+    private final String selfGroupCardName;
+
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public h(@Nullable String str, @Nullable String str2, @Nullable ArrayList<String> arrayList, @Nullable List<? extends FTSEntity> list, int i3, @NotNull String traceId, @NotNull SearchAtMeChatItem searchAtMeChatItem, @NotNull String selfGroupCardName) {
+        super(str, str2, arrayList, list);
+        Intrinsics.checkNotNullParameter(traceId, "traceId");
+        Intrinsics.checkNotNullParameter(searchAtMeChatItem, "searchAtMeChatItem");
+        Intrinsics.checkNotNullParameter(selfGroupCardName, "selfGroupCardName");
+        this.dtReferPage = i3;
+        this.traceId = traceId;
+        this.searchAtMeChatItem = searchAtMeChatItem;
+        this.selfGroupCardName = selfGroupCardName;
+        C(7);
+        D(String.valueOf(searchAtMeChatItem.groupChatInfo.get(0).getGroupCode()));
+    }
+
+    @Override // ep2.d
+    public /* bridge */ /* synthetic */ CharSequence G() {
+        return (CharSequence) I();
+    }
+
+    @Override // ep2.d
+    public /* bridge */ /* synthetic */ CharSequence H() {
+        return (CharSequence) J();
+    }
+
+    @Nullable
+    public Void I() {
+        return null;
+    }
+
+    @Nullable
+    public Void J() {
+        return null;
+    }
+
+    @Override // com.tencent.mobileqq.search.model.t
+    public int k() {
+        return 4;
+    }
+
+    @Override // com.tencent.mobileqq.search.model.t
+    @NotNull
+    /* renamed from: l */
+    public String getUin() {
+        return String.valueOf(this.searchAtMeChatItem.groupChatInfo.get(0).getGroupCode());
+    }
+
+    @Override // com.tencent.mobileqq.search.model.y
+    @NotNull
+    /* renamed from: m */
+    public CharSequence getDescription() {
+        boolean z16;
+        int i3 = this.searchAtMeChatItem.msgCount;
+        if (i3 > 1) {
+            return i3 + "\u6761\u4e0e\u201c@\u6211\u201d\u76f8\u5173\u804a\u5929\u8bb0\u5f55";
+        }
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        ArrayList<MsgElement> arrayList = this.searchAtMeChatItem.msgRecord.elements;
+        Intrinsics.checkNotNullExpressionValue(arrayList, "searchAtMeChatItem.msgRecord.elements");
+        for (MsgElement msgElement : arrayList) {
+            int i16 = msgElement.elementType;
+            if (i16 == 6) {
+                IEmojiSpanService iEmojiSpanService = (IEmojiSpanService) QRoute.api(IEmojiSpanService.class);
+                FaceElement faceElement = msgElement.faceElement;
+                spannableStringBuilder.append(iEmojiSpanService.createEmojiSpanText(faceElement.faceType, faceElement.faceIndex, 0, false, 15)).toString();
+            } else if (i16 == 1) {
+                String str = msgElement.textElement.content;
+                String account = MobileQQ.sMobileQQ.peekAppRuntime().getAccount();
+                if (msgElement.textElement.atType == 2) {
+                    if (this.selfGroupCardName.length() > 0) {
+                        z16 = true;
+                    } else {
+                        z16 = false;
+                    }
+                    if (z16 && Intrinsics.areEqual(String.valueOf(msgElement.textElement.atUid), account)) {
+                        str = "@" + this.selfGroupCardName;
+                    }
+                }
+                spannableStringBuilder.append((CharSequence) str);
+            }
+        }
+        return new QQText(spannableStringBuilder, 3, 15);
+    }
+
+    @Override // com.tencent.mobileqq.search.model.y
+    @NotNull
+    /* renamed from: t */
+    public CharSequence getSubTitleSpans() {
+        return "";
+    }
+
+    @Override // com.tencent.mobileqq.search.model.y
+    @NotNull
+    /* renamed from: u */
+    public CharSequence getTitleSpans() {
+        String str = this.searchAtMeChatItem.groupChatInfo.get(0).groupName;
+        Intrinsics.checkNotNullExpressionValue(str, "searchAtMeChatItem.groupChatInfo[0].groupName");
+        return str;
+    }
+
+    @Override // com.tencent.mobileqq.search.model.y
+    public void v(@Nullable View view) {
+        Long l3;
+        long j3;
+        SearchAtMeChatItem searchAtMeChatItem = this.searchAtMeChatItem;
+        if (searchAtMeChatItem.msgCount > 1) {
+            FTSEntitySearchFragment.wh(BaseApplication.getContext(), "@\u6211", 2, 2, this.dtReferPage, this.traceId, getUin(), getTitleSpans().toString());
+            return;
+        }
+        MsgRecord msgRecord = searchAtMeChatItem.msgRecord;
+        Long l16 = null;
+        if (msgRecord != null) {
+            l3 = Long.valueOf(msgRecord.msgSeq);
+        } else {
+            l3 = null;
+        }
+        MsgRecord msgRecord2 = this.searchAtMeChatItem.msgRecord;
+        if (msgRecord2 != null) {
+            l16 = Long.valueOf(msgRecord2.msgId);
+        }
+        CharSequence titleSpans = getTitleSpans();
+        String uin = getUin();
+        Bundle bundle = new Bundle();
+        long j16 = 0;
+        if (l16 != null) {
+            j3 = l16.longValue();
+        } else {
+            j3 = 0;
+        }
+        bundle.putLong("key_navigate_msgid", j3);
+        if (l3 != null) {
+            j16 = l3.longValue();
+        }
+        bundle.putLong("key_navigate_msgseq", j16);
+        IAIOStarterApi iAIOStarterApi = (IAIOStarterApi) com.tencent.qqnt.aio.adapter.a.INSTANCE.a(IAIOStarterApi.class);
+        Intrinsics.checkNotNull(view);
+        Context context = view.getContext();
+        Intrinsics.checkNotNullExpressionValue(context, "view!!.context");
+        IAIOStarterApi.a.b(iAIOStarterApi, context, 2, uin, titleSpans.toString(), 0L, bundle, 16, null);
+    }
+}

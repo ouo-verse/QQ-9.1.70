@@ -1,0 +1,12 @@
+package com.qzone.proxy.feedcomponent.model;
+
+import com.tencent.component.annotation.NeedParcel;
+import com.tencent.component.app.common.SmartParcelable;
+
+/* compiled from: P */
+/* loaded from: classes39.dex */
+public class CellGroupAlbumInfo implements SmartParcelable {
+
+    @NeedParcel
+    public String groupId;
+}

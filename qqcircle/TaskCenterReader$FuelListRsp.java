@@ -1,0 +1,18 @@
+package qqcircle;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt32Field;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+import com.tencent.mobileqq.pb.PBStringField;
+import feedcloud.FeedCloudCommon$StCommonExt;
+
+/* compiled from: P */
+/* loaded from: classes29.dex */
+public final class TaskCenterReader$FuelListRsp extends MessageMicro<TaskCenterReader$FuelListRsp> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18, 24, 34}, new String[]{"extInfo", "fuelRecords", "isFinish", "ext"}, new Object[]{null, null, 0, ""}, TaskCenterReader$FuelListRsp.class);
+    public FeedCloudCommon$StCommonExt extInfo = new FeedCloudCommon$StCommonExt();
+    public final PBRepeatMessageField<TaskCenterReader$FuelListRecord> fuelRecords = PBField.initRepeatMessage(TaskCenterReader$FuelListRecord.class);
+    public final PBInt32Field isFinish = PBField.initInt32(0);
+    public final PBStringField ext = PBField.initString("");
+}

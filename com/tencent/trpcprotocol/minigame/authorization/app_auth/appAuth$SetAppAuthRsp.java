@@ -1,0 +1,9 @@
+package com.tencent.trpcprotocol.minigame.authorization.app_auth;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+
+/* compiled from: P */
+/* loaded from: classes38.dex */
+public final class appAuth$SetAppAuthRsp extends MessageMicro<appAuth$SetAppAuthRsp> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[0], new String[0], new Object[0], appAuth$SetAppAuthRsp.class);
+}

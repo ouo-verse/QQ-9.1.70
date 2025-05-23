@@ -1,0 +1,127 @@
+package tencent.im.oidb.hotchat;
+
+import com.tencent.ad.tangram.statistics.AdReporterForEffect;
+import com.tencent.biz.qqcircle.immersive.feed.event.QFSBottomDynamicGuideEvent;
+import com.tencent.luggage.wxa.fe.a;
+import com.tencent.luggage.wxa.rf.g;
+import com.tencent.mobileqq.pb.ByteStringMicro;
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBBytesField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt32Field;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+import com.tencent.mobileqq.pb.PBStringField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+import com.tencent.mobileqq.pb.PBUInt64Field;
+import com.tencent.qqnt.kernel.nativeinterface.MsgConstant;
+import com.tencent.view.FilterEnum;
+
+/* loaded from: classes29.dex */
+public final class Common$WifiPOIInfo extends MessageMicro<Common$WifiPOIInfo> {
+    static final MessageMicro.FieldMap __fieldMap__;
+    public final PBStringField banner_url;
+    public final PBBytesField bytes_name;
+    public final PBBytesField bytes_sig;
+    public final PBBytesField bytes_uid;
+    public final PBStringField face_url;
+    public final PBUInt32Field hot_theme_group_flag;
+    public final PBInt32Field latitude;
+    public final PBInt32Field longitude;
+    public final PBRepeatMessageField<Common$SeatsInfo> rpt_msg_seats_info;
+    public final PBStringField smemo;
+    public final PBStringField string_join_group_url;
+    public final PBUInt32Field uint32_audit_flag;
+    public final PBUInt32Field uint32_creater_city_id;
+    public final PBUInt32Field uint32_distance;
+    public final PBUInt32Field uint32_face_id;
+    public final PBUInt32Field uint32_favorites_expired;
+    public final PBUInt32Field uint32_group_code;
+    public final PBUInt32Field uint32_group_flag_ext2;
+    public final PBUInt32Field uint32_group_id;
+    public final PBUInt32Field uint32_group_is_not_exist;
+    public final PBUInt32Field uint32_group_type_flag;
+    public final PBUInt32Field uint32_group_uin;
+    public final PBUInt32Field uint32_guest_num;
+    public final PBUInt32Field uint32_high_quality_flag;
+    public final PBUInt32Field uint32_is_admin;
+    public final PBUInt32Field uint32_is_all_country;
+    public final PBUInt32Field uint32_is_member;
+    public final PBUInt32Field uint32_is_robot_group;
+    public final PBUInt32Field uint32_is_user_create;
+    public final PBUInt32Field uint32_msg_tab_switch_off;
+    public final PBUInt32Field uint32_special_flag;
+    public final PBUInt32Field uint32_sub_type;
+    public final PBUInt32Field uint32_total_num_limit;
+    public final PBUInt32Field uint32_tv_pk_flag;
+    public final PBUInt32Field uint32_visitor_num;
+    public final PBUInt32Field uint32_wifi_poi_type;
+    public final PBUInt64Field uint64_exit_group_code;
+    public final PBUInt64Field uint64_favorites_time;
+    public final PBUInt64Field uint64_flower_num;
+    public final PBUInt64Field uint64_flower_point;
+    public final PBUInt64Field uint64_get_praise_gap_time;
+    public final PBUInt64Field uint64_last_msg_seq;
+    public final PBUInt64Field uint64_owner_uin;
+    public final PBUInt64Field uint64_praise_nums;
+    public final PBUInt64Field uint64_report_praise_gap_frequency;
+    public final PBUInt64Field uint64_report_praise_gap_time;
+    public final PBUInt64Field uint64_robot_uin;
+    public final PBUInt64Field uint64_vistor_join_group_time;
+
+    static {
+        ByteStringMicro byteStringMicro = ByteStringMicro.EMPTY;
+        __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18, 24, 34, 40, 48, 56, 64, 72, 80, 88, 98, 104, 114, 120, 128, 136, 146, 152, 160, 168, 176, 184, 192, 200, 208, 218, 224, 232, 248, 256, 264, 272, FilterEnum.MIC_PTU_TRANS_XINXIAN, 288, 296, 304, 312, 320, AdReporterForEffect.ACTION_MOBILEAPP_QUICKAPP_OPEN_FAILURE, 336, a.CTRL_INDEX, g.CTRL_INDEX, 362, 368, 376, MsgConstant.KRMFILETHUMBSIZE384, QFSBottomDynamicGuideEvent.DYNAMIC_GUIDE_BUTTON_TYPE}, new String[]{"bytes_uid", "bytes_name", "uint32_face_id", "bytes_sig", "uint32_group_code", "uint32_group_uin", "uint32_visitor_num", "uint32_wifi_poi_type", "uint32_is_member", "uint32_distance", "uint32_msg_tab_switch_off", "face_url", "hot_theme_group_flag", "banner_url", "uint32_special_flag", "uint32_total_num_limit", "uint32_is_admin", "string_join_group_url", "uint32_group_type_flag", "uint32_creater_city_id", "uint32_is_user_create", "uint64_owner_uin", "uint32_audit_flag", "uint32_tv_pk_flag", "uint32_sub_type", "uint64_last_msg_seq", "rpt_msg_seats_info", "uint64_flower_num", "uint64_flower_point", "uint64_favorites_time", "uint32_favorites_expired", "uint32_group_id", "uint64_praise_nums", "uint64_report_praise_gap_time", "uint64_report_praise_gap_frequency", "uint64_get_praise_gap_time", "uint64_vistor_join_group_time", "uint32_group_is_not_exist", "uint32_guest_num", "uint32_high_quality_flag", "uint64_exit_group_code", "latitude", "longitude", "smemo", "uint32_is_all_country", "uint32_group_flag_ext2", "uint32_is_robot_group", "uint64_robot_uin"}, new Object[]{byteStringMicro, byteStringMicro, 0, byteStringMicro, 0, 0, 0, 0, 0, 0, 0, "", 0, "", 0, 0, 0, "", 0, 0, 0, 0L, 0, 0, 0, 0L, null, 0L, 0L, 0L, 0, 0, 0L, 0L, 0L, 0L, 0L, 0, 0, 0, 0L, 0, 0, "", 0, 0, 0, 0L}, Common$WifiPOIInfo.class);
+    }
+
+    public Common$WifiPOIInfo() {
+        ByteStringMicro byteStringMicro = ByteStringMicro.EMPTY;
+        this.bytes_uid = PBField.initBytes(byteStringMicro);
+        this.bytes_name = PBField.initBytes(byteStringMicro);
+        this.uint32_face_id = PBField.initUInt32(0);
+        this.bytes_sig = PBField.initBytes(byteStringMicro);
+        this.uint32_group_code = PBField.initUInt32(0);
+        this.uint32_group_uin = PBField.initUInt32(0);
+        this.uint32_visitor_num = PBField.initUInt32(0);
+        this.uint32_wifi_poi_type = PBField.initUInt32(0);
+        this.uint32_is_member = PBField.initUInt32(0);
+        this.uint32_distance = PBField.initUInt32(0);
+        this.uint32_msg_tab_switch_off = PBField.initUInt32(0);
+        this.face_url = PBField.initString("");
+        this.hot_theme_group_flag = PBField.initUInt32(0);
+        this.banner_url = PBField.initString("");
+        this.uint32_special_flag = PBField.initUInt32(0);
+        this.uint32_total_num_limit = PBField.initUInt32(0);
+        this.uint32_is_admin = PBField.initUInt32(0);
+        this.string_join_group_url = PBField.initString("");
+        this.uint32_group_type_flag = PBField.initUInt32(0);
+        this.uint32_creater_city_id = PBField.initUInt32(0);
+        this.uint32_is_user_create = PBField.initUInt32(0);
+        this.uint64_owner_uin = PBField.initUInt64(0L);
+        this.uint32_audit_flag = PBField.initUInt32(0);
+        this.uint32_tv_pk_flag = PBField.initUInt32(0);
+        this.uint32_sub_type = PBField.initUInt32(0);
+        this.uint64_last_msg_seq = PBField.initUInt64(0L);
+        this.rpt_msg_seats_info = PBField.initRepeatMessage(Common$SeatsInfo.class);
+        this.uint64_flower_num = PBField.initUInt64(0L);
+        this.uint64_flower_point = PBField.initUInt64(0L);
+        this.uint64_favorites_time = PBField.initUInt64(0L);
+        this.uint32_favorites_expired = PBField.initUInt32(0);
+        this.uint32_group_id = PBField.initUInt32(0);
+        this.uint64_praise_nums = PBField.initUInt64(0L);
+        this.uint64_report_praise_gap_time = PBField.initUInt64(0L);
+        this.uint64_report_praise_gap_frequency = PBField.initUInt64(0L);
+        this.uint64_get_praise_gap_time = PBField.initUInt64(0L);
+        this.uint64_vistor_join_group_time = PBField.initUInt64(0L);
+        this.uint32_group_is_not_exist = PBField.initUInt32(0);
+        this.uint32_guest_num = PBField.initUInt32(0);
+        this.uint32_high_quality_flag = PBField.initUInt32(0);
+        this.uint64_exit_group_code = PBField.initUInt64(0L);
+        this.latitude = PBField.initInt32(0);
+        this.longitude = PBField.initInt32(0);
+        this.smemo = PBField.initString("");
+        this.uint32_is_all_country = PBField.initUInt32(0);
+        this.uint32_group_flag_ext2 = PBField.initUInt32(0);
+        this.uint32_is_robot_group = PBField.initUInt32(0);
+        this.uint64_robot_uin = PBField.initUInt64(0L);
+    }
+}

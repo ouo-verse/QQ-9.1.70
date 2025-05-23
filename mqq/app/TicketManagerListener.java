@@ -1,0 +1,7 @@
+package mqq.app;
+
+/* compiled from: P */
+/* loaded from: classes28.dex */
+public interface TicketManagerListener {
+    void onTicketRefreshed();
+}

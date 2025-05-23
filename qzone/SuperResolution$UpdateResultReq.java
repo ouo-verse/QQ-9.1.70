@@ -1,0 +1,16 @@
+package qzone;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBEnumField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt64Field;
+import com.tencent.mobileqq.pb.PBStringField;
+
+/* compiled from: P */
+/* loaded from: classes29.dex */
+public final class SuperResolution$UpdateResultReq extends MessageMicro<SuperResolution$UpdateResultReq> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 16, 24}, new String[]{"task_id", "status", "sr_size"}, new Object[]{"", 0, 0L}, SuperResolution$UpdateResultReq.class);
+    public final PBStringField task_id = PBField.initString("");
+    public final PBEnumField status = PBField.initEnum(0);
+    public final PBInt64Field sr_size = PBField.initInt64(0);
+}

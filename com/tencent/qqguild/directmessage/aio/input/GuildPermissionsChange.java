@@ -1,0 +1,32 @@
+package com.tencent.qqguild.directmessage.aio.input;
+
+import com.tencent.mvi.base.route.MsgIntent;
+import com.tencent.mvi.base.route.h;
+import kotlin.Metadata;
+
+@Metadata(d1 = {"\u0000\u0010\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\b\n\u0002\b\b\u0018\u00002\u00020\u0001B\u000f\u0012\u0006\u0010\u0007\u001a\u00020\u0002\u00a2\u0006\u0004\b\b\u0010\tR\u0017\u0010\u0007\u001a\u00020\u00028\u0006\u00a2\u0006\f\n\u0004\b\u0003\u0010\u0004\u001a\u0004\b\u0005\u0010\u0006\u00a8\u0006\n"}, d2 = {"Lcom/tencent/qqguild/directmessage/aio/input/GuildPermissionsChange;", "Lcom/tencent/mvi/base/route/MsgIntent;", "", "d", "I", "a", "()I", "permissions", "<init>", "(I)V", "qqguild-impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes22.dex */
+public final class GuildPermissionsChange implements MsgIntent {
+
+    /* renamed from: d, reason: collision with root package name and from kotlin metadata */
+    private final int permissions;
+
+    public GuildPermissionsChange(int i3) {
+        this.permissions = i3;
+    }
+
+    /* renamed from: a, reason: from getter */
+    public final int getPermissions() {
+        return this.permissions;
+    }
+
+    @Override // com.tencent.mvi.base.route.i
+    public /* synthetic */ String eventName() {
+        return h.a(this);
+    }
+
+    @Override // com.tencent.mvi.base.route.MsgIntent
+    public boolean isSticky() {
+        return MsgIntent.a.a(this);
+    }
+}

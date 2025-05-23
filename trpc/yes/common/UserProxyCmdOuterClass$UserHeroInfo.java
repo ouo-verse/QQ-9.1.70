@@ -1,0 +1,15 @@
+package trpc.yes.common;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBEnumField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt64Field;
+import com.tencent.mobileqq.pb.PBStringField;
+
+/* loaded from: classes30.dex */
+public final class UserProxyCmdOuterClass$UserHeroInfo extends MessageMicro<UserProxyCmdOuterClass$UserHeroInfo> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{8, 18, 24}, new String[]{"hero_id", "icon", "skill"}, new Object[]{0L, "", 0}, UserProxyCmdOuterClass$UserHeroInfo.class);
+    public final PBInt64Field hero_id = PBField.initInt64(0);
+    public final PBStringField icon = PBField.initString("");
+    public final PBEnumField skill = PBField.initEnum(0);
+}

@@ -1,0 +1,8 @@
+package com.tencent.hippykotlin.demo.pages.qsearch_detail_page.function;
+
+import com.tencent.kuikly.core.base.l;
+
+/* compiled from: P */
+/* loaded from: classes32.dex */
+public final class QSearchFunctionItemEvent extends l {
+}

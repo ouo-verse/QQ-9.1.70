@@ -1,0 +1,90 @@
+package com.tencent.mobileqq.icgame.data.login.nano;
+
+import com.google.protobuf.nano.CodedInputByteBufferNano;
+import com.google.protobuf.nano.CodedOutputByteBufferNano;
+import com.google.protobuf.nano.ExtendableMessageNano;
+import com.google.protobuf.nano.InternalNano;
+import com.google.protobuf.nano.InvalidProtocolBufferNanoException;
+import com.google.protobuf.nano.MessageNano;
+import java.io.IOException;
+
+/* loaded from: classes15.dex */
+public final class PairMessage extends ExtendableMessageNano<PairMessage> {
+    private static volatile PairMessage[] _emptyArray;
+    public String key;
+    public String value;
+
+    public PairMessage() {
+        clear();
+    }
+
+    public static PairMessage[] emptyArray() {
+        if (_emptyArray == null) {
+            synchronized (InternalNano.LAZY_INIT_LOCK) {
+                if (_emptyArray == null) {
+                    _emptyArray = new PairMessage[0];
+                }
+            }
+        }
+        return _emptyArray;
+    }
+
+    public static PairMessage parseFrom(byte[] bArr) throws InvalidProtocolBufferNanoException {
+        return (PairMessage) MessageNano.mergeFrom(new PairMessage(), bArr);
+    }
+
+    public PairMessage clear() {
+        this.key = "";
+        this.value = "";
+        this.unknownFieldData = null;
+        this.cachedSize = -1;
+        return this;
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.google.protobuf.nano.ExtendableMessageNano, com.google.protobuf.nano.MessageNano
+    public int computeSerializedSize() {
+        int computeSerializedSize = super.computeSerializedSize();
+        if (!this.key.equals("")) {
+            computeSerializedSize += CodedOutputByteBufferNano.computeStringSize(1, this.key);
+        }
+        if (!this.value.equals("")) {
+            return computeSerializedSize + CodedOutputByteBufferNano.computeStringSize(2, this.value);
+        }
+        return computeSerializedSize;
+    }
+
+    @Override // com.google.protobuf.nano.ExtendableMessageNano, com.google.protobuf.nano.MessageNano
+    public void writeTo(CodedOutputByteBufferNano codedOutputByteBufferNano) throws IOException {
+        if (!this.key.equals("")) {
+            codedOutputByteBufferNano.writeString(1, this.key);
+        }
+        if (!this.value.equals("")) {
+            codedOutputByteBufferNano.writeString(2, this.value);
+        }
+        super.writeTo(codedOutputByteBufferNano);
+    }
+
+    public static PairMessage parseFrom(CodedInputByteBufferNano codedInputByteBufferNano) throws IOException {
+        return new PairMessage().mergeFrom(codedInputByteBufferNano);
+    }
+
+    @Override // com.google.protobuf.nano.MessageNano
+    public PairMessage mergeFrom(CodedInputByteBufferNano codedInputByteBufferNano) throws IOException {
+        while (true) {
+            int readTag = codedInputByteBufferNano.readTag();
+            if (readTag == 0) {
+                return this;
+            }
+            if (readTag == 10) {
+                this.key = codedInputByteBufferNano.readString();
+            } else if (readTag != 18) {
+                if (!storeUnknownField(codedInputByteBufferNano, readTag)) {
+                    return this;
+                }
+            } else {
+                this.value = codedInputByteBufferNano.readString();
+            }
+        }
+    }
+}

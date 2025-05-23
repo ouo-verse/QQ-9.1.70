@@ -1,0 +1,78 @@
+package com.tencent.trpcprotocol.kuolie.vas.dubhe;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBEnumField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt64Field;
+import com.tencent.mobileqq.pb.PBStringField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+import cooperation.qqcircle.report.QCircleLpReportDc05507;
+
+/* compiled from: P */
+/* loaded from: classes38.dex */
+public final class QVASDubhe$ReportDubheReq extends MessageMicro<QVASDubhe$ReportDubheReq> {
+    public static final int DubheActionID_ACTION_ATTR_CHANGE = 127;
+    public static final int DubheActionID_AUTO_PAY_CLICK = 134;
+    public static final int DubheActionID_CANCEL_COLLECTION = 136;
+    public static final int DubheActionID_COLLECTION = 135;
+    public static final int DubheActionID_INITIALIZE_VALUE = 0;
+    public static final int DubheActionID_ITEM_CLICK = 102;
+    public static final int DubheActionID_ITEM_CLICK_RED_OLD = 123;
+    public static final int DubheActionID_ITEM_CLOSE = 122;
+    public static final int DubheActionID_ITEM_DOWNLOAD = 103;
+    public static final int DubheActionID_ITEM_EXPORT = 101;
+    public static final int DubheActionID_ITEM_FOLLOW = 120;
+    public static final int DubheActionID_ITEM_FOURTH_LEVEL_EXPORT = 141;
+    public static final int DubheActionID_ITEM_GIVE = 114;
+    public static final int DubheActionID_ITEM_LIKE = 116;
+    public static final int DubheActionID_ITEM_PAY = 109;
+    public static final int DubheActionID_ITEM_PAY_SUCC = 110;
+    public static final int DubheActionID_ITEM_RED_CLEAR = 205;
+    public static final int DubheActionID_ITEM_SHARE = 115;
+    public static final int DubheActionID_ITEM_SKIP = 162;
+    public static final int DubheActionID_ITEM_SUB_LIST_CLICK = 138;
+    public static final int DubheActionID_ITEM_SUB_LIST_EXPORT = 137;
+    public static final int DubheActionID_ITEM_THIRD_LEVEL_EXPORT = 139;
+    public static final int DubheActionID_ITEM_TYPE_CHANGE = 126;
+    public static final int DubheActionID_ITEM_UNUSE = 128;
+    public static final int DubheActionID_ITEM_USE = 113;
+    public static final int DubheActionID_MAX_ITEM_ID = 202;
+    public static final int DubheActionID_MESSAGE_ARRIVE = 119;
+    public static final int DubheActionID_MESSAGE_CLICK = 118;
+    public static final int DubheActionID_MESSAGE_EXPORT = 117;
+    public static final int DubheActionID_MODULE_CLIKC = 124;
+    public static final int DubheActionID_MODULE_EXPORT = 111;
+    public static final int DubheActionID_PAGE_COST = 133;
+    public static final int DubheActionID_PAGE_EXCEPTION_COST = 132;
+    public static final int DubheActionID_PAGE_EXPORT = 100;
+    public static final int DubheActionID_PAGE_INIT_COST = 130;
+    public static final int DubheActionID_PAGE_LOADURL_COST = 131;
+    public static final int DubheActionID_PAGE_LOAD_COST = 129;
+    public static final int DubheActionID_RED_MESSAGE_ARRIVE = 121;
+    public static final int DubheActionID_SUBMODULE_CLICK = 125;
+    public static final int DubheActionID_SUB_MODULE_EXPORT = 112;
+    public static final int DubheActionID_UNKNOW_ID = 999;
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18, 24, 34, 42, 50, 56, 64, 72, 82, 90, 98, 106, 114, 122, 130, 136, 144, 152, 162, 170, 178}, new String[]{"to_uid", "trace_id", "trance_num", "app_id", "page_id", "item_id", "action_id", "action_value", "oper_time", "trigger_info", "sub_item_id", "trace_detail", "trace_index", "module_id", "sub_module_id", QCircleLpReportDc05507.KEY_POSITION_ID, "test_id", "rule_id", "action_attr", "busi_info", "item_type", "third_party_report_url_for_exposure"}, new Object[]{"", "", 0, "", "", "", 0, 0L, 0L, "", "", "", "", "", "", "", 0L, 0L, 0L, "", "", ""}, QVASDubhe$ReportDubheReq.class);
+    public final PBStringField to_uid = PBField.initString("");
+    public final PBStringField trace_id = PBField.initString("");
+    public final PBUInt32Field trance_num = PBField.initUInt32(0);
+    public final PBStringField app_id = PBField.initString("");
+    public final PBStringField page_id = PBField.initString("");
+    public final PBStringField item_id = PBField.initString("");
+    public final PBEnumField action_id = PBField.initEnum(0);
+    public final PBInt64Field action_value = PBField.initInt64(0);
+    public final PBInt64Field oper_time = PBField.initInt64(0);
+    public final PBStringField trigger_info = PBField.initString("");
+    public final PBStringField sub_item_id = PBField.initString("");
+    public final PBStringField trace_detail = PBField.initString("");
+    public final PBStringField trace_index = PBField.initString("");
+    public final PBStringField module_id = PBField.initString("");
+    public final PBStringField sub_module_id = PBField.initString("");
+    public final PBStringField position_id = PBField.initString("");
+    public final PBInt64Field test_id = PBField.initInt64(0);
+    public final PBInt64Field rule_id = PBField.initInt64(0);
+    public final PBInt64Field action_attr = PBField.initInt64(0);
+    public final PBStringField busi_info = PBField.initString("");
+    public final PBStringField item_type = PBField.initString("");
+    public final PBStringField third_party_report_url_for_exposure = PBField.initString("");
+}

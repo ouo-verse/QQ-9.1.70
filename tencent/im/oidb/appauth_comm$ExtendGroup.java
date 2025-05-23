@@ -1,0 +1,14 @@
+package tencent.im.oidb;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+
+/* compiled from: P */
+/* loaded from: classes29.dex */
+public final class appauth_comm$ExtendGroup extends MessageMicro<appauth_comm$ExtendGroup> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{8, 18}, new String[]{"auth_group_type", "auth_list"}, new Object[]{0, null}, appauth_comm$ExtendGroup.class);
+    public final PBUInt32Field auth_group_type = PBField.initUInt32(0);
+    public final PBRepeatMessageField<appauth_comm$ExtendGroupPair> auth_list = PBField.initRepeatMessage(appauth_comm$ExtendGroupPair.class);
+}

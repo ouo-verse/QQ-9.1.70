@@ -1,0 +1,64 @@
+package com.tencent.qqnt.kernel.nativeinterface;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/* compiled from: P */
+/* loaded from: classes24.dex */
+public interface IKernelBdhUploadService {
+
+    /* compiled from: P */
+    /* loaded from: classes24.dex */
+    public static final class CppProxy implements IKernelBdhUploadService {
+        static final /* synthetic */ boolean $assertionsDisabled = false;
+        private final AtomicBoolean destroyed = new AtomicBoolean(false);
+        private final long nativeRef;
+
+        CppProxy(long j3) {
+            if (j3 != 0) {
+                this.nativeRef = j3;
+                return;
+            }
+            throw new RuntimeException("nativeRef is zero");
+        }
+
+        private native void nativeDestroy(long j3);
+
+        private native void native_cancelUpload(long j3, long j16);
+
+        private native float native_processForTask(long j3, long j16);
+
+        private native long native_uploadFile(long j3, BdhUploadReq bdhUploadReq, IKernelBdhUploadCompleteCallback iKernelBdhUploadCompleteCallback);
+
+        public void _djinni_private_destroy() {
+            if (!this.destroyed.getAndSet(true)) {
+                nativeDestroy(this.nativeRef);
+            }
+        }
+
+        @Override // com.tencent.qqnt.kernel.nativeinterface.IKernelBdhUploadService
+        public void cancelUpload(long j3) {
+            native_cancelUpload(this.nativeRef, j3);
+        }
+
+        protected void finalize() throws Throwable {
+            _djinni_private_destroy();
+            super.finalize();
+        }
+
+        @Override // com.tencent.qqnt.kernel.nativeinterface.IKernelBdhUploadService
+        public float processForTask(long j3) {
+            return native_processForTask(this.nativeRef, j3);
+        }
+
+        @Override // com.tencent.qqnt.kernel.nativeinterface.IKernelBdhUploadService
+        public long uploadFile(BdhUploadReq bdhUploadReq, IKernelBdhUploadCompleteCallback iKernelBdhUploadCompleteCallback) {
+            return native_uploadFile(this.nativeRef, bdhUploadReq, iKernelBdhUploadCompleteCallback);
+        }
+    }
+
+    void cancelUpload(long j3);
+
+    float processForTask(long j3);
+
+    long uploadFile(BdhUploadReq bdhUploadReq, IKernelBdhUploadCompleteCallback iKernelBdhUploadCompleteCallback);
+}

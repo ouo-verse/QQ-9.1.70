@@ -1,0 +1,16 @@
+package tencent.im.oidb.cmd0x9ab;
+
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+
+/* compiled from: P */
+/* loaded from: classes29.dex */
+public final class oidb_0x9ab$GroupTabList extends MessageMicro<oidb_0x9ab$GroupTabList> {
+    public static final int RPT_TAB_LIST_FIELD_NUMBER = 2;
+    public static final int UINT32_CURR_TAB_ID_FIELD_NUMBER = 1;
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{8, 18}, new String[]{"uint32_curr_tab_id", "rpt_tab_list"}, new Object[]{0, null}, oidb_0x9ab$GroupTabList.class);
+    public final PBUInt32Field uint32_curr_tab_id = PBField.initUInt32(0);
+    public final PBRepeatMessageField<oidb_0x9ab$TabItem> rpt_tab_list = PBField.initRepeatMessage(oidb_0x9ab$TabItem.class);
+}

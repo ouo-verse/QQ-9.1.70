@@ -1,0 +1,29 @@
+package qshadow;
+
+import com.huawei.hms.support.feature.result.CommonConstant;
+import com.tencent.mobileqq.data.MessageForQQStory;
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBRepeatMessageField;
+import com.tencent.mobileqq.pb.PBStringField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+
+/* compiled from: P */
+/* loaded from: classes29.dex */
+public final class QShadowMetaMaterial$MaterialInfo extends MessageMicro<QShadowMetaMaterial$MaterialInfo> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18, 26, 32, 40, 50, 58, 66, 74, 82, 90, 96}, new String[]{"id", "metaSdkInfo", "thumbURL", "thumbWidth", "thumbHeight", "packageURL", "checksumMd5", "additionalPackage", "additionalFields", CommonConstant.KEY_DISPLAY_NAME, MessageForQQStory.KEY_AUTHOR_NAME, "usageCnt"}, new Object[]{"", null, "", 0, 0, "", "", null, null, "", "", 0}, QShadowMetaMaterial$MaterialInfo.class);
+
+    /* renamed from: id, reason: collision with root package name */
+    public final PBStringField f429484id = PBField.initString("");
+    public QShadowMetaMaterial$MetaSdkInfo metaSdkInfo = new QShadowMetaMaterial$MetaSdkInfo();
+    public final PBStringField thumbURL = PBField.initString("");
+    public final PBUInt32Field thumbWidth = PBField.initUInt32(0);
+    public final PBUInt32Field thumbHeight = PBField.initUInt32(0);
+    public final PBStringField packageURL = PBField.initString("");
+    public final PBStringField checksumMd5 = PBField.initString("");
+    public QShadowMetaMaterial$MetaAdditionalPackage additionalPackage = new QShadowMetaMaterial$MetaAdditionalPackage();
+    public final PBRepeatMessageField<QShadowMetaMaterial$AdditionalEntry> additionalFields = PBField.initRepeatMessage(QShadowMetaMaterial$AdditionalEntry.class);
+    public final PBStringField displayName = PBField.initString("");
+    public final PBStringField authorName = PBField.initString("");
+    public final PBUInt32Field usageCnt = PBField.initUInt32(0);
+}

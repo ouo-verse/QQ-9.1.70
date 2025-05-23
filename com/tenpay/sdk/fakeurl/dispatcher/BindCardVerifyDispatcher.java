@@ -1,0 +1,73 @@
+package com.tenpay.sdk.fakeurl.dispatcher;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import com.tencent.ditto.shell.LayoutAttrDefine;
+import com.tencent.mobileqq.activity.QPublicFragmentActivity;
+import com.tencent.mobileqq.fragment.QPublicBaseFragment;
+import com.tenpay.bank.BindBankModule;
+import com.tenpay.sdk.QWalletFakeUrl;
+import com.tenpay.sdk.SDKCallbackManager;
+import com.tenpay.sdk.activity.NetBaseActivity;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0004\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\u0018\u00002\u00020\u0001B\u000f\u0012\b\u0010\u0002\u001a\u0004\u0018\u00010\u0003\u00a2\u0006\u0002\u0010\u0004J\u001a\u0010\u0007\u001a\u00020\b2\b\u0010\t\u001a\u0004\u0018\u00010\n2\u0006\u0010\u000b\u001a\u00020\fH\u0016R\u0013\u0010\u0002\u001a\u0004\u0018\u00010\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0005\u0010\u0006\u00a8\u0006\r"}, d2 = {"Lcom/tenpay/sdk/fakeurl/dispatcher/BindCardVerifyDispatcher;", "Lcom/tenpay/sdk/fakeurl/dispatcher/FakeUrlDispatcher;", "uin", "", "(Ljava/lang/String;)V", "getUin", "()Ljava/lang/String;", "performAction", "", "context", "Landroid/content/Context;", LayoutAttrDefine.CLICK_URI, "Landroid/net/Uri;", "qwallet-impl_release"}, k = 1, mv = {1, 7, 1}, xi = 48)
+/* loaded from: classes27.dex */
+public final class BindCardVerifyDispatcher implements FakeUrlDispatcher {
+
+    @Nullable
+    private final String uin;
+
+    public BindCardVerifyDispatcher(@Nullable String str) {
+        this.uin = str;
+    }
+
+    @Nullable
+    public final String getUin() {
+        return this.uin;
+    }
+
+    @Override // com.tenpay.sdk.fakeurl.dispatcher.FakeUrlDispatcher
+    public void performAction(@Nullable Context context, @NotNull Uri uri) {
+        boolean z16;
+        Intent intent;
+        Intrinsics.checkNotNullParameter(uri, "uri");
+        Intent intent2 = new Intent();
+        intent2.putExtra("IsShiMing", true);
+        String str = this.uin;
+        boolean z17 = false;
+        if (str != null && str.length() != 0) {
+            z16 = false;
+        } else {
+            z16 = true;
+        }
+        if (!z16) {
+            intent2.putExtra("uin", this.uin);
+        }
+        String queryParameter = uri.getQueryParameter("showIDCardVerify");
+        if (queryParameter == null || queryParameter.length() == 0) {
+            z17 = true;
+        }
+        if (z17) {
+            intent2.putExtra("IsIdVerifyValid", true);
+        } else {
+            intent2.putExtra("IsIdVerifyValid", Intrinsics.areEqual(queryParameter, "1"));
+        }
+        if (context instanceof QPublicFragmentActivity) {
+            QPublicBaseFragment fragment = ((QPublicFragmentActivity) context).getFragment();
+            if (fragment instanceof NetBaseActivity) {
+                ((NetBaseActivity) fragment).visitFakeUrlJumpBefore(intent2, QWalletFakeUrl.FAKEURL_BINDCARDVERIFY);
+            }
+        }
+        if ((context instanceof Activity) && (intent = ((Activity) context).getIntent()) != null && intent.hasExtra(SDKCallbackManager.SESSION_RECEIVER)) {
+            intent2.putExtra(SDKCallbackManager.SESSION_RECEIVER, intent.getParcelableExtra(SDKCallbackManager.SESSION_RECEIVER));
+        }
+        BindBankModule.INSTANCE.startVerify(context, intent2);
+    }
+}

@@ -1,0 +1,23 @@
+package com.tencent.sqshow.zootopia.publish.tab;
+
+import com.tencent.sqshow.zootopia.publish.page.samestyle.SameStyleContentPageFrom;
+import kotlin.Metadata;
+
+@Metadata(d1 = {"\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0000\n\u0002\u0010\u000e\n\u0002\b\b\b\u0086\u0001\u0018\u00002\b\u0012\u0004\u0012\u00020\u00000\u0001B\u000f\b\u0002\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0005\u0010\u0006j\u0002\b\u0007j\u0002\b\bj\u0002\b\tj\u0002\b\n\u00a8\u0006\u000b"}, d2 = {"Lcom/tencent/sqshow/zootopia/publish/tab/SelectPublishContentPageType;", "", "pageName", "", "(Ljava/lang/String;ILjava/lang/String;)V", "getPageName", "()Ljava/lang/String;", SameStyleContentPageFrom.FROM_SAME_STYLE, "AR_SAME_STYLE", "DRESS_SHARE", "FASHION_DESIGN", "superqqshow-portal-impl_release"}, k = 1, mv = {1, 7, 1}, xi = 48)
+/* loaded from: classes34.dex */
+public enum SelectPublishContentPageType {
+    SAME_STYLE("\u6a21\u7248"),
+    AR_SAME_STYLE("\u62cd\u6444"),
+    DRESS_SHARE("\u79c0\u7a7f\u642d"),
+    FASHION_DESIGN("\u505a\u670d\u9970");
+
+    private final String pageName;
+
+    SelectPublishContentPageType(String str) {
+        this.pageName = str;
+    }
+
+    public final String getPageName() {
+        return this.pageName;
+    }
+}

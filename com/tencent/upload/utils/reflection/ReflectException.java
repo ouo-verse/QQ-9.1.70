@@ -1,0 +1,45 @@
+package com.tencent.upload.utils.reflection;
+
+import com.tencent.mobileqq.qfix.redirect.IPatchRedirector;
+
+/* compiled from: P */
+/* loaded from: classes27.dex */
+public class ReflectException extends RuntimeException {
+    static IPatchRedirector $redirector_ = null;
+    private static final long serialVersionUID = -6213149635297151442L;
+
+    public ReflectException(String str) {
+        super(str);
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector == null || !iPatchRedirector.hasPatch((short) 1)) {
+            return;
+        }
+        iPatchRedirector.redirect((short) 1, (Object) this, (Object) str);
+    }
+
+    public ReflectException(String str, Throwable th5) {
+        super(str, th5);
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector == null || !iPatchRedirector.hasPatch((short) 2)) {
+            return;
+        }
+        iPatchRedirector.redirect((short) 2, (Object) this, (Object) str, (Object) th5);
+    }
+
+    public ReflectException() {
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector == null || !iPatchRedirector.hasPatch((short) 3)) {
+            return;
+        }
+        iPatchRedirector.redirect((short) 3, (Object) this);
+    }
+
+    public ReflectException(Throwable th5) {
+        super(th5);
+        IPatchRedirector iPatchRedirector = $redirector_;
+        if (iPatchRedirector == null || !iPatchRedirector.hasPatch((short) 4)) {
+            return;
+        }
+        iPatchRedirector.redirect((short) 4, (Object) this, (Object) th5);
+    }
+}

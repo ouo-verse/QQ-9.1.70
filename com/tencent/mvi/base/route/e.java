@@ -1,0 +1,25 @@
+package com.tencent.mvi.base.route;
+
+import androidx.lifecycle.LifecycleOwner;
+import com.tencent.mobileqq.activity.QQBrowserActivity;
+import kotlin.Metadata;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u00008\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\bf\u0018\u00002\u00020\u0001J\u0018\u0010\u0007\u001a\u00020\u00062\u0006\u0010\u0003\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u0004H&J\u0010\u0010\b\u001a\u00020\u00062\u0006\u0010\u0003\u001a\u00020\u0002H&J\u001a\u0010\u000b\u001a\u00020\u00062\b\u0010\n\u001a\u0004\u0018\u00010\t2\u0006\u0010\u0005\u001a\u00020\u0004H&J\u0012\u0010\f\u001a\u00020\u00062\b\u0010\n\u001a\u0004\u0018\u00010\tH&J\u0012\u0010\u0010\u001a\u0004\u0018\u00010\u000f2\u0006\u0010\u000e\u001a\u00020\rH&J\"\u0010\u0013\u001a\u00020\u00062\b\u0010\n\u001a\u0004\u0018\u00010\t2\u0006\u0010\u0005\u001a\u00020\u00042\u0006\u0010\u0012\u001a\u00020\u0011H&\u00a8\u0006\u0014"}, d2 = {"Lcom/tencent/mvi/base/route/e;", "", "Lcom/tencent/mvi/base/route/g;", "subscribe", "Lcom/tencent/mvi/base/route/b;", "action", "", "l", "e", "", QQBrowserActivity.KEY_MSG_TYPE, "j", "a", "Lcom/tencent/mvi/base/route/MsgIntent;", "message", "Lcom/tencent/mvi/base/route/k;", "k", "Landroidx/lifecycle/LifecycleOwner;", "lifecycleOwner", "g", "mvi_debug"}, k = 1, mv = {1, 4, 2})
+/* loaded from: classes21.dex */
+public interface e {
+    void a(@Nullable String msgType);
+
+    void e(@NotNull g subscribe);
+
+    void g(@Nullable String msgType, @NotNull b action, @NotNull LifecycleOwner lifecycleOwner);
+
+    void j(@Nullable String msgType, @NotNull b action);
+
+    @Nullable
+    k k(@NotNull MsgIntent message);
+
+    void l(@NotNull g subscribe, @NotNull b action);
+}

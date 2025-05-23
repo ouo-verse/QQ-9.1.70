@@ -1,0 +1,187 @@
+package com.tencent.localedit.fakenative.localserver;
+
+import com.tencent.local_edit.andserver.framework.mapping.Mime;
+import com.tencent.local_edit.andserver.http.HttpMethod;
+import com.tencent.local_edit.andserver.util.MediaType;
+import com.tencent.mobileqq.guild.setting.guildmanage.speak.threshold.model.JoinTimeType;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/* compiled from: P */
+/* loaded from: classes7.dex */
+public final class e extends n11.b {
+
+    /* renamed from: h, reason: collision with root package name */
+    private LocalServerRequestProxy f119918h = new LocalServerRequestProxy();
+
+    /* renamed from: i, reason: collision with root package name */
+    private Map<o11.b, n11.f> f119919i = new LinkedHashMap();
+
+    public e() {
+        o11.b bVar = new o11.b();
+        o11.e eVar = new o11.e();
+        eVar.a("/local-edit/loadFile");
+        eVar.a("/local-edit/loadFile/");
+        bVar.h(eVar);
+        o11.c cVar = new o11.c();
+        cVar.a("GET");
+        bVar.g(cVar);
+        Mime mime = new Mime();
+        mime.a("application/octet-stream");
+        bVar.i(mime);
+        o11.a aVar = new o11.a();
+        m11.a aVar2 = new m11.a();
+        aVar2.l(new String[0]);
+        aVar2.h(new String[0]);
+        aVar2.i(new String[0]);
+        aVar2.k(new HttpMethod[0]);
+        aVar2.g(true);
+        aVar2.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar, new j(this.f119918h, bVar, aVar, aVar2));
+        o11.b bVar2 = new o11.b();
+        o11.e eVar2 = new o11.e();
+        eVar2.a("/local-edit/fileStat/");
+        eVar2.a("/local-edit/fileStat");
+        bVar2.h(eVar2);
+        o11.c cVar2 = new o11.c();
+        cVar2.a("GET");
+        bVar2.g(cVar2);
+        Mime mime2 = new Mime();
+        mime2.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar2.i(mime2);
+        o11.a aVar3 = new o11.a();
+        m11.a aVar4 = new m11.a();
+        aVar4.l(new String[0]);
+        aVar4.h(new String[0]);
+        aVar4.i(new String[0]);
+        aVar4.k(new HttpMethod[0]);
+        aVar4.g(true);
+        aVar4.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar2, new h(this.f119918h, bVar2, aVar3, aVar4));
+        o11.b bVar3 = new o11.b();
+        o11.e eVar3 = new o11.e();
+        eVar3.a("/local-edit/loadDocx");
+        eVar3.a("/local-edit/loadDocx/");
+        bVar3.h(eVar3);
+        o11.c cVar3 = new o11.c();
+        cVar3.a("GET");
+        bVar3.g(cVar3);
+        Mime mime3 = new Mime();
+        mime3.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar3.i(mime3);
+        o11.a aVar5 = new o11.a();
+        m11.a aVar6 = new m11.a();
+        aVar6.l(new String[0]);
+        aVar6.h(new String[0]);
+        aVar6.i(new String[0]);
+        aVar6.k(new HttpMethod[0]);
+        aVar6.g(true);
+        aVar6.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar3, new i(this.f119918h, bVar3, aVar5, aVar6));
+        o11.b bVar4 = new o11.b();
+        o11.e eVar4 = new o11.e();
+        eVar4.a("/local-edit/downloadImage");
+        eVar4.a("/local-edit/downloadImage/");
+        bVar4.h(eVar4);
+        o11.c cVar4 = new o11.c();
+        cVar4.a("GET");
+        bVar4.g(cVar4);
+        Mime mime4 = new Mime();
+        mime4.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar4.i(mime4);
+        o11.a aVar7 = new o11.a();
+        m11.a aVar8 = new m11.a();
+        aVar8.l(new String[0]);
+        aVar8.h(new String[0]);
+        aVar8.i(new String[0]);
+        aVar8.k(new HttpMethod[0]);
+        aVar8.g(true);
+        aVar8.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar4, new g(this.f119918h, bVar4, aVar7, aVar8));
+        o11.b bVar5 = new o11.b();
+        o11.e eVar5 = new o11.e();
+        eVar5.a("/local-edit/chunkImport/");
+        eVar5.a("/local-edit/chunkImport");
+        bVar5.h(eVar5);
+        o11.c cVar5 = new o11.c();
+        cVar5.a("GET");
+        bVar5.g(cVar5);
+        Mime mime5 = new Mime();
+        mime5.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar5.i(mime5);
+        o11.a aVar9 = new o11.a();
+        m11.a aVar10 = new m11.a();
+        aVar10.l(new String[0]);
+        aVar10.h(new String[0]);
+        aVar10.i(new String[0]);
+        aVar10.k(new HttpMethod[0]);
+        aVar10.g(true);
+        aVar10.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar5, new f(this.f119918h, bVar5, aVar9, aVar10));
+        o11.b bVar6 = new o11.b();
+        o11.e eVar6 = new o11.e();
+        eVar6.a("/local-edit/uploadImage/");
+        eVar6.a("/local-edit/uploadImage");
+        bVar6.h(eVar6);
+        o11.c cVar6 = new o11.c();
+        cVar6.a("POST");
+        bVar6.g(cVar6);
+        Mime mime6 = new Mime();
+        mime6.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar6.i(mime6);
+        o11.a aVar11 = new o11.a();
+        m11.a aVar12 = new m11.a();
+        aVar12.l(new String[0]);
+        aVar12.h(new String[0]);
+        aVar12.i(new String[0]);
+        aVar12.k(new HttpMethod[0]);
+        aVar12.g(true);
+        aVar12.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar6, new m(this.f119918h, bVar6, aVar11, aVar12));
+        o11.b bVar7 = new o11.b();
+        o11.e eVar7 = new o11.e();
+        eVar7.a("/local-edit/saveDocx");
+        eVar7.a("/local-edit/saveDocx/");
+        bVar7.h(eVar7);
+        o11.c cVar7 = new o11.c();
+        cVar7.a("POST");
+        bVar7.g(cVar7);
+        Mime mime7 = new Mime();
+        mime7.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar7.i(mime7);
+        o11.a aVar13 = new o11.a();
+        m11.a aVar14 = new m11.a();
+        aVar14.l(new String[0]);
+        aVar14.h(new String[0]);
+        aVar14.i(new String[0]);
+        aVar14.k(new HttpMethod[0]);
+        aVar14.g(true);
+        aVar14.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar7, new l(this.f119918h, bVar7, aVar13, aVar14));
+        o11.b bVar8 = new o11.b();
+        o11.e eVar8 = new o11.e();
+        eVar8.a("/local-edit/report");
+        eVar8.a("/local-edit/report/");
+        bVar8.h(eVar8);
+        o11.c cVar8 = new o11.c();
+        cVar8.a("POST");
+        bVar8.g(cVar8);
+        Mime mime8 = new Mime();
+        mime8.a(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        bVar8.i(mime8);
+        o11.a aVar15 = new o11.a();
+        m11.a aVar16 = new m11.a();
+        aVar16.l(new String[0]);
+        aVar16.h(new String[0]);
+        aVar16.i(new String[0]);
+        aVar16.k(new HttpMethod[0]);
+        aVar16.g(true);
+        aVar16.j(JoinTimeType.THIRTY_MINUTES);
+        this.f119919i.put(bVar8, new k(this.f119918h, bVar8, aVar15, aVar16));
+    }
+
+    @Override // n11.b
+    protected Map<o11.b, n11.f> g() {
+        return this.f119919i;
+    }
+}

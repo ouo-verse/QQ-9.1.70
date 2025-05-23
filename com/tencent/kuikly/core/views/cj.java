@@ -1,0 +1,25 @@
+package com.tencent.kuikly.core.views;
+
+import com.tencent.kuikly.core.base.event.Event;
+import kotlin.Metadata;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.internal.Intrinsics;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000 \n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0002\b\f\u0018\u00002\u00020\u0001B\u0007\u00a2\u0006\u0004\b\u0011\u0010\u0012J)\u0010\t\u001a\u00020\u00072!\u0010\b\u001a\u001d\u0012\u0013\u0012\u00110\u0003\u00a2\u0006\f\b\u0004\u0012\b\b\u0005\u0012\u0004\b\b(\u0006\u0012\u0004\u0012\u00020\u00070\u0002R?\u0010\u0010\u001a\u001f\u0012\u0013\u0012\u00110\u0003\u00a2\u0006\f\b\u0004\u0012\b\b\u0005\u0012\u0004\b\b(\u0006\u0012\u0004\u0012\u00020\u0007\u0018\u00010\u00028\u0000@\u0000X\u0080\u000e\u00a2\u0006\u0012\n\u0004\b\n\u0010\u000b\u001a\u0004\b\f\u0010\r\"\u0004\b\u000e\u0010\u000f\u00a8\u0006\u0013"}, d2 = {"Lcom/tencent/kuikly/core/views/cj;", "Lcom/tencent/kuikly/core/base/event/Event;", "Lkotlin/Function1;", "", "Lkotlin/ParameterName;", "name", "transitionAppear", "", "eventHandlerFn", "transitionFinish", "a", "Lkotlin/jvm/functions/Function1;", tl.h.F, "()Lkotlin/jvm/functions/Function1;", "setTransitionFinishHandlerFn$core_release", "(Lkotlin/jvm/functions/Function1;)V", "transitionFinishHandlerFn", "<init>", "()V", "core_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes33.dex */
+public final class cj extends Event {
+
+    /* renamed from: a, reason: collision with root package name and from kotlin metadata */
+    private Function1<? super Boolean, Unit> transitionFinishHandlerFn;
+
+    public final Function1<Boolean, Unit> h() {
+        return this.transitionFinishHandlerFn;
+    }
+
+    public final void transitionFinish(Function1<? super Boolean, Unit> eventHandlerFn) {
+        Intrinsics.checkNotNullParameter(eventHandlerFn, "eventHandlerFn");
+        this.transitionFinishHandlerFn = eventHandlerFn;
+    }
+}

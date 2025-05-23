@@ -1,0 +1,11 @@
+package com.tencent.luggage.wxa.fo;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* compiled from: P */
+@Retention(RetentionPolicy.RUNTIME)
+/* loaded from: classes8.dex */
+public @interface b {
+    Class[] dependencies() default {};
+}

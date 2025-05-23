@@ -1,0 +1,15 @@
+package com.qzone.proxy.feedcomponent.model;
+
+import com.tencent.component.annotation.NeedParcel;
+import com.tencent.component.app.common.SmartParcelable;
+
+/* compiled from: P */
+/* loaded from: classes39.dex */
+public class CellIntimateSpaceInfo implements SmartParcelable {
+
+    @NeedParcel
+    public String spaceId;
+
+    @NeedParcel
+    public int spaceType;
+}

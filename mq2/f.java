@@ -1,0 +1,65 @@
+package mq2;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import com.tencent.mobileqq.R;
+import com.tencent.mobileqq.activity.PhoneUnityBindInfoActivity;
+import com.tencent.mobileqq.activity.contact.phonecontact.PhoneUnityManager;
+import com.tencent.mobileqq.app.QQManagerFactory;
+import com.tencent.qphone.base.util.BaseApplication;
+import com.tencent.qphone.base.util.QLog;
+import java.util.ArrayList;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import mqq.app.AppRuntime;
+import mqq.app.MobileQQ;
+import mqq.manager.Manager;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u00000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0007\u0018\u0000 \u00122\u00020\u0001:\u0001\u0013B\u0007\u00a2\u0006\u0004\b\u0010\u0010\u0011J\b\u0010\u0003\u001a\u00020\u0002H\u0016J\u0018\u0010\u0006\u001a\u0012\u0012\u0004\u0012\u00020\u00010\u0004j\b\u0012\u0004\u0012\u00020\u0001`\u0005H\u0016J\"\u0010\f\u001a\u00020\u000b2\u0006\u0010\u0007\u001a\u00020\u00022\u0006\u0010\t\u001a\u00020\b2\b\u0010\n\u001a\u0004\u0018\u00010\u0002H\u0016R\u0016\u0010\u000f\u001a\u0004\u0018\u00010\r8\u0002X\u0082\u0004\u00a2\u0006\u0006\n\u0004\b\u0006\u0010\u000e\u00a8\u0006\u0014"}, d2 = {"Lmq2/f;", "Ljq2/c;", "", "e", "Ljava/util/ArrayList;", "Lkotlin/collections/ArrayList;", "c", "title", "Landroid/content/Context;", "context", "id", "", "f", "Landroid/os/Bundle;", "Landroid/os/Bundle;", "phoneInfoDefault", "<init>", "()V", "d", "a", "qq_setting_impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes38.dex */
+public final class f extends jq2.c {
+
+    /* renamed from: c, reason: collision with root package name and from kotlin metadata */
+    private final Bundle phoneInfoDefault;
+
+    public f() {
+        AppRuntime peekAppRuntime = MobileQQ.sMobileQQ.peekAppRuntime();
+        Manager manager = peekAppRuntime != null ? peekAppRuntime.getManager(QQManagerFactory.PHONE_UNITY_MANAGER) : null;
+        PhoneUnityManager phoneUnityManager = manager instanceof PhoneUnityManager ? (PhoneUnityManager) manager : null;
+        this.phoneInfoDefault = phoneUnityManager != null ? phoneUnityManager.D : null;
+    }
+
+    @Override // jq2.c
+    public ArrayList<jq2.c> c() {
+        ArrayList<jq2.c> arrayList = new ArrayList<>();
+        if (this.phoneInfoDefault != null) {
+            arrayList.add(new pq2.a());
+        }
+        return arrayList;
+    }
+
+    @Override // jq2.c
+    /* renamed from: e */
+    public String getDetailTitle() {
+        String string = BaseApplication.context.getString(R.string.f2045853a);
+        Intrinsics.checkNotNullExpressionValue(string, "context.getString(com.te\u2026.qq_setting_phone_number)");
+        return string;
+    }
+
+    @Override // jq2.c
+    public void f(String title, Context context, String id5) {
+        Intrinsics.checkNotNullParameter(title, "title");
+        Intrinsics.checkNotNullParameter(context, "context");
+        QLog.d("PhoneNumNode", 2, "startRouteToPage");
+        Intent intent = new Intent(context, (Class<?>) PhoneUnityBindInfoActivity.class);
+        intent.putExtra("kSrouce", 1);
+        intent.putExtra("setting_search_title", title);
+        Bundle bundle = this.phoneInfoDefault;
+        if (bundle != null) {
+            intent.putExtra("kBindPhoneData", bundle);
+        }
+        context.startActivity(intent);
+    }
+}

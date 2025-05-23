@@ -1,0 +1,162 @@
+package com.tencent.mobileqq.weiyun.pb;
+
+import com.qzone.album.data.model.PhotoCacheData;
+import com.qzone.homepage.ui.Facade.model.FacadeCacheData;
+import com.tencent.mobileqq.pb.ByteStringMicro;
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBBoolField;
+import com.tencent.mobileqq.pb.PBBytesField;
+import com.tencent.mobileqq.pb.PBDoubleField;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBInt32Field;
+import com.tencent.mobileqq.pb.PBInt64Field;
+import com.tencent.mobileqq.pb.PBStringField;
+import com.tencent.mobileqq.pb.PBUInt32Field;
+import com.tencent.mobileqq.pb.PBUInt64Field;
+import com.tencent.mobileqq.winkpublish.publishconst.FSUploadConst;
+import com.tencent.qfsmonet.api.data.MonetPacketDescriptor;
+import com.tencent.weiyun.transmission.db.JobDbManager;
+import cooperation.qzone.api.QZoneContant;
+
+/* loaded from: classes20.dex */
+public final class WeiyunPB$FileExtInfo extends MessageMicro<WeiyunPB$FileExtInfo> {
+    public static final int ALBUM_OWNER_UIN_FIELD_NUMBER = 214;
+    public static final int APP_DATA_FIELD_NUMBER = 301;
+    public static final int APP_NAME_FIELD_NUMBER = 6;
+    public static final int BACKUP_FLAG_FIELD_NUMBER = 11;
+    public static final int BATCH_ID_FIELD_NUMBER = 210;
+    public static final int CAN_ACCEL_FIELD_NUMBER = 203;
+    public static final int COMMENT_COUNT_FIELD_NUMBER = 215;
+    public static final int COOKIE_NAME_FIELD_NUMBER = 14;
+    public static final int COOKIE_VALUE_FIELD_NUMBER = 15;
+    public static final int DEV_MAC_FIELD_NUMBER = 1;
+    public static final int DEV_NAME_FIELD_NUMBER = 4;
+    public static final int DEV_OS_FIELD_NUMBER = 5;
+    public static final int DEV_SHOW_TYPE_FIELD_NUMBER = 2;
+    public static final int DEV_TYPE_FIELD_NUMBER = 3;
+    public static final int EVENT_ID_FIELD_NUMBER = 150;
+    public static final int EXT_STATUS_FIELD_NUMBER = 20;
+    public static final int FROM_SOURCE_FIELD_NUMBER = 25;
+    public static final int GROUP_ID_FIELD_NUMBER = 24;
+    public static final int HEIGHT_FIELD_NUMBER = 28;
+    public static final int LATITUDE_FIELD_NUMBER = 23;
+    public static final int LIKE_COUNT_FIELD_NUMBER = 216;
+    public static final int LONGITUDE_FIELD_NUMBER = 22;
+    public static final int LONG_TIME_FIELD_NUMBER = 91;
+    public static final int MUSIC_DETAIL_INFO_FIELD_NUMBER = 43;
+    public static final int NUMBER_FIELD_NUMBER = 211;
+    public static final int ORG_FILE_SHA_FIELD_NUMBER = 30;
+    public static final int ORG_FILE_SIZE_FIELD_NUMBER = 29;
+    public static final int ORIENTATION_FIELD_NUMBER = 31;
+    public static final int ORIGIN_PIC_SHA_FIELD_NUMBER = 52;
+    public static final int OVERWRITE_FIELD_NUMBER = 501;
+    public static final int OWER_INFO_FIELD_NUMBER = 801;
+    public static final int TAKE_DEV_TYPE_FIELD_NUMBER = 9;
+    public static final int TAKE_TIME_FIELD_NUMBER = 21;
+    public static final int THUMB_URL_FIELD_NUMBER = 13;
+    public static final int TOTAL_NUM_FIELD_NUMBER = 212;
+    public static final int TPLINK_KEY_FIELD_NUMBER = 204;
+    public static final int UPLOAD_APPID_FIELD_NUMBER = 51;
+    public static final int UPLOAD_IPADDR_FIELD_NUMBER = 401;
+    public static final int UPLOAD_NICKNAME_FIELD_NUMBER = 219;
+    public static final int UPLOAD_UIN_FIELD_NUMBER = 213;
+    public static final int WEIYUN_HOST_FIELD_NUMBER = 201;
+    public static final int WEIYUN_PORT_FIELD_NUMBER = 202;
+    public static final int WIDTH_FIELD_NUMBER = 27;
+    static final MessageMicro.FieldMap __fieldMap__;
+    public final PBUInt64Field album_owner_uin;
+    public final PBStringField app_data;
+    public final PBStringField batch_id;
+    public final PBBoolField can_accel;
+    public final PBUInt32Field comment_count;
+    public final PBStringField event_id;
+    public final PBUInt32Field like_count;
+    public final PBInt64Field long_time;
+    public WeiyunPB$MusicDetailItem music_detail_info;
+    public final PBUInt32Field number;
+    public final PBBytesField org_file_sha;
+    public final PBUInt32Field orientation;
+    public final PBBytesField origin_pic_sha;
+    public final PBInt32Field overwrite;
+    public WeiyunPB$DirFileOwnerInfo ower_info;
+    public final PBUInt32Field total_num;
+    public final PBInt64Field tplink_key;
+    public final PBUInt32Field upload_appid;
+    public final PBStringField upload_ipaddr;
+    public final PBStringField upload_nickname;
+    public final PBUInt64Field upload_uin;
+    public final PBStringField weiyun_host;
+    public final PBInt32Field weiyun_port;
+    public final PBStringField dev_mac = PBField.initString("");
+    public final PBInt32Field dev_show_type = PBField.initInt32(0);
+    public final PBStringField dev_type = PBField.initString("");
+    public final PBStringField dev_name = PBField.initString("");
+    public final PBStringField dev_os = PBField.initString("");
+    public final PBStringField app_name = PBField.initString("");
+    public final PBStringField take_dev_type = PBField.initString("");
+    public final PBBoolField backup_flag = PBField.initBool(false);
+    public final PBStringField thumb_url = PBField.initString("");
+    public final PBStringField cookie_name = PBField.initString("");
+    public final PBStringField cookie_value = PBField.initString("");
+    public final PBInt32Field ext_status = PBField.initInt32(0);
+    public final PBInt64Field take_time = PBField.initInt64(0);
+    public final PBDoubleField longitude = PBField.initDouble(0.0d);
+    public final PBDoubleField latitude = PBField.initDouble(0.0d);
+    public final PBInt32Field group_id = PBField.initInt32(1);
+    public final PBInt32Field from_source = PBField.initInt32(0);
+    public final PBUInt32Field width = PBField.initUInt32(0);
+    public final PBUInt32Field height = PBField.initUInt32(0);
+    public final PBUInt64Field org_file_size = PBField.initUInt64(0);
+
+    static {
+        int[] iArr = {10, 16, 26, 34, 42, 50, 74, 88, 106, 114, 122, 160, 168, 177, 185, 192, 200, 216, 224, 232, 242, 248, 346, 408, 418, 728, 1202, 1610, QZoneContant.QZ_START_FEED_DETAIL_REQ, 1624, 1632, 1682, 1688, 1696, FSUploadConst.ERR_UPLOAD_RESULT_ILLEGAL, 1712, 1720, 1728, 1754, 2410, 3210, 4008, MonetPacketDescriptor.MonetDataFormat.RG8};
+        String[] strArr = {"dev_mac", "dev_show_type", "dev_type", "dev_name", "dev_os", "app_name", "take_dev_type", "backup_flag", FacadeCacheData.THUMB_URL, "cookie_name", "cookie_value", "ext_status", "take_time", "longitude", "latitude", "group_id", "from_source", "width", "height", "org_file_size", "org_file_sha", "orientation", "music_detail_info", "upload_appid", "origin_pic_sha", "long_time", "event_id", "weiyun_host", "weiyun_port", "can_accel", "tplink_key", JobDbManager.COL_UP_BATCH_ID, "number", "total_num", "upload_uin", "album_owner_uin", "comment_count", "like_count", "upload_nickname", "app_data", "upload_ipaddr", "overwrite", "ower_info"};
+        Boolean bool = Boolean.FALSE;
+        Double valueOf = Double.valueOf(0.0d);
+        ByteStringMicro byteStringMicro = ByteStringMicro.EMPTY;
+        __fieldMap__ = MessageMicro.initFieldMap(iArr, strArr, new Object[]{"", 0, "", "", "", "", "", bool, "", "", "", 0, 0L, valueOf, valueOf, 1, 0, 0, 0, 0L, byteStringMicro, 0, null, 0, byteStringMicro, 0L, "", "", 0, bool, 0L, "", 0, 0, 0L, 0L, 0, 0, "", "", "", 0, null}, WeiyunPB$FileExtInfo.class);
+    }
+
+    /* JADX WARN: Type inference failed for: r0v3, types: [com.tencent.mobileqq.weiyun.pb.WeiyunPB$DirFileOwnerInfo] */
+    /* JADX WARN: Type inference failed for: r5v2, types: [com.tencent.mobileqq.weiyun.pb.WeiyunPB$MusicDetailItem] */
+    public WeiyunPB$FileExtInfo() {
+        ByteStringMicro byteStringMicro = ByteStringMicro.EMPTY;
+        this.org_file_sha = PBField.initBytes(byteStringMicro);
+        this.orientation = PBField.initUInt32(0);
+        this.music_detail_info = new MessageMicro<WeiyunPB$MusicDetailItem>() { // from class: com.tencent.mobileqq.weiyun.pb.WeiyunPB$MusicDetailItem
+            public static final int SINGER_LOGO_FIELD_NUMBER = 40;
+            public static final int SINGER_NAME_FIELD_NUMBER = 30;
+            public static final int SPECIAL_ISSUE_LOGO_FIELD_NUMBER = 60;
+            public static final int SPECIAL_ISSUE_NAME_FIELD_NUMBER = 50;
+            static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{242, 322, 402, 482}, new String[]{"singer_name", "singer_logo", "special_issue_name", "special_issue_logo"}, new Object[]{"", "", "", ""}, WeiyunPB$MusicDetailItem.class);
+            public final PBStringField singer_name = PBField.initString("");
+            public final PBStringField singer_logo = PBField.initString("");
+            public final PBStringField special_issue_name = PBField.initString("");
+            public final PBStringField special_issue_logo = PBField.initString("");
+        };
+        this.upload_appid = PBField.initUInt32(0);
+        this.origin_pic_sha = PBField.initBytes(byteStringMicro);
+        this.long_time = PBField.initInt64(0L);
+        this.event_id = PBField.initString("");
+        this.weiyun_host = PBField.initString("");
+        this.weiyun_port = PBField.initInt32(0);
+        this.can_accel = PBField.initBool(false);
+        this.tplink_key = PBField.initInt64(0L);
+        this.batch_id = PBField.initString("");
+        this.number = PBField.initUInt32(0);
+        this.total_num = PBField.initUInt32(0);
+        this.upload_uin = PBField.initUInt64(0L);
+        this.album_owner_uin = PBField.initUInt64(0L);
+        this.comment_count = PBField.initUInt32(0);
+        this.like_count = PBField.initUInt32(0);
+        this.upload_nickname = PBField.initString("");
+        this.app_data = PBField.initString("");
+        this.upload_ipaddr = PBField.initString("");
+        this.overwrite = PBField.initInt32(0);
+        this.ower_info = new MessageMicro<WeiyunPB$DirFileOwnerInfo>() { // from class: com.tencent.mobileqq.weiyun.pb.WeiyunPB$DirFileOwnerInfo
+            public static final int OWNER_UIN_FIELD_NUMBER = 1;
+            static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{8}, new String[]{PhotoCacheData.OWNER_UIN}, new Object[]{0L}, WeiyunPB$DirFileOwnerInfo.class);
+            public final PBUInt64Field owner_uin = PBField.initUInt64(0);
+        };
+    }
+}

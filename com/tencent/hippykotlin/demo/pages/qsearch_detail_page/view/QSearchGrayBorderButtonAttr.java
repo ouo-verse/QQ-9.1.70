@@ -1,0 +1,10 @@
+package com.tencent.hippykotlin.demo.pages.qsearch_detail_page.view;
+
+import com.tencent.kuikly.core.base.k;
+
+/* compiled from: P */
+/* loaded from: classes32.dex */
+public final class QSearchGrayBorderButtonAttr extends k {
+    public int status;
+    public String text = "";
+}

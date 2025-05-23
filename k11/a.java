@@ -1,0 +1,9 @@
+package k11;
+
+import androidx.annotation.NonNull;
+
+/* compiled from: P */
+/* loaded from: classes7.dex */
+public interface a {
+    String c(@NonNull com.tencent.local_edit.andserver.http.b bVar) throws Throwable;
+}

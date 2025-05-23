@@ -1,0 +1,56 @@
+package com.tencent.mobileqq.guild.feed.nativepublish.tool.restore.restorer.text.v2;
+
+import com.tencent.mobileqq.guild.feed.nativedetail.bottom.utils.c;
+import com.tencent.mobileqq.guild.feed.nativepublish.tool.restore.factory.d;
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
+import om1.RestoreInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import pm1.b;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000(\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0007\u0018\u00002\u00020\u0001B\u0007\u00a2\u0006\u0004\b\u000f\u0010\u0010J\"\u0010\t\u001a\u00020\b2\u0006\u0010\u0003\u001a\u00020\u00022\u0006\u0010\u0005\u001a\u00020\u00042\b\u0010\u0007\u001a\u0004\u0018\u00010\u0006H\u0016R\u0014\u0010\f\u001a\u00020\n8\u0002X\u0082\u0004\u00a2\u0006\u0006\n\u0004\b\t\u0010\u000bR\u0014\u0010\u000e\u001a\u00020\n8\u0002X\u0082\u0004\u00a2\u0006\u0006\n\u0004\b\r\u0010\u000b\u00a8\u0006\u0011"}, d2 = {"Lcom/tencent/mobileqq/guild/feed/nativepublish/tool/restore/restorer/text/v2/a;", "Lpm1/b;", "Lorg/json/JSONObject;", "jsonObject", "Lom1/b;", "restoreResult", "Lom1/a;", "restoreInfo", "", "a", "Lcom/tencent/mobileqq/guild/feed/nativepublish/tool/restore/factory/d$a;", "Lcom/tencent/mobileqq/guild/feed/nativepublish/tool/restore/factory/d$a;", "employeeForImage", "b", "employeeForVideo", "<init>", "()V", "qqguild_feed_impl_release"}, k = 1, mv = {1, 7, 1})
+/* loaded from: classes13.dex */
+public final class a implements b {
+
+    /* renamed from: a, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final d.a employeeForImage = new d.a(new rm1.a());
+
+    /* renamed from: b, reason: collision with root package name and from kotlin metadata */
+    @NotNull
+    private final d.a employeeForVideo = new d.a(new rm1.d());
+
+    @Override // pm1.b
+    public void a(@NotNull JSONObject jsonObject, @NotNull om1.b restoreResult, @Nullable RestoreInfo restoreInfo) {
+        Intrinsics.checkNotNullParameter(jsonObject, "jsonObject");
+        Intrinsics.checkNotNullParameter(restoreResult, "restoreResult");
+        if (restoreInfo == null) {
+            return;
+        }
+        c.C7754c c7754c = c.C7754c.f220907a;
+        if (jsonObject.has("images")) {
+            JSONArray jSONArray = jsonObject.getJSONArray("images");
+            int length = jSONArray.length();
+            for (int i3 = 0; i3 < length; i3++) {
+                d.a aVar = this.employeeForImage;
+                JSONObject jSONObject = jSONArray.getJSONObject(i3);
+                Intrinsics.checkNotNullExpressionValue(jSONObject, "images.getJSONObject(index)");
+                aVar.a(jSONObject, restoreResult, restoreInfo);
+            }
+        }
+        if (jsonObject.has("videos")) {
+            JSONArray jSONArray2 = jsonObject.getJSONArray("videos");
+            int length2 = jSONArray2.length();
+            for (int i16 = 0; i16 < length2; i16++) {
+                d.a aVar2 = this.employeeForVideo;
+                JSONObject jSONObject2 = jSONArray2.getJSONObject(i16);
+                Intrinsics.checkNotNullExpressionValue(jSONObject2, "videos.getJSONObject(index)");
+                aVar2.a(jSONObject2, restoreResult, restoreInfo);
+            }
+        }
+    }
+}

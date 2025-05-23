@@ -1,0 +1,10 @@
+package com.tencent.relation.common.api;
+
+import com.tencent.mobileqq.qroute.QRouteApi;
+import com.tencent.mobileqq.qroute.annotation.QAPI;
+
+/* compiled from: P */
+@QAPI(process = {"all"})
+/* loaded from: classes25.dex */
+public interface IRelationRequest extends QRouteApi {
+}

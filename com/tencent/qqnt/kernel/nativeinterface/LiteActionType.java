@@ -1,0 +1,26 @@
+package com.tencent.qqnt.kernel.nativeinterface;
+
+/* compiled from: P */
+/* loaded from: classes24.dex */
+public enum LiteActionType {
+    KINVALID,
+    KNEWBUDDY,
+    KBIRTHDAY,
+    KGOODMORNINGFORINTIMATE,
+    KPOKEFORINTIMATE,
+    KGOODNIGHTFORINTIMATE,
+    KGAMEPARTNER,
+    KSPORTPARTNER,
+    KSTUDYPARTNER,
+    KMETADREAMPARTNER,
+    KMEALPARTNER,
+    KGOODMORNING,
+    KPOKE,
+    KGOODNIGHT,
+    KPEACEPARTNER,
+    KLOVERSAIGCEMOJI,
+    KNEWMARK,
+    KCONTINUEMARKSPARK,
+    KCONTINUEMARKGRASS,
+    KCONTINUEMARKWATER
+}

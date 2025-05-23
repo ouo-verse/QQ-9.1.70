@@ -1,0 +1,6 @@
+package com.tencent.karaoke.recordsdk.media.audio;
+
+/* compiled from: P */
+/* loaded from: classes7.dex */
+public interface r {
+}

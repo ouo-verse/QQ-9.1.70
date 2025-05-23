@@ -1,0 +1,28 @@
+package com.tencent.mapsdk.internal;
+
+import com.tencent.map.tools.json.annotation.Json;
+
+/* compiled from: P */
+/* loaded from: classes9.dex */
+public final class ha extends hj {
+
+    /* renamed from: a, reason: collision with root package name */
+    @Json(name = "showCount")
+    public int f148620a;
+
+    public ha() {
+        this.f148620a = 0;
+    }
+
+    private int a() {
+        int i3 = this.f148620a + 1;
+        this.f148620a = i3;
+        return i3;
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    public ha(long j3) {
+        super(j3);
+        this.f148620a = 0;
+    }
+}

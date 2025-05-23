@@ -1,0 +1,24 @@
+package u04;
+
+import com.tencent.xweb.pinus.ChildProcessServiceWrapper;
+import java.util.Map;
+
+/* compiled from: P */
+/* loaded from: classes25.dex */
+public class i extends a<Map<Integer, v04.a>> {
+    @Override // u04.q
+    public String b() {
+        return ChildProcessServiceWrapper.PROCESS_TYPE_GPU;
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // u04.a
+    /* renamed from: f, reason: merged with bridge method [inline-methods] */
+    public Map<String, Integer> d(Map<Integer, v04.a> map) {
+        v04.a aVar = map.get(7);
+        if (aVar != null) {
+            return aVar.i();
+        }
+        return null;
+    }
+}

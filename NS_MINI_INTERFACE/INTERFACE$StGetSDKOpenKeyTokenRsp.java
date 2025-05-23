@@ -1,0 +1,14 @@
+package NS_MINI_INTERFACE;
+
+import NS_COMM.COMM;
+import com.tencent.mobileqq.pb.MessageMicro;
+import com.tencent.mobileqq.pb.PBField;
+import com.tencent.mobileqq.pb.PBStringField;
+
+/* compiled from: P */
+/* loaded from: classes.dex */
+public final class INTERFACE$StGetSDKOpenKeyTokenRsp extends MessageMicro<INTERFACE$StGetSDKOpenKeyTokenRsp> {
+    static final MessageMicro.FieldMap __fieldMap__ = MessageMicro.initFieldMap(new int[]{10, 18}, new String[]{"extInfo", "token"}, new Object[]{null, ""}, INTERFACE$StGetSDKOpenKeyTokenRsp.class);
+    public COMM.StCommonExt extInfo = new COMM.StCommonExt();
+    public final PBStringField token = PBField.initString("");
+}

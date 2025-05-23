@@ -1,0 +1,9 @@
+package com.tencent.qqnt.kernel.nativeinterface;
+
+import java.util.ArrayList;
+
+/* compiled from: P */
+/* loaded from: classes24.dex */
+public interface IFlashTransferGetFirstClusteringListCallback {
+    void onGetFirstClusteringList(int i3, int i16, String str, ArrayList<FirstClusteringInfo> arrayList);
+}

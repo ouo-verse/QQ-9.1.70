@@ -1,0 +1,48 @@
+package l25;
+
+import c45.b;
+import java.util.Map;
+import kotlin.TuplesKt;
+import kotlin.collections.MapsKt__MapsJVMKt;
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import kotlin.jvm.internal.Intrinsics;
+
+/* compiled from: P */
+/* loaded from: classes38.dex */
+public final class d extends c45.j {
+
+    /* renamed from: d, reason: collision with root package name */
+    public String f413750d;
+
+    public d() {
+        this(null, 1, 0 == true ? 1 : 0);
+    }
+
+    @Override // c45.j
+    public final c45.j decodeWith(c45.f fVar) {
+        return fVar.g(new d(null, 1, 0 == true ? 1 : 0));
+    }
+
+    public /* synthetic */ d(String str, int i3, DefaultConstructorMarker defaultConstructorMarker) {
+        this("");
+    }
+
+    @Override // c45.j
+    public final Map<Integer, c45.h> getIndexes() {
+        Map<Integer, c45.h> mapOf;
+        mapOf = MapsKt__MapsJVMKt.mapOf(TuplesKt.to(5, new c45.h(5, this.f413750d, new b.e.g(false))));
+        return mapOf;
+    }
+
+    public d(String str) {
+        this.f413750d = str;
+    }
+
+    @Override // c45.j
+    public final void setValue(int i3, Object obj) {
+        if (i3 == 5) {
+            Intrinsics.checkNotNull(obj, "null cannot be cast to non-null type kotlin.String");
+            this.f413750d = (String) obj;
+        }
+    }
+}

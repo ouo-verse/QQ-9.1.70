@@ -1,0 +1,64 @@
+package of2;
+
+import com.tencent.qqnt.kernel.nativeinterface.FileUploadInfo;
+import java.util.ArrayList;
+import java.util.Iterator;
+import kotlin.Metadata;
+import kotlin.jvm.internal.ArrayIteratorKt;
+import kotlin.jvm.internal.Intrinsics;
+
+/* compiled from: P */
+@Metadata(d1 = {"\u0000\u0010\n\u0002\u0018\u0002\n\u0002\u0010\u0011\n\u0002\u0010\u0000\n\u0002\b\u0005\u001a\u0017\u0010\u0003\u001a\b\u0012\u0004\u0012\u00020\u00020\u0001*\u00020\u0000\u00a2\u0006\u0004\b\u0003\u0010\u0004\u001a\u0015\u0010\u0005\u001a\u00020\u0000*\u0006\u0012\u0002\b\u00030\u0001\u00a2\u0006\u0004\b\u0005\u0010\u0006\u00a8\u0006\u0007"}, d2 = {"Lcom/tencent/qqnt/kernel/nativeinterface/FileUploadInfo;", "", "", "a", "(Lcom/tencent/qqnt/kernel/nativeinterface/FileUploadInfo;)[Ljava/lang/Object;", "b", "([Ljava/lang/Object;)Lcom/tencent/qqnt/kernel/nativeinterface/FileUploadInfo;", "qqecommerce_impl_release"}, k = 2, mv = {1, 7, 1})
+/* loaded from: classes38.dex */
+public final class ab {
+    public static final Object[] a(FileUploadInfo fileUploadInfo) {
+        Intrinsics.checkNotNullParameter(fileUploadInfo, "<this>");
+        ArrayList arrayList = new ArrayList();
+        arrayList.add("uploadedBytes");
+        arrayList.add(String.valueOf(fileUploadInfo.uploadedBytes));
+        arrayList.add("errCode");
+        arrayList.add(Integer.valueOf(fileUploadInfo.errCode));
+        arrayList.add("svrErrCode");
+        arrayList.add(Integer.valueOf(fileUploadInfo.svrErrCode));
+        arrayList.add("errMsg");
+        String errMsg = fileUploadInfo.errMsg;
+        Intrinsics.checkNotNullExpressionValue(errMsg, "errMsg");
+        arrayList.add(errMsg);
+        arrayList.add("isNeedDelExif");
+        arrayList.add(Integer.valueOf(fileUploadInfo.isNeedDelExif ? 1 : 0));
+        Object[] array = arrayList.toArray(new Object[0]);
+        Intrinsics.checkNotNull(array, "null cannot be cast to non-null type kotlin.Array<T of kotlin.collections.ArraysKt__ArraysJVMKt.toTypedArray>");
+        return array;
+    }
+
+    public static final FileUploadInfo b(Object[] objArr) {
+        Intrinsics.checkNotNullParameter(objArr, "<this>");
+        Iterator it = ArrayIteratorKt.iterator(objArr);
+        FileUploadInfo fileUploadInfo = new FileUploadInfo();
+        while (it.hasNext()) {
+            Object next = it.next();
+            if (Intrinsics.areEqual(next, "uploadedBytes")) {
+                Object next2 = it.next();
+                Intrinsics.checkNotNull(next2, "null cannot be cast to non-null type kotlin.String");
+                fileUploadInfo.uploadedBytes = Long.parseLong((String) next2);
+            } else if (Intrinsics.areEqual(next, "errCode")) {
+                Object next3 = it.next();
+                Intrinsics.checkNotNull(next3, "null cannot be cast to non-null type kotlin.Int");
+                fileUploadInfo.errCode = ((Integer) next3).intValue();
+            } else if (Intrinsics.areEqual(next, "svrErrCode")) {
+                Object next4 = it.next();
+                Intrinsics.checkNotNull(next4, "null cannot be cast to non-null type kotlin.Int");
+                fileUploadInfo.svrErrCode = ((Integer) next4).intValue();
+            } else if (Intrinsics.areEqual(next, "errMsg")) {
+                Object next5 = it.next();
+                Intrinsics.checkNotNull(next5, "null cannot be cast to non-null type kotlin.String");
+                fileUploadInfo.errMsg = (String) next5;
+            } else if (Intrinsics.areEqual(next, "isNeedDelExif")) {
+                Object next6 = it.next();
+                Intrinsics.checkNotNull(next6, "null cannot be cast to non-null type kotlin.Int");
+                fileUploadInfo.isNeedDelExif = ((Integer) next6).intValue() == 1;
+            }
+        }
+        return fileUploadInfo;
+    }
+}

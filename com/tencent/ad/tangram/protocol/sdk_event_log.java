@@ -1,0 +1,146 @@
+package com.tencent.ad.tangram.protocol;
+
+/* compiled from: P */
+/* loaded from: classes3.dex */
+public final class sdk_event_log {
+
+    /* compiled from: P */
+    /* loaded from: classes3.dex */
+    public static final class SdkEventDimension {
+        public static final int ACTION_CODE_APP_MARKET_NOT_INSTALLED = 314;
+        public static final int ACTION_CODE_DEEPLINK_FALLBACK_TO_URL = 502;
+        public static final int ACTION_CODE_ILLEGAL_PARAMS = 206;
+        public static final int ACTION_CODE_RESOLVE_ACTIVITY_FAILED = 315;
+        public static final int ACTION_CODE_START_ACTIVITY_FAILED = 317;
+        public static final int ACTION_CODE_UNKNOWN = 0;
+        public static final int ACTION_CODE_URI_NOT_VALID = 304;
+        public static final int ACTOR_APP = 2;
+        public static final int ACTOR_SYSTEM = 3;
+        public static final int ACTOR_UNKNOWN = 0;
+        public static final int ACTOR_USER = 1;
+        public static final int CLICK_ACTION_TYPE_JUMP_AND_REPORT = 1;
+        public static final int CLICK_ACTION_TYPE_ONLY_JUMP = 3;
+        public static final int CLICK_ACTION_TYPE_ONLY_REPORT = 2;
+        public static final int CLICK_ACTION_TYPE_UNKNOEN = 0;
+        public static final int CLICK_REQ_TYPE_200_NOT_RETURN_URL = 3;
+        public static final int CLICK_REQ_TYPE_200_RETURN_URL = 2;
+        public static final int CLICK_REQ_TYPE_302_TO_JUMP = 1;
+        public static final int CLICK_REQ_TYPE_UNKNOWN = 0;
+        public static final int DEEPLINK_SCENE_H5 = 2;
+        public static final int DEEPLINK_SCENE_TERMINAL = 1;
+        public static final int DEEPLINK_SCENE_UNKNOWN = 0;
+        public static final int DEEPLINK_TYPE_DEEPLINK = 1;
+        public static final int DEEPLINK_TYPE_DELAYED = 3;
+        public static final int DEEPLINK_TYPE_UNIVERSAL = 2;
+        public static final int DEEPLINK_TYPE_UNKNOWN = 0;
+        public static final int DOWNLOAD_SCENE_DYNAMIC_LANDINGPAGE_DOWNLOADER = 6;
+        public static final int DOWNLOAD_SCENE_DYNAMIC_LANDINGPAGE_MANUFACTURER = 7;
+        public static final int DOWNLOAD_SCENE_EXPLICIT_DOWNLOADER = 2;
+        public static final int DOWNLOAD_SCENE_EXPLICIT_MANUFACTURER = 1;
+        public static final int DOWNLOAD_SCENE_HALF_SCREEN_DOWNLOADER = 5;
+        public static final int DOWNLOAD_SCENE_LANDINGPAGE_DOWNLOADER = 4;
+        public static final int DOWNLOAD_SCENE_LANDINGPAGE_MANUFACTURER = 3;
+        public static final int DOWNLOAD_SCENE_UNKNOWN = 0;
+        public static final int EVENT_APP_INSTALLED = 4001019;
+        public static final int EVENT_APP_INSTALL_SUCCESS_FROM_APP_MARKET = 4001017;
+        public static final int EVENT_APP_INSTALL_SUCCESS_FROM_APP_MARKET_BY_XIJING = 4001043;
+        public static final int EVENT_APP_NOT_INSTALLED = 4001020;
+        public static final int EVENT_CLICK = 4000000;
+        public static final int EVENT_HALF_SCREEN_CLICK_ON_DOWNLOAD = 4001070;
+        public static final int EVENT_HALF_SCREEN_CLICK_ON_WX_CUSTOMER_SERVICE = 4001081;
+        public static final int EVENT_HALF_SCREEN_CLOSE = 4001071;
+        public static final int EVENT_HALF_SCREEN_LOAD_FAILED = 4001067;
+        public static final int EVENT_HALF_SCREEN_LOAD_START = 4001065;
+        public static final int EVENT_HALF_SCREEN_LOAD_SUCCESS = 4001066;
+        public static final int EVENT_INJECT_TRACE_ID_FAILED = 4001077;
+        public static final int EVENT_INJECT_TRACE_ID_START = 4001076;
+        public static final int EVENT_INJECT_TRACE_ID_SUCCESS = 4001078;
+        public static final int EVENT_LANDING_PAGE_EXIT_AFTER_LOAD_SUCCESS = 4003026;
+        public static final int EVENT_LANDING_PAGE_EXIT_BEFORE_LOAD_SUCCESS = 4003023;
+        public static final int EVENT_LANDING_PAGE_EXIT_WITHOUT_ACTION = 4003024;
+        public static final int EVENT_LANDING_PAGE_EXTENSIONS_LOAD_START = 4003027;
+        public static final int EVENT_LANDING_PAGE_EXTENSIONS_LOAD_SUCCESS = 4003028;
+        public static final int EVENT_LANDING_PAGE_EXTENSIONS_VIDEO_PLAY_START = 4003029;
+        public static final int EVENT_LANDING_PAGE_LOAD_COMPONENT_RENDERED = 4003011;
+        public static final int EVENT_LANDING_PAGE_LOAD_FAILED = 4003009;
+        public static final int EVENT_LANDING_PAGE_LOAD_FIRSTPAGE_RENDERED = 4003012;
+        public static final int EVENT_LANDING_PAGE_LOAD_START = 4003001;
+        public static final int EVENT_LANDING_PAGE_LOAD_SUCCESS = 4003010;
+        public static final int EVENT_LANDING_PAGE_WEB_VIEW_INITIALIZE_START = 4003005;
+        public static final int EVENT_LANDING_PAGE_WEB_VIEW_INITIALIZE_SUCCESS = 4003007;
+        public static final int EVENT_LANDING_PAGE_WEB_VIEW_JS_INJECT = 4003032;
+        public static final int EVENT_LANDING_PAGE_WEB_VIEW_LOAD_URL_START = 4003008;
+        public static final int EVENT_LAUNCH_DEEPLINK_FAILED_WITH_CONFIRMATION = 4002038;
+        public static final int EVENT_LAUNCH_DEEPLINK_FALLBACK_TO_URL_FAILED_WITH_CONFIRMATION = 4002040;
+        public static final int EVENT_LAUNCH_DEEPLINK_START_WITH_CONFIRMATION = 4002037;
+        public static final int EVENT_LAUNCH_DEEPLINK_SUCCESS_WITH_CONFIRMATION = 4002039;
+        public static final int EVENT_LAUNCH_DEEPLINK_UNKNOWN = 4002041;
+        public static final int EVENT_OPEN_APP_MARKET_FAILED = 4001015;
+        public static final int EVENT_OPEN_APP_MARKET_START = 4001014;
+        public static final int EVENT_OPEN_APP_MARKET_SUCCESS = 4001016;
+        public static final int EVENT_OPEN_APP_WITH_DEEPLINK_DELAYED_FAILED = 4002024;
+        public static final int EVENT_OPEN_APP_WITH_DEEPLINK_DELAYED_START = 4002014;
+        public static final int EVENT_OPEN_APP_WITH_DEEPLINK_DELAYED_SUCCESS = 4002015;
+        public static final int EVENT_OPEN_APP_WITH_DEEPLINK_FAILED = 4002012;
+        public static final int EVENT_OPEN_APP_WITH_DEEPLINK_SUCCESS = 4002011;
+        public static final int EVENT_OPEN_QUICK_APP_FAILED = 4008010;
+        public static final int EVENT_OPEN_QUICK_APP_SUCCESS = 4008009;
+        public static final int EVENT_OUTER_APP_JUMP_REPORT_JUMP_BACK = 4002028;
+        public static final int EVENT_OUTER_APP_JUMP_REPORT_JUMP_OUT = 4002027;
+        public static final int EVENT_SINGLE_APP_MARKET_JUMP_FAILED = 4001045;
+        public static final int EVENT_SINGLE_APP_MARKET_JUMP_START = 4001044;
+        public static final int EVENT_STATISTICS_CLICK_FAILED = 4000002;
+        public static final int EVENT_STATISTICS_CLICK_START = 4000001;
+        public static final int EVENT_STATISTICS_CLICK_SUCCESS = 4000003;
+        public static final int EVENT_TRY_TO_OPEN_APP_WITH_DEEPLINK = 4002001;
+        public static final int EVENT_TRY_TO_OPEN_QUICK_APP = 4008001;
+        public static final int EVENT_UNKNOWN = 0;
+        public static final int EVENT_WECHAT_AD_DATA_CHECK_FAILED = 4006003;
+        public static final int EVENT_WECHAT_AD_DATA_CHECK_SUCCESS = 4006002;
+        public static final int EVENT_WECHAT_CLICK_APP_STATUS_DISMATCH = 4006007;
+        public static final int EVENT_WECHAT_CLICK_APP_STATUS_MATCH = 4006006;
+        public static final int EVENT_WECHAT_CLICK_JUMP_START = 4006001;
+        public static final int EVENT_WECHAT_CLICK_SYNC_RESULT_FAIL = 4006009;
+        public static final int EVENT_WECHAT_CLICK_SYNC_RESULT_SUCCESS = 4006008;
+        public static final int EVENT_WECHAT_LUGGAGE_AUTHORIZED = 4006105;
+        public static final int EVENT_WECHAT_LUGGAGE_AUTHORIZE_FAILED = 4006108;
+        public static final int EVENT_WECHAT_LUGGAGE_AUTHORIZE_SUCCESS = 4006107;
+        public static final int EVENT_WECHAT_LUGGAGE_DYNAMIC_PACKAGE_EXISTS = 4006101;
+        public static final int EVENT_WECHAT_LUGGAGE_DYNAMIC_PACKAGE_NOT_EXISTS = 4006102;
+        public static final int EVENT_WECHAT_LUGGAGE_INITIALIZE_DYNAMIC_PACKAGE_FAILED = 4006104;
+        public static final int EVENT_WECHAT_LUGGAGE_INITIALIZE_DYNAMIC_PACKAGE_SUCCESS = 4006103;
+        public static final int EVENT_WECHAT_LUGGAGE_UNAUTHORIZED = 4006106;
+        public static final int LANDINGPAGE_TYPE_ALITA_MINI_PROGRAM = 12;
+        public static final int LANDINGPAGE_TYPE_CUSTOM = 11;
+        public static final int LANDINGPAGE_TYPE_H5 = 1;
+        public static final int LANDINGPAGE_TYPE_H5_AND_SPLICING = 6;
+        public static final int LANDINGPAGE_TYPE_H5_AND_SPLICING_REWARD = 14;
+        public static final int LANDINGPAGE_TYPE_H5_REWARD = 13;
+        public static final int LANDINGPAGE_TYPE_HALF = 5;
+        public static final int LANDINGPAGE_TYPE_HIPPY = 3;
+        public static final int LANDINGPAGE_TYPE_HIPPY_AND_SPLICING = 8;
+        public static final int LANDINGPAGE_TYPE_NATIVE = 2;
+        public static final int LANDINGPAGE_TYPE_NATIVE_AND_SPLICING = 7;
+        public static final int LANDINGPAGE_TYPE_NATIVE_DYNAMIC = 10;
+        public static final int LANDINGPAGE_TYPE_SPLICING = 4;
+        public static final int LANDINGPAGE_TYPE_UNKNOWN = 0;
+        public static final int LANDINGPAGE_TYPE_VIDEO_DETAIL = 9;
+        public static final int WEBVIEW_JS_INJECT = 1;
+        public static final int WEBVIEW_JS_INJECT_CHECK = 3;
+        public static final int WEBVIEW_JS_INJECT_GET_RESULT = 2;
+        public static final int WEBVIEW_JS_INJECT_UNKNOWN = 0;
+        public static final int WEBVIEW_PROGRESS_INDEPENDENT = 2;
+        public static final int WEBVIEW_PROGRESS_MAIN = 1;
+        public static final int WEBVIEW_PROGRESS_UNKNOWN = 0;
+        public static final int WX_CLICK_WITH_PKG_EXIST = 1;
+        public static final int WX_CLICK_WITH_PKG_NOT_EXIST = 2;
+        public static final int WX_LAUNCH_MINI_PROGRAM = 3;
+        public static final int WX_METHOD_UNKNOWN = 0;
+        public static final int WX_PRELOAD_CLOSE = 0;
+        public static final int WX_PRELOAD_DOWNLOAD_PKGINFO = 2;
+        public static final int WX_PRELOAD_MINI_PROGRAM = 1;
+    }
+
+    sdk_event_log() {
+    }
+}
